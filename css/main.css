@@ -344,3 +344,113 @@ template {
   display: none;
 }
 html{-webkit-box-sizing:border-box;box-sizing:border-box;font-size:62.5%;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}*,:after,:before{-webkit-box-sizing:inherit;box-sizing:inherit}body{font-size:1.6em;line-height:1.6;color:#000;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif}._1rH2hDH{line-height:1;font-size:1.4rem;padding:.8rem 2rem;border:.1rem solid transparent;outline:0;cursor:pointer;-webkit-transition:background-color .2s ease,color .2s ease;transition:background-color .2s ease,color .2s ease;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;border-radius:3px}.sBH686a{color:#212121;background-color:#fff;border:.1rem solid #757575}.sBH686a:hover{background-color:#eee}.sBH686a:active{background-color:#bdbdbd}._3A_VJK0{color:#fff;background-color:#2196f3;font-weight:700}._3A_VJK0:focus,._3A_VJK0:hover{background-color:#1976d2}._3A_VJK0:active{background-color:#0d47a1}
+
+
+
+
+header {
+  background: rgba(0,0,0,0.4);
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+}
+
+.logo {
+  float: left;
+  width: 300px;
+  height: 50px;
+}
+
+.main-menu {
+  float: left;
+  width: 280px;
+}
+
+.main-menu ul {  
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  overflow: hidden;
+}
+
+.main-menu ul li {
+  float: left;
+  margin: 0 10px;
+  padding: 0;
+}
+
+.main-menu ul li a {
+  font-size: 1.3rem;
+  text-decoration: none;
+  color: #fff;
+  padding: 10px 20px;
+  display: block;
+}
+
+.linkedin {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  float: right;
+}
+
+.linkedin img {
+  width: 42px;
+  height: 42px;
+}
+
+.hero {
+  min-height: 600px;
+  background: #eee;
+}
+
+.about-jimmy {
+  padding-top: 300px;
+  text-align: center;
+}
+
+.about-jimmy .avatar {
+  width: 150px;
+  height: 150px;
+  background: #888;
+  margin: 0 auto;
+}
+
+.about-jimmy .description {
+  font-size: 2rem;
+  width: 80%;
+  margin: 0 auto;
+  line-height: 1.2;
+  padding: 30px 0;
+}
+
+.project-hero {
+  background-image: url(../images/throwmotion.jpg);
+  min-height: 80vh;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.project-box {
+  margin-bottom: 30px;
+}
+
+.project-box a {
+  display: block;
+  background: #eee;
+  width: 100%;
+  height: 200px;
+}
+
+.animatedModal {
+  position: relative;
+}
+
+.close-animatedModal {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 10;
+}

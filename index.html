@@ -4,13 +4,116 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>React Pages Boilerplate</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/jhansson.github.io/icons-15ce0df4e3cd3ba24663efe197267acb/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="/jhansson.github.io/icons-15ce0df4e3cd3ba24663efe197267acb/favicon-16x16.png"><link rel="shortcut icon" href="/jhansson.github.io/icons-15ce0df4e3cd3ba24663efe197267acb/favicon.ico"><link href="/jhansson.github.io/main.css" rel="stylesheet"></head>
+    <title>Jimmy Hansson - Game Developer</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="icons/favicon.ico">
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/simple-grid.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+  </head>
   <body>
-    <noscript>
-      Enable JavaScript to see content on this page
-    </noscript>
-    
-    <div id="app"></div>
-  <script type="text/javascript" src="/jhansson.github.io/bundle.js"></script></body>
+    <!--
+    <header>
+      <a class="logo" href="index.html" title="">
+        Jimmy Hansson
+      </a>   
+      <nav class="main-menu font-heavy">
+        <ul>
+          <li><a href="#projects" title="">Projects</a></li>
+          <li><a href="#about" title="">About</a></li>
+        </ul>
+      </nav>
+      <a class="linkedin" href="http://www.linkedin.com/in/jimmy-s-hansson">
+        <img src="icons/linkedin.png" alt="My LinkedIn account" />
+      </a>
+    </header>
+  -->
+    <div class="hero">
+      <div class="about-jimmy">
+        <div class="avatar"></div>
+        <div class="container">
+            <div class="row">
+              <div class="col-12">
+        <p class="description font-heavy">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque. </p>
+        </div>
+        </div>
+        </div>
+      </div>
+    </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+              <h1>Projects</h1>
+              <!--Call your modal-->
+              <div class="project-box">
+                <a id="demo01" href="#animatedModal">
+                    
+                </a>
+                <div id="animatedModal">
+                    <!--THIS IS IMPORTANT! to close the modal, the class name has to match the name given on the ID  class="close-animatedModal" -->
+                    <div class="close-animatedModal"> 
+                        CLOSE MODAL
+                    </div>
+                        
+                    <div class="modal-content">
+                      <div class="project-hero">
+                        Poop
+                      </div>
+                      <div class="row">
+                        <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
+                        <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <div class="project-box">
+              <a id="demo02" href="#animatedModalTwo">
+                  
+              </a>
+              <div id="animatedModalTwo">
+                  <!--THIS IS IMPORTANT! to close the modal, the class name has to match the name given on the ID  class="close-animatedModal" -->
+                  <div class="close-animatedModalTwo"> 
+                      CLOSE MODAL
+                  </div>
+                      
+                  <div class="modal-content">
+                    <div class="project-hero">
+                      Poop
+                    </div>
+                    <div class="row">
+                      <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
+                      <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
+                    </div>
+                  </div>
+              </div>
+              </div>
+              <div class="project-box">
+              <a class="demo03" href="#animatedModal3">
+                  
+              </a>
+              </div>
+          </div>
+        </div>
+          <div class="row">
+            <div class="col-4">
+              <div class="project-box"></div>
+            </div>
+            <div class="col-4">
+                <div class="project-box"></div>
+            </div>
+            <div class="col-4">
+                <div class="project-box"></div>
+            </div>
+          </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.6.0/lazyload.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="js/animatedModal.min.js"></script>
+        <script>
+            new LazyLoad();
+            $("#demo01").animatedModal({color:'#fff'});
+            $("#demo02").animatedModal({color:'#fff'});
+        </script>
+  </body>
 </html>
