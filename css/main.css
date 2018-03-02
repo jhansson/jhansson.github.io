@@ -428,7 +428,33 @@ header {
   padding: 30px 0;
 }
 
-.project-hero {
+#echomodal {
+  background: #333;
+}
+
+#throwmotionmodal {
+  background: #c9cfdb;
+}
+
+#echomodal .project-hero {
+  background-image: url(../images/echowater.jpg);
+  min-height: 100vh;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#climbingmodal .project-hero {
+  background-image: url(../images/climbing.jpg);
+  min-height: 100vh;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#throwmotionmodal .project-hero {
   background-image: url(../images/throwmotion.jpg);
   min-height: 100vh;
     position: relative;
@@ -437,6 +463,8 @@ header {
     background-repeat: no-repeat;
 }
 
+
+
 .project-description {
   background: #3949ab;
     position: absolute;
@@ -444,6 +472,10 @@ header {
     left: 0;
     /* right: 0; */
     width: 60%; 
+}
+
+#echomodal .project-description {
+  background: #042e27;
 }
 
 .project-description h2 {
@@ -459,6 +491,9 @@ header {
   margin-top: 0;
 }
 
+#echomodal p, #echomodal h3 {
+  color: #fff;
+}
 
 
 .throwmotionmodal {
@@ -466,19 +501,21 @@ header {
   margin: 20px;
 }
 
+.close-echomodal,
+.close-climbingmodal,
 .close-throwmotionmodal {
-  background: url(../images/close.png) 0px 1px no-repeat;
-  padding: 0px 20px 5px 40px;
+  background: #0EB57D url(../images/close.png) 8px 5px no-repeat;
+  padding: 5px 20px 5px 51px;
   font-size: 1.6rem;
   position: fixed;
-  top: 10px;
-  right: 10px;
+  top: 0px;
+  left: 50%;
   z-index: 10;
   color: #fff;
   text-decoration: none;
 }
 
-.close-throwmotion:hover {
+.close-throwmotionmodal:hover {
   text-decoration: underline;
 }
 
@@ -580,6 +617,7 @@ body {
 .project-box, .project-box-featured {
   margin-bottom: 30px;
   width: 100% !important;
+  position:  relative;
 }
 
 .project-box a, .project-box-featured a{
@@ -597,18 +635,34 @@ body {
   min-height: 501px;
 }
 
+.project-title {
+  position: absolute;
+  padding: 10px 20px;
+  left: 0;
+  bottom: 20px;
+  background: #000;
+  color: #fff;
+}
+
 .project-echo {
   background: url(../images/echoposter.jpg) center top / cover no-repeat;
+}
+
+.project-climbing {
+  background: url(../images/climbing.jpg) center top / cover no-repeat;
 }
 
 .project-throwmotion {
   background: url(../images/throwmotion.jpg) center top / cover no-repeat;
 }
 
+.modal-content h3 {
+  margin: 5rem 0 2rem 0;
+}
 
 footer {
-  height: 300px;
-  background: #0EB57D;
+  height: 100px;
+  background: #eee;
   margin-top: 80px;
 }
 
