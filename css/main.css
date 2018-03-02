@@ -391,7 +391,6 @@ header {
   position: relative;
   width: 42px;
   height: 42px;
-  float: right;
 }
 
 .linkedin img {
@@ -509,7 +508,8 @@ header {
   font-size: 1.6rem;
   position: fixed;
   top: 0px;
-  left: 50%;
+  left: calc(50% - 65px);
+  width: 130px;
   z-index: 10;
   color: #fff;
   text-decoration: none;
@@ -644,6 +644,18 @@ body {
   color: #fff;
 }
 
+.project-echo .project-title {
+  background: #042e27;
+}  
+
+.project-climbing .project-title {
+  background: #3949ab;
+}  
+
+.project-throwmotion .project-title {
+  background: #3949ab;
+}  
+
 .project-echo {
   background: url(../images/echoposter.jpg) center top / cover no-repeat;
 }
@@ -664,8 +676,30 @@ footer {
   height: 100px;
   background: #eee;
   margin-top: 80px;
+  text-align: center;
+  padding-top: 20px;
 }
 
+.chip {
+  height: 32px;
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  line-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 16px;
+  background-color: #dedede;
+  display: inline-block;
+  color: rgba(0,0,0,.87);
+  margin: 2px 0;
+  font-size: 0;
+  white-space: nowrap;
+}
+
+.chip__text {
+  font-size: 13px;
+  vertical-align: middle;
+  display: inline-block;
+}
 
 .no-margin-col {
   margin: 0 !important;
@@ -674,10 +708,18 @@ footer {
 .no-margin-top-col {
   margin-top: 0 !important;
   margin-right: 0 !important;
-  width: 98%;
-  
+  width: 98%;  
+}
+
+@media only screen and (max-width: 45em) {
+  .col-5.no-margin-col { width: 100% !important; }
+  .project-description { width: 100%; bottom: 0px; }
+  .about-me { padding: 20px; }
+  .about-me h1 { font-size: 2rem; }
+  .faceshot { height: 340px; }
 }
 
 @media only screen and (min-width: 45em) {
-  .no-margin-top-col { width: 98% !important; }
+  .no-margin-top-col { width: 98% !important;  }
+  
 }
