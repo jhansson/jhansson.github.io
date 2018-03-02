@@ -400,6 +400,10 @@ header {
 }
 
 .hero {
+  background: url('../images/jimmybg.jpg');
+  background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   min-height: 600px;
   background: #eee;
 }
@@ -426,15 +430,37 @@ header {
 
 .project-hero {
   background-image: url(../images/throwmotion.jpg);
-  min-height: 80vh;
+  min-height: 100vh;
     position: relative;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
 
+.project-description {
+  background: #3949ab;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;  
+}
+
+.project-description h2 {
+  color: #fff;
+  font-size: 3rem;
+  margin-bottom: 0;
+  margin-top: 1rem;
+}
+
+.project-description p {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-top: 0;
+}
+
 .project-box {
   margin-bottom: 30px;
+  width: 100% !important;
 }
 
 .project-box a {
@@ -444,13 +470,28 @@ header {
   height: 200px;
 }
 
-.animatedModal {
+.throwmotion {
   position: relative;
+  margin: 20px;
 }
 
-.close-animatedModal {
-  position: absolute;
-  top: 0;
-  left: 50%;
+.close-throwmotion {
+  background: url(../images/close.png) 0px 1px no-repeat;
+  padding: 0px 20px 5px 40px;
+  font-size: 1.6rem;
+  position: fixed;
+  top: 10px;
+  right: 10px;
   z-index: 10;
+  color: #fff;
+  text-decoration: none;
+}
+
+.close-throwmotion:hover {
+  text-decoration: underline;
+}
+
+.center-col {
+  margin: 0 auto !important;
+  float: none !important;
 }
