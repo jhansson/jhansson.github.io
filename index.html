@@ -12,136 +12,113 @@
     <link href="css/simple-grid.min.css" rel="stylesheet">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <!--<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">-->
   </head>
   <body>
-    <!--
-    <header>
-      <a class="logo" href="index.html" title="">
-        Jimmy Hansson
-      </a>   
-      <nav class="main-menu font-heavy">
-        <ul>
-          <li><a href="#projects" title="">Projects</a></li>
-          <li><a href="#about" title="">About</a></li>
-        </ul>
-      </nav>
-      <a class="linkedin" href="http://www.linkedin.com/in/jimmy-s-hansson">
-        <img src="icons/linkedin.png" alt="My LinkedIn account" />
-      </a>
-    </header>
-  -->
-    <div id="hero" class="hero">
-      <div class="about-jimmy">
-        <div class="avatar"></div>
-        <div class="container">
+  <div class="background-thing"></div>
+  <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <!-- TOP BOX START -->
+          <div class="shadow-box">
             <div class="row">
-              <div class="col-12">
-                <p class="description font-heavy">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque. </p>
-                <div>
-                    <span class="mdl-chip">
-                        <span class="mdl-chip__text">Unity</span>
-                    </span>
-                    <span class="mdl-chip">
-                        <span class="mdl-chip__text">UE4</span>
-                    </span>
-                    <span class="mdl-chip">
-                        <span class="mdl-chip__text">C#</span>
-                    </span>
-                    <span class="mdl-chip">
-                        <span class="mdl-chip__text">Blueprint</span>
-                    </span>
-                    <span class="mdl-chip">
-                        <span class="mdl-chip__text">UX</span>
-                    </span>
+              <div class="col-5 no-margin-col">
+                <div class="faceshot"></div>
+              </div>
+              <div class="col-7">
+                <div class="about-me">
+                  <span class="hello-box">Hello!</span>
+                  <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
+                  <span class="subtitle">GAMEPLAY DESIGNER &amp; SCRIPTER</span>
+                  <p>
+                    Text about what I think about game development. What is important to me and some other stuff.
+                    Not too long and not too short, maybe my skills too.
+                  </p>
                 </div>
               </div>
             </div>
+          </div>
+          <!-- TOP BOX END -->          
         </div>
       </div>
-    </div>
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <h2 class="projects-header">Projects</h2>
+          <!-- PROJECTS START -->
+          <div class="row">
+            <div class="col-7">
+              <div class="project-box-featured project-echo">
+                <a id="echo-link" href="#echomodal">
+                  View Updates
+                </a>
+              </div>
+            </div>
+            <div class="col-5">
               <div class="row">
-                  <div class="col-8 center-col">
-                      <div class="project-box mdl-card mdl-shadow--2dp">                          
-                          <div>
-                            <a id="throwmotion-link3" href="#throwmotion">
-                              View Updates
-                            </a>
-                          </div>
-                      </div>
+                <div class="col-12 no-margin-top-col">
+                  <div class="project-box">
+                    <a id="climbing-link" href="#climbingmodal">
+                      View Updates
+                    </a>
                   </div>
-                  </div>
-                  <div class="row">
-                  <div class="col-8 center-col">
-                      <div class="project-box mdl-card mdl-shadow--2dp">                          
-                          <div>
-                            <a id="throwmotion-link2" href="#throwmotion">
-                              View Updates
-                            </a>
-                          </div>
-                      </div>
-                  </div>
-                  </div>
-                  <div class="row">
-                  <div class="col-8 center-col">
-                      <div class="project-box mdl-card mdl-shadow--2dp">                          
-                          <div>
-                            <a id="throwmotion-link" href="#throwmotion">
-                              View Updates
-                            </a>
-                          </div>
-                      </div>
-                      <div id="throwmotion">
-                          <a href="#" class="close-throwmotion font-heavy"> 
-                              Close
-                          </a>
-                              
-                          <div class="modal-content">
-                            <div class="project-hero">
-                              <div class="project-description">
-                                <div class="container">
-                                  <div class="row">
-                                    <div class="col-12">
-                                      <h2>Throw Motion</h2>
-                                      <p>2 Week Game Project: 4 Player Party Game</p>
-                                    </div>
-                                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 no-margin-top-col">
+                  <div class="project-box project-throwmotion">
+                    <a id="throwmotion-link" href="#throwmotionmodal">
+                      View Updates
+                    </a>
+                  </div> 
+                  <!-- MODAL START -->
+                  <div id="throwmotionmodal">
+                      <a href="#" class="close-throwmotionmodal font-heavy">Close</a>                          
+                      <div class="modal-content">
+                        <div class="project-hero">
+                          <div class="project-description">
+                            <div class="container">
+                              <div class="row">
+                                <div class="col-12">
+                                  <h2>Throw Motion</h2>
+                                  <p>2 Week Game Project: 4 Player Party Game</p>
                                 </div>
                               </div>
                             </div>
-                            <div class="container">
-                              <div class="row">
-                                <div class="col-6">Karaktärernas rörelse på is. Vad var målet och vad blev resultatet. Hur gjorde jag för att skapa det. Användande av partiklar för att ge visuell feedback vid stopp och svängar. Vad kunde jag ha gjort annorlunda, vad lärde jag mig?</div>
-                                <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
-                              </div>
-                            </div>
                           </div>
+                        </div>
+                        <div class="container">
+                          <div class="row">
+                            <div class="col-6">Karaktärernas rörelse på is. Vad var målet och vad blev resultatet. Hur gjorde jag för att skapa det. Användande av partiklar för att ge visuell feedback vid stopp och svängar. Vad kunde jag ha gjort annorlunda, vad lärde jag mig?</div>
+                            <div class="col-6">Proin rutrum diam in auctor scelerisque. Aenean diam tortor, semper ut pellentesque id, venenatis nec neque.</div>
+                          </div>
+                        </div>
                       </div>
                   </div>
+                  <!-- MODAL END -->
                 </div>
+              </div>
+            </div>
           </div>
-        </div>
-          
-        </div>
-        <script type="text/javascript" src="js/vidim.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.6.0/lazyload.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="js/animatedModal.min.js"></script>
-        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-        <script>
-            new LazyLoad();
-            $("#throwmotion-link").animatedModal({modalTarget:'throwmotion', animationDuration: '.4s', color:'#fff'});
-            $("#demo02").animatedModal({modalTarget:'animatedModalTwo', animationDuration: '.4s', color:'#fff'});
+          <!-- PROJECTS END -->
+    </div>
+    <footer>
+      En footer
+    </footer>
+    <script type="text/javascript" src="js/vidim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.6.0/lazyload.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/animatedModal.min.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script>
+        new LazyLoad();
+        $("#echo-link").animatedModal({modalTarget:'echomodal', animationDuration: '.4s', color:'#fff'});
+        $("#climbing-link").animatedModal({modalTarget:'climbingmodal', animationDuration: '.4s', color:'#fff'});
+        $("#throwmotion-link").animatedModal({modalTarget:'throwmotionmodal', animationDuration: '.4s', color:'#fff'});
 
-            var demo2 = new vidim( '#hero', {
-              src: 'https://youtu.be/NMUr2yNALhU',
-              type: 'YouTube',
-              poster: 'https://s3-eu-west-1.amazonaws.com/originalexe/vidim/videos/Symmetric-Traffic.jpg'
-            });
-            
-        </script>
+        var demo2 = new vidim( '#hero', {
+          src: 'https://youtu.be/NMUr2yNALhU',
+          type: 'YouTube',
+          poster: 'https://s3-eu-west-1.amazonaws.com/originalexe/vidim/videos/Symmetric-Traffic.jpg'
+        });
+        
+    </script>
   </body>
 </html>
