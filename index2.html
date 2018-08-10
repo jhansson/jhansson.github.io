@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-2397178-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-2397178-1');
+    </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Jimmy Hansson - Gameplay designer &amp; scripter</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link href="css/simple-grid.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link href="css/main.css?poop=1" rel="stylesheet">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>    
+  </head>
+  <body>
+  <div class="background-thing"></div>
+  <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <!-- TOP BOX START -->
+          <div class="shadow-box">
+            <div class="row">
+              <div class="col-5 no-margin-col">
+                <div class="faceshot"></div>
+              </div>
+              <div class="col-7">
+                <div class="about-me">
+                  <span class="hello-box">Hello!</span>
+                  <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
+                  <span class="subtitle">GAMEPLAY DESIGNER &amp; SCRIPTER</span>
+                  <p>
+                    I'm a technical designer with an interest in developing games and systems
+                    with the user experience in focus. 
+                  </p>
+                  <div>
+                      <span class="chip">
+                          <span class="chip__text">Unity</span>
+                      </span>
+                      <span class="chip">
+                          <span class="chip__text">UE4</span>
+                      </span>
+                      <span class="chip">
+                          <span class="chip__text">C#</span>
+                      </span>
+                      <span class="chip">
+                          <span class="chip__text">Blueprint</span>
+                      </span>
+                      <span class="chip">
+                          <span class="chip__text">UX</span>
+                      </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- TOP BOX END -->          
+        </div>
+      </div>
+      <h2 class="projects-header">Work</h2>
+          <!-- PROJECTS START -->
+          <div class="row">
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Physics Based Movement and Interaction System</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="560" height="415" src="https://www.youtube.com/embed/JCbnJnLDAqU?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>
+                        Have you ever had this recurring dream, a dream where you revisit a specific moment, 
+                        a time when something went wrong? In Echo, you are in exactly that dream.
+                      </p>
+                      <p>
+                        I was mainly responsible for the character movement and interactions. 
+                        The movement is a custom made physics based system that allows for more realistic
+                        and predictable interactions with the environment than with the default Unreal character.
+                      </p>
+                      <p>
+                        The goal for interacting with objects was to get a fairly realistic movement where it look 
+                        and feel like you as a player are dragging around a physical object.
+                      </p>
+                      <p>
+                        Physics constraints are used to attach the object to the player and IK is then used on the 
+                        hands and arms to position them on the object's surface. Raycasting is used to get locations.
+                      </p>  
+                      <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects" />
+                      <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms" />
+                      <h3 style="text-align: center">What I learned</h3>
+                      <p>
+                        Since there only was two main actions (jumping and dragging) I should have prioritized to make sure
+                        they felt really good for the player to execute. Jumping should feel more fluid when used from a 
+                        running state. Dragging objects around should be stabilized by using two physical constraints, simulating 
+                        the attachments of both hands of the player.
+                      </p>
+                      <p>
+                        I learned that by creating your own movement system you gain a lot of flexibility, but it also takes
+                        more time than I expected. There are a lot of small things that makes up a solid movement system, like
+                        keeping track of all possible edge cases and states the character can be in.
+                      </p>
+
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- START ML GOLFER -->
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Machine Learning: Golf</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/SE4Kzsz61q8?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>Some text about something.</p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </div>
+         
+          
+          <div class="row">
+            <!-- START REALISTIC BALL PHYSICS -->
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Realistic ball physics for sports</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/dwVkOuvu-Nw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>Some text about something.</p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- START NIMBLE HANDS -->
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Nimble Hands - Physics Based Thief Game</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/dwVkOuvu-Nw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>Some text about something.</p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- START ENEMY AI WITH GOAP -->
+          <div class="row">
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Enemy AI with GOAP</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/idcmk7gtxYw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>Some text about something.</p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+<!-- START GAMEPLAY SCRIPTER IN THROW MOTION -->
+            <div class="col-6">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Gameplay Scripter in Party Game "Throw Motion"</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                    <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                      <div class="mdl-tabs__tab-bar">
+                        <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                        <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                      </div>                          
+                      <div class="mdl-tabs__panel is-active" id="video-panel">
+                        <iframe width="660" height="415" src="https://www.youtube.com/embed/SwNvQGzgMQw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                      </div>
+                      <div class="mdl-tabs__panel" id="desc-panel">
+                        <p>
+                          It was developed in four weeks by a team of game designers and 3d artists. 
+                          It's a 1-4 player party game where the two sports of dodgeball and figure skating has been mashed together.
+                        </p>
+                    
+                      <h3 style="text-align: center">What I did</h3>                      
+                        <p>
+                          I was mainly responsible for the character movement, game rules and camera functionalities.
+                        </p>
+                        <p>
+                            The aim for the movement was to find a good balance between sliding on the ice but still
+                            have responsive controls. Character movement is based on the Unreal character movement with 
+                            modifications to make it feel like you're sliding around on ice.
+                        </p>
+                        <p>
+                          For the camera I set up blueprint to make the camera zoom in and out depending on where the 
+                          players are, making sure they are all in frame of the camera. This way the camera gets closer
+                          to the action when all players are close to each other.
+                        </p>   
+                      <h3 style="text-align: center">What I learned</h3>                        
+                      <p>
+                        In intensive party games, it's better to go for more arcade feeling in the controls. 
+                        The user experience was affected negatively by having the players slide to much on the ice.
+                        By making the controls more responsive the players would have felt more in control of their characters.
+                      </p>
+                      <p>
+                        I also learned that you can make a pretty good prototype for a game in two weeks with
+                        good communication in the team. 
+                      </p>
+                      <div class="snippet-code">
+                          <pre>
+                            <code class="language-csharp">
+  var poop = 4f;
+  // Tell this stuff
+  var yo = "escaped";
+                            </code>
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- START FREE CLIMB SYSTEM -->
+          <div class="row">
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Climbing System in Unreal Engine 4</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/-cVRhMPvjho?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>
+                        Inspired by games like Shadow of the Colossus and The Legend of Zelda: Breath of the Wild
+                        I've created a Blueprint based climbing system in Unreal Engine 4. Being able to climb freely
+                        gives the player a lot of interesting ways to explore the world.
+                    </p>
+                    <p>
+                      A system that lets the player climb freely on any surface in the world. The surfaces can 
+                      be static or moving. The climbing activated when moving into a climbable object within a certain
+                      angle threshold between the climbable normal and the way the player looks. Raycasting is then used to 
+                      check if it's possible to climb in the input direction. If possible, a helper will be created at the 
+                      local position of the raycast hit in the object being climbed upon. This way when we lerp to this position,
+                      it doesn't matter if the object moves, we always have the local position stored.
+                    </p>
+                    <p>
+                      The system uses IK and physical animations to have better placements on hands and feet.
+                      If the character can't reach any surface with its feet, partial ragdoll effect will be used on 
+                      spine and down to get more dynamic and fitting animations.
+                    </p>    
+                    <h3 style="text-align: center">What I learned</h3>                        
+                    <p>
+                      Creating more advanced features in Blueprint is not easy and clearly not what it is designed for.
+                      Many of the complicated blueprints could have been written in a few lines of C#.
+                    </p>
+                    <p>
+                      I have gained a lot of knowledge of Blueprint and can appreciate the power of visual scripting.
+                    </p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- START EQUIPMENT AND INVENTORY SYSTEM -->
+            <div class="col-6">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                  <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Equipment and Inventory System</h2>
+                  </div>
+                  <div class="mdl-card__supporting-text">
+                    <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                      <div class="mdl-tabs__tab-bar">
+                        <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                        <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                      </div>                          
+                      <div class="mdl-tabs__panel is-active" id="video-panel">
+                        <iframe width="660" height="415" src="https://www.youtube.com/embed/ijDse7tpp_k?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                      </div>
+                      <div class="mdl-tabs__panel" id="desc-panel">
+                        <p>Some text about something.</p>
+                        <div class="snippet-code">
+                          <pre>
+                            <code class="language-csharp">
+  var poop = 4f;
+  // Tell this stuff
+  var yo = "escaped";
+                            </code>
+                          </pre>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <!-- START MISSION DESIGN WITH BEHAVIOUR TREE -->
+          <div class="row">
+            <div class="col-12">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Mission Control with Behaviour Tree</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/dwVkOuvu-Nw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>Some text about something.</p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+var poop = 4f;
+// Tell this stuff
+var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- PROJECTS END -->
+    </div>
+    <footer>
+        <a class="linkedin" href="http://www.linkedin.com/in/jimmy-s-hansson">
+          <img src="icons/linkedin.png" alt="My LinkedIn account" />
+        </a>
+    </footer>
+    <script type="text/javascript" src="js/vidim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/8.6.0/lazyload.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/animatedModal.min.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="js/prism.js"></script>
+    <script>
+        new LazyLoad();
+        $("#echo-link").animatedModal({modalTarget:'echomodal', animationDuration: '.4s', color:'#000'});
+        $("#climbing-link").animatedModal({modalTarget:'climbingmodal', animationDuration: '.4s', color:'#fff'});
+        $("#throwmotion-link").animatedModal({modalTarget:'throwmotionmodal', animationDuration: '.4s', color:'#c9cfdb'});
+
+        var demo2 = new vidim( '#hero', {
+          src: 'https://youtu.be/NMUr2yNALhU',
+          type: 'YouTube',
+          poster: 'https://s3-eu-west-1.amazonaws.com/originalexe/vidim/videos/Symmetric-Traffic.jpg'
+        });
+        
+    </script>
+  </body>
+</html>
