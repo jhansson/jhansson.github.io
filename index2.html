@@ -167,62 +167,6 @@ var yo = "escaped";
          
           
           <div class="row">
-            
-              <div class="col-6">
-                  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title">
-                      <h2 class="mdl-card__title-text">Climbing System in Unreal Engine 4</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                      <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-                        <div class="mdl-tabs__tab-bar">
-                          <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                          <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
-                        </div>                          
-                        <div class="mdl-tabs__panel is-active" id="video-panel">
-                          <iframe width="660" height="415" src="https://www.youtube.com/embed/-cVRhMPvjho?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                        </div>
-                        <div class="mdl-tabs__panel" id="desc-panel">
-                          <p>
-                            Inspired by games like Shadow of the Colossus and The Legend of Zelda: Breath of the Wild
-                            I've created a Blueprint based climbing system in Unreal Engine 4. Being able to climb freely
-                            gives the player a lot of interesting ways to explore the world.
-                        </p>
-                        <p>
-                          A system that lets the player climb freely on any surface in the world. The surfaces can 
-                          be static or moving. The climbing activated when moving into a climbable object within a certain
-                          angle threshold between the climbable normal and the way the player looks. Raycasting is then used to 
-                          check if it's possible to climb in the input direction. If possible, a helper will be created at the 
-                          local position of the raycast hit in the object being climbed upon. This way when we lerp to this position,
-                          it doesn't matter if the object moves, we always have the local position stored.
-                        </p>
-                        <p>
-                          The system uses IK and physical animations to have better placements on hands and feet.
-                          If the character can't reach any surface with its feet, partial ragdoll effect will be used on 
-                          spine and down to get more dynamic and fitting animations.
-                        </p>    
-                        <h3 style="text-align: center">What I learned</h3>                        
-                        <p>
-                          Creating more advanced features in Blueprint is not easy and clearly not what it is designed for.
-                          Many of the complicated blueprints could have been written in a few lines of C#.
-                        </p>
-                        <p>
-                          I have gained a lot of knowledge of Blueprint and can appreciate the power of visual scripting.
-                        </p>
-                          <div class="snippet-code">
-                            <pre>
-                              <code class="language-csharp">
-    var poop = 4f;
-    // Tell this stuff
-    var yo = "escaped";
-                              </code>
-                            </pre>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               <div class="col-6">
                   <div class="demo-card-wide mdl-card mdl-shadow--2dp">
                     <div class="mdl-card__title">
@@ -284,7 +228,7 @@ var yo = "escaped";
               </div>
             </div>
           </div>
-
+</div>
           <!-- START ENEMY AI WITH GOAP -->
           <div class="row">
             <!-- START REALISTIC BALL PHYSICS -->
@@ -318,11 +262,64 @@ var yo = "escaped";
                   </div>
                 </div>
               </div>
-            </div>
-<!-- START GAMEPLAY SCRIPTER IN THROW MOTION -->
             
+          <!-- START GAMEPLAY SCRIPTER IN THROW MOTION -->
+          <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Climbing System in Unreal Engine 4</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="415" src="https://www.youtube.com/embed/-cVRhMPvjho?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <p>
+                        Inspired by games like Shadow of the Colossus and The Legend of Zelda: Breath of the Wild
+                        I've created a Blueprint based climbing system in Unreal Engine 4. Being able to climb freely
+                        gives the player a lot of interesting ways to explore the world.
+                    </p>
+                    <p>
+                      A system that lets the player climb freely on any surface in the world. The surfaces can 
+                      be static or moving. The climbing activated when moving into a climbable object within a certain
+                      angle threshold between the climbable normal and the way the player looks. Raycasting is then used to 
+                      check if it's possible to climb in the input direction. If possible, a helper will be created at the 
+                      local position of the raycast hit in the object being climbed upon. This way when we lerp to this position,
+                      it doesn't matter if the object moves, we always have the local position stored.
+                    </p>
+                    <p>
+                      The system uses IK and physical animations to have better placements on hands and feet.
+                      If the character can't reach any surface with its feet, partial ragdoll effect will be used on 
+                      spine and down to get more dynamic and fitting animations.
+                    </p>    
+                    <h3 style="text-align: center">What I learned</h3>                        
+                    <p>
+                      Creating more advanced features in Blueprint is not easy and clearly not what it is designed for.
+                      Many of the complicated blueprints could have been written in a few lines of C#.
+                    </p>
+                    <p>
+                      I have gained a lot of knowledge of Blueprint and can appreciate the power of visual scripting.
+                    </p>
+                      <div class="snippet-code">
+                        <pre>
+                          <code class="language-csharp">
+          var poop = 4f;
+          // Tell this stuff
+          var yo = "escaped";
+                          </code>
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
           <!-- START FREE CLIMB SYSTEM -->
           <div class="row">
               <div class="col-6">
