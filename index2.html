@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <link href="css/main.css?poop=1" rel="stylesheet">
+    <link rel="stylesheet" href="css/baguetteBox.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>    
   </head>
   <body>
@@ -38,10 +39,11 @@
                 <div class="about-me">
                   <span class="hello-box">Hello!</span>
                   <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
-                  <span class="subtitle">GAMEPLAY DESIGNER &amp; SCRIPTER</span>
+                  <span class="subtitle">GAME DESIGNER &amp; SCRIPTER</span>
                   <p>
                     I'm a technical designer with an interest in developing games and systems
-                    with the user experience in focus. 
+                    with the user experience in focus. I have ~10 years of professional experience 
+                    as a software designer and programmer.
                   </p>
                   <div>
                       <span class="chip">
@@ -85,10 +87,11 @@
                       <iframe width="560" height="315" src="https://www.youtube.com/embed/JCbnJnLDAqU?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                     </div>
                     <div class="mdl-tabs__panel" id="desc-panel">
+                      <h3>What it is</h3>
                       <p>
-                        Have you ever had this recurring dream, a dream where you revisit a specific moment, 
-                        a time when something went wrong? In Echo, you are in exactly that dream.
+                          A game called Echo which focused on environmental storytelling made in Unreal Engine 4.
                       </p>
+                      <h3>What I did</h3>
                       <p>
                         I was mainly responsible for the character movement and interactions. 
                         The movement is a custom made physics based system that allows for more realistic
@@ -102,9 +105,19 @@
                         Physics constraints are used to attach the object to the player and IK is then used on the 
                         hands and arms to position them on the object's surface. Raycasting is used to get locations.
                       </p>  
-                      <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects" />
-                      <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms" />
-                      <h3 style="text-align: center">What I learned</h3>
+                      <p>Part of Blueprint code to grab an object:</p>
+                      <div class="gallery">
+                        <a href="images/grabbing01.png" data-caption="Part of Blueprint for grabbing objects">
+                          <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects"/>
+                        </a>
+                      </div>
+                      <p>Blueprint for IK on arms when grabbing an object:</p>
+                      <div class="gallery">
+                        <a href="images/grabbing02ik.png" data-caption="Blueprint for IK on character arms">
+                          <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms"/>
+                        </a>
+                      </div>
+                      <h3>What I learned</h3>
                       <p>
                         Since there only was two main actions (jumping and dragging) I should have prioritized to make sure
                         they felt really good for the player to execute. Jumping should feel more fluid when used from a 
@@ -116,16 +129,6 @@
                         more time than I expected. There are a lot of small things that makes up a solid movement system, like
                         keeping track of all possible edge cases and states the character can be in.
                       </p>
-
-                      <div class="snippet-code">
-                        <pre>
-                          <code class="language-csharp">
-var poop = 4f;
-// Tell this stuff
-var yo = "escaped";
-                          </code>
-                        </pre>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -142,22 +145,26 @@ var yo = "escaped";
                   <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
                     <div class="mdl-tabs__tab-bar">
                       <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
                     </div>                          
                     <div class="mdl-tabs__panel is-active" id="video-panel">
                       <iframe width="660" height="315" src="https://www.youtube.com/embed/nRS-iI4quSE?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                     </div>
                     <div class="mdl-tabs__panel" id="desc-panel">
-                      <p>Some text about something.</p>
-                      <div class="snippet-code">
-                        <pre>
-                          <code class="language-csharp">
-var poop = 4f;
-// Tell this stuff
-var yo = "escaped";
-                          </code>
-                        </pre>
-                      </div>
+                        <h3>What it is</h3>
+                        <p>
+                            Nimble Hands is a game where you as a thief has to navigate tight spaces with your ever growing physics based sack of loot.
+                        </p>
+                        <h3>What I did</h3>
+                        <p>
+                          A ten page Game Design Document that describes story, gameplay, unique mechanics, 
+                          player character, game world, game experience, game mechanics, enemies and challenges,  
+                          level design, art style, music, sound, target audience and monitization.
+                        </p>
+                        <p>
+                          I also created the prototypes in the video to showcase the fun factor with a physics based sack. 
+                          The first prototype was made in Unreal Engine and the more finished version was made in Unity.
+                        </p>
                     </div>
                   </div>
                 </div>
@@ -180,16 +187,126 @@ var yo = "escaped";
                           <iframe width="660" height="315" src="https://www.youtube.com/embed/idcmk7gtxYw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                         </div>
                         <div class="mdl-tabs__panel" id="desc-panel">
-                          <p>Some text about something.</p>
-                          <div class="snippet-code">
-                            <pre>
-                              <code class="language-csharp">
-    var poop = 4f;
-    // Tell this stuff
-    var yo = "escaped";
-                              </code>
-                            </pre>
-                          </div>
+                            <h3>What it is</h3>
+                            <p>
+                              FPS arena shooter with AI made with Goal Oriented Action Planning.
+                              10 day project made in Unity and C#.
+                            </p>
+                            <h3>What I did</h3>
+                            <p>
+                              Created a FPS controller and a procedural generated map for fast paced action.
+                              The AI is made with ReGoap and inspired by the AI in Fear.
+                            </p>
+                            <p><strong>Example code to look for cover positions to add to memory of agent:</strong></p>
+                            <div class="accordionItem close">
+                                <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                                <div class="accordionItemContent">
+                                    <div class="snipped-code">
+                                        <pre>
+                                          <code class="language-csharp">
+...
+// Sensor for remembering reachable cover positions
+// Find "edges" in navmesh and see if they can cover you in the player direction
+if (NavMesh.FindClosestEdge(transform.position, out defensiveEdgeHit, NavMesh.AllAreas))
+{
+    for (int i = 0; i < numCoverPositions; i++)
+    {
+        RaycastHit hit;
+        Vector2 randomPosCircle = (Random.insideUnitCircle * searchArea);
+        Vector3 randomPos = new Vector3(randomPosCircle.x, groundLevel, randomPosCircle.y);
+        NavMeshHit navHit;
+
+        if (NavMesh.SamplePosition(defensiveEdgeHit.position + (-directionToPlayer) + randomPos, out navHit, searchRadius, NavMesh.AllAreas))
+        {
+            var direction = pc.transform.position - navHit.position / heading.magnitude;
+
+            if (Physics.Raycast(navHit.position + new Vector3(0, 0.5f, 0), direction, out hit, 40f))
+            {
+                // Only ArenaBlocks can be between player and AI
+                if (hit.collider.CompareTag("ArenaBlock"))
+                {
+                    memory.GetWorldState().Set(SENSOR_TYPE.DEFENSIVE_COVER_POSITION, defensiveCoverPosition);
+                    break;
+                }
+            }
+        }
+    }
+}
+...
+                                          </code>
+                                        </pre>
+                                      </div>
+                                </div>
+                              </div>
+                              <p><strong>Example code for go to cover action:</strong></p>
+                              <div class="accordionItem close">
+                                  <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                                  <div class="accordionItemContent">
+                                      <div class="snipped-code">
+                                          <pre>
+                                            <code class="language-csharp">
+...
+protected override void Awake()
+{
+  ...
+  // Set required preconditions and effects if succesful action
+  preconditions.Set(SENSOR_TYPE.LAST_POSITION_KNOWN, true);
+  preconditions.Set(SENSOR_TYPE.CAN_NOT_SEE_TARGET, true);
+  preconditions.Set(SENSOR_TYPE.NOT_CLOSE_LAST_SEEN_POSITION, true);
+  effects.Set(SENSOR_TYPE.IS_IN_COVER, true);
+  effects.Set(SENSOR_TYPE.TARGET_IS_NOT_AIMING_AT_ME, true);
+}
+...
+public void Update(...)
+{
+  // LAST_SEEN_POSITION has been updated while moving to cover: exit out this action
+  if (lastTargetLocation != (Vector3)agent.GetMemory().GetWorldState().Get(SENSOR_TYPE.LAST_SEEN_POSITION))
+  {
+      failCallback(this);
+  }
+
+  // Has a cover position to move to
+  if (coverPos != Vector3.zero)
+  {
+      // Cover has been reached
+      if (Vector3.Distance(transform.position, coverPos) < maxDistanceInCover)
+      {
+          agent.GetMemory().GetWorldState().Set(SENSOR_TYPE.MOVING_TOWARDS_COVER, false);
+          agent.GetMemory().GetWorldState().Set(SENSOR_TYPE.IS_IN_COVER, true);
+
+          ...
+          
+          // Been in cover long enough
+          if (coverTimerStarted && Time.time > timeToCover)
+          {
+              agent.GetMemory().GetWorldState().Set(SENSOR_TYPE.IS_IN_COVER, false);
+              coverTimerStarted = false;
+              doneCallback(this);
+          }                
+
+          // Exit cover if target is aiming at me
+          if (coverTimerStarted && (bool)agent.GetMemory().GetWorldState().Get(SENSOR_TYPE.TARGET_IS_AIMING_AT_ME))
+          {
+              failCallback(this);
+          }
+      }
+  }
+  ...
+}
+...
+                                            </code>
+                                          </pre>
+                                        </div>
+                                  </div>
+                                </div>
+                          <h3>What I learned</h3>
+                          <p>I really enjoyed working with GOAP. It gives a flexibility to the AI which is 
+                            harder to reach with Behaviour Trees or similar AI solutions.</p>
+                            <p>
+                              I still think there is too much "hard coding" for me in how the actions are being performed and 
+                              that preconditions and effects are prone to errors. I think the philosophy behind GOAP but with Machine Learning
+                              will solve a lot of the issues.
+                            </p>
                         </div>
                       </div>
                     </div>
@@ -211,16 +328,86 @@ var yo = "escaped";
                           <iframe width="660" height="315" src="https://www.youtube.com/embed/SE4Kzsz61q8?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                         </div>
                         <div class="mdl-tabs__panel" id="desc-panel">
-                          <p>Some text about something.</p>
-                          <div class="snippet-code">
-                            <pre>
-                              <code class="language-csharp">
-    var poop = 4f;
-    // Tell this stuff
-    var yo = "escaped";
-                              </code>
-                            </pre>
-                          </div>
+                            <h3>What it is</h3>
+                            <p>
+                              AI that has learned to play simple golf by using Machine Learning. Result is from around 30 minutes of training only.
+                            </p>
+                            <h3>What I did</h3>
+                            <p>
+                              I used Unity and ml-agents to train the AI. I made a training environment that used
+                              curriculum training to teach the AI in steps. First it had the green (goal) close by
+                              in the same position making it easy to accidentally hit it. When the AI had high enough success rate, the next stage started
+                              where the green was randomized in position. This way it could realize that it was
+                              not the world position that was important, but the actual position of the green in the world.
+                            </p>
+                            <p>After several different lessons that gradually made things harder and introduced more challenges,
+                              the AI could play randomly generated maps with high success rate even when I added randomness in 
+                              how clean the ball was hit.
+                            </p>
+
+                          <p><strong>Code for the AI observations:</strong></p>
+                          <div class="accordionItem close">
+                              <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                              <div class="accordionItemContent">
+                                  <div class="snipped-code">
+                                      <pre>
+                                        <code class="language-csharp">
+public override void CollectObservations()
+{
+    float rayDistance = 5f;
+    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
+    float[] rayAnglesOffset = { 0f + 22.5f, 45f + 22.5f, 90f + 22.5f, 135f + 22.5f, 180f + 22.5f, 225f + 22.5f, 270f + 22.5f, 315f + 22.5f };
+    string[] detectableObjects;
+    detectableObjects = new string[] { "ground", "goal", "fairway" };
+
+    // Raytracing environment in different angles
+    AddVectorObs(rayGridPer.Perceive(1f, rayAngles, detectableObjects, 0f, 7f));
+    AddVectorObs(rayGridPer.Perceive(2f, rayAnglesOffset, detectableObjects, 0f, 7f));
+    AddVectorObs(rayGridPer.Perceive(3f, rayAngles, detectableObjects, 0f, 7f));
+    AddVectorObs(rayGridPer.Perceive(6f, rayAnglesOffset, detectableObjects, 0f, 7f));
+    AddVectorObs(rayGridPer.Perceive(10f, rayAngles, detectableObjects, 0f, 7f));
+
+    // Observe relations in distance between different objects
+    AddVectorObs(target.transform.position - goal.transform.position);
+    AddVectorObs(goal.transform.position - area.transform.position);
+    AddVectorObs(Vector3.Distance(target.transform.position, goal.transform.position));
+    AddVectorObs(maxTargetDistance - targetDistance);
+
+    AddVectorObs(shotCount);
+    AddVectorObs(decisionCounter);
+
+    // Observe if the predicted trajectory hits something
+    aimingAtObstacle = 0f;
+    for (int i = 0; i < launchArcRenderer.lr.positionCount; i++)
+    {
+        float hitSomething = 0.0f;
+        Collider[] hits = Physics.OverlapSphere(launchArcRenderer.lr.GetPosition(i), 0.3f);
+        if (hits.Length > 0)
+        {
+            if (hits[0].CompareTag("obstacle"))
+            {
+                hitSomething = 1.0f;
+                aimingAtObstacle = 1.0f;
+            }                
+        }
+        AddVectorObs(hitSomething);
+    }
+
+    AddVectorObs(aimingAtObstacle);
+}
+                                        </code>
+                                      </pre>
+                                    </div>
+                              </div>
+                            </div>
+                            <h3>What I learned</h3>
+                            <p>It's easy for the AI to come to the wrong conclusions about what the different observations actually means.
+                              A lot of trial and error was needed to find a balance between the observations. It's easy to "overload" the AI.
+                            </p>
+                              <p>
+                                Curriculum learning where the AI goes through serveral lessons that gets gradually harder is very effective 
+                                to reach the end goal in much less time than without it if the challenge is fairly hard.
+                              </p>
                         </div>
                       </div>
                     </div>
@@ -245,16 +432,119 @@ var yo = "escaped";
                         <iframe width="660" height="315" src="https://www.youtube.com/embed/pfkqlZy90J4?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                       </div>
                       <div class="mdl-tabs__panel" id="desc-panel">
-                        <p>Some text about something.</p>
-                        <div class="snippet-code">
-                          <pre>
-                            <code class="language-csharp">
-  var poop = 4f;
-  // Tell this stuff
-  var yo = "escaped";
-                            </code>
-                          </pre>
-                        </div>
+                          <h3>What it is</h3>
+                          <p>
+                            I like simulations. I like golf. I like football. So I wanted to create ball physics that tries to simulate realistic flight trajectory.
+                            Made in Unity and C#.
+                          </p>
+                          <h3>What I did</h3>
+                          <p>
+                            I read many papers about ball flight and tried to integrate them to work together with Unity's own physics.
+                            The physics of the ball flight uses things like temperature, air density, Reynolds Number, bunch of different coefficients and frictions
+                             to calculate magnus force and spin.
+                          </p>
+                          <p>
+                            Each golf club also has its own mass, loft and ECOR value that has different impact on the ball. Depending on the club 
+                            swing angle, spin is added to the ball and can result in slicing and hooking the ball.
+                          </p>
+                          <p><strong>One part of calculating ball flight:</strong></p>
+                          <div class="accordionItem close">
+                              <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                              <div class="accordionItemContent">
+                                  <div class="snipped-code">
+                                      <pre>
+                                        <code class="language-csharp">
+Vector3 DragAndMagnusForce() {
+  // Compute the apparent velocity magnitude.
+  velocityMagnitude = rigidBody.velocity.magnitude + 0000000.1f;
+
+  // Compute the total drag force and the dirctional drag.
+  totalDragForce = 0.5f * density * area * cd * (velocityMagnitude * velocityMagnitude);
+  directionalDrag = -totalDragForce * rigidBody.velocity / (velocityMagnitude);
+
+  //  Evaluate the Magnus force terms.
+  rotationSpinRatio = Mathf.Abs(radius * (rigidBody.angularVelocity.magnitude) / (velocityMagnitude));
+  liftCoefficient = -0.05f + Mathf.Sqrt(0.0025f + 0.36f * (rotationSpinRatio));
+  magnusForceCoefficient = 0.5f * density * area * liftCoefficient * (velocityMagnitude * velocityMagnitude);     
+  magnusForce = magnusForceCoefficient * Vector3.Cross(rigidBody.angularVelocity, rigidBody.velocity).normalized;
+
+  // Return directional drag and magnus force       
+  return new Vector3(
+      magnusForce.x + directionalDrag.x,
+      magnusForce.y + directionalDrag.y,
+      magnusForce.z + directionalDrag.z
+  );        
+}
+                                        </code>
+                                      </pre>
+                                    </div>
+                              </div>
+                            </div>
+                            <p><strong>Code to calculate force from golf club:</strong></p>
+                          <div class="accordionItem close">
+                              <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                              <div class="accordionItemContent">
+                                  <div class="snipped-code">
+                                      <pre>
+                                        <code class="language-csharp">
+public void CalculateClubCollision(GolfBall golfBall)
+{
+    Rigidbody golfBallRb = golfBall.GetComponent<Rigidbody>();
+    // Convert the loft angle from degrees to radians and
+    // assign values to some convenience variables.
+    float loftRadians = (loft + ballHitAngle) * Mathf.PI / 180.0f;
+    float clubFaceAngleRadians = clubFaceAngle * Mathf.PI / 180.0f;
+    float swingAngleRadians = swingAngle * Mathf.PI / 180.0f;
+    float ballAngle = (loft - ballHitAngle) * Mathf.PI / 180.0f;
+    float cosL = Mathf.Cos(loftRadians);
+    float sinL = Mathf.Sin(loftRadians);
+    float sinL2 = Mathf.Sin(ballAngle);
+
+    //  Calculate the pre-collision velocities normal and parallel to the line of action.
+    float velocityClubParallel = cosL * shotPower;
+    float velocityClubNormal = -sinL * shotPower;
+    float vcn2 = -sinL2 * shotPower;
+    float vcnAngle = Mathf.Sin(clubFaceAngleRadians + swingAngleRadians) * shotPower;
+
+    //  Compute the post-collision velocity of the ball along the line of action.
+    float velocityBallParallel = (1.0f + ecor) * clubMass * velocityClubParallel / (clubMass + golfBall.GetComponent<Rigidbody>().mass);
+
+    //  Compute the post-collision velocity of the ball perpendicular to the line of action.
+    float velocityBallNormal = (5.0f / 7.0f) * clubMass * velocityClubNormal / (clubMass + golfBall.GetComponent<Rigidbody>().mass);
+
+    // Spin
+    float omega = (5.0f / 7.0f) * velocityClubNormal / (golfBall.radius);
+    float omegaSide = (5.0f / 7.0f) * vcnAngle / (golfBall.radius);
+
+    //  Rotate post-collision ball velocities back into standard Cartesian frame of reference.
+    float vx0 = 0f;
+    float vy0 = (sinL * velocityBallParallel) + (cosL * velocityBallNormal);
+    float vz0 = (cosL * velocityBallParallel) - (sinL * velocityBallNormal);
+
+    // Set the direction of the ball depending on aiming direction and swing angle.
+    Vector3 directionToAim = -transform.right + (rb.velocity.normalized * 0.15f);
+    directionToAim.y = 0;
+    directionToAim = Quaternion.AngleAxis(swingAngle, Vector3.up) * directionToAim;
+    float angle = Vector3.Angle(directionToAim, Vector3.forward) + swingAngle;
+    directionToAim = directionToAim.normalized;
+    angle = (directionToAim.x < 0) ? -angle : angle;
+
+    // Set velocity on golf ball
+    golfBallRb.velocity = new Vector3(vz0 * directionToAim.x, vy0, vz0 * directionToAim.z);
+
+    // Set the spin of the ball that is generated by the club impact.
+    golfBallRb.angularVelocity = new Vector3(
+        omega * Mathf.Cos(angle * Mathf.PI / 180.0f),
+        omegaSide,
+        omega * -Mathf.Sin(angle * Mathf.PI / 180.0f)
+    );
+}
+                                        </code>
+                                      </pre>
+                                    </div>
+                              </div>
+                            </div>
+
                       </div>
                     </div>
                   </div>
@@ -277,25 +567,29 @@ var yo = "escaped";
                       <iframe width="660" height="315" src="https://www.youtube.com/embed/-cVRhMPvjho?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                     </div>
                     <div class="mdl-tabs__panel" id="desc-panel">
+                      <h3>What it is</h3>
                       <p>
                         Inspired by games like Shadow of the Colossus and The Legend of Zelda: Breath of the Wild
                         I've created a Blueprint based climbing system in Unreal Engine 4. Being able to climb freely
                         gives the player a lot of interesting ways to explore the world.
                     </p>
+                    <h3>What I did</h3>
                     <p>
                       A system that lets the player climb freely on any surface in the world. The surfaces can 
-                      be static or moving. The climbing activated when moving into a climbable object within a certain
+                      be static or moving. The climbing is activated when moving into a climbable object within a certain
                       angle threshold between the climbable normal and the way the player looks. Raycasting is then used to 
                       check if it's possible to climb in the input direction. If possible, a helper will be created at the 
                       local position of the raycast hit in the object being climbed upon. This way when we lerp to this position,
                       it doesn't matter if the object moves, we always have the local position stored.
-                    </p>
-                    <p>
-                      The system uses IK and physical animations to have better placements on hands and feet.
-                      If the character can't reach any surface with its feet, partial ragdoll effect will be used on 
-                      spine and down to get more dynamic and fitting animations.
                     </p>    
-                    <h3 style="text-align: center">What I learned</h3>                        
+                    <p><strong>Main blueprint in climbing component:</strong></p>
+                    <div class="accordionItem close">
+                      <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                      <div class="accordionItemContent">
+                          <iframe src="https://blueprintue.com/render/fsalmp60" height="500" scrolling="no"></iframe>
+                      </div>
+                    </div>
+                    <h3>What I learned</h3>                        
                     <p>
                       Creating more advanced features in Blueprint is not easy and clearly not what it is designed for.
                       Many of the complicated blueprints could have been written in a few lines of C#.
@@ -303,15 +597,6 @@ var yo = "escaped";
                     <p>
                       I have gained a lot of knowledge of Blueprint and can appreciate the power of visual scripting.
                     </p>
-                      <div class="snippet-code">
-                        <pre>
-                          <code class="language-csharp">
-          var poop = 4f;
-          // Tell this stuff
-          var yo = "escaped";
-                          </code>
-                        </pre>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -329,18 +614,19 @@ var yo = "escaped";
                       <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
                         <div class="mdl-tabs__tab-bar">
                           <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                          <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                          <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
                         </div>                          
                         <div class="mdl-tabs__panel is-active" id="video-panel">
                           <iframe width="660" height="315" src="https://www.youtube.com/embed/SwNvQGzgMQw?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                         </div>
                         <div class="mdl-tabs__panel" id="desc-panel">
+                            <h3>What it is</h3> 
                           <p>
                             It was developed in four weeks by a team of game designers and 3d artists. 
                             It's a 1-4 player party game where the two sports of dodgeball and figure skating has been mashed together.
                           </p>
                       
-                        <h3 style="text-align: center">What I did</h3>                      
+                        <h3>What I did</h3>                      
                           <p>
                             I was mainly responsible for the character movement, game rules and camera functionalities.
                           </p>
@@ -354,7 +640,7 @@ var yo = "escaped";
                             players are, making sure they are all in frame of the camera. This way the camera gets closer
                             to the action when all players are close to each other.
                           </p>   
-                        <h3 style="text-align: center">What I learned</h3>                        
+                        <h3>What I learned</h3>                        
                         <p>
                           In intensive party games, it's better to go for more arcade feeling in the controls. 
                           The user experience was affected negatively by having the players slide to much on the ice.
@@ -364,15 +650,6 @@ var yo = "escaped";
                           I also learned that you can make a pretty good prototype for a game in two weeks with
                           good communication in the team. 
                         </p>
-                        <div class="snippet-code">
-                            <pre>
-                              <code class="language-csharp">
-    var poop = 4f;
-    // Tell this stuff
-    var yo = "escaped";
-                              </code>
-                            </pre>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -395,16 +672,25 @@ var yo = "escaped";
                         <iframe width="660" height="315" src="https://www.youtube.com/embed/ijDse7tpp_k?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                       </div>
                       <div class="mdl-tabs__panel" id="desc-panel">
-                        <p>Some text about something.</p>
-                        <div class="snippet-code">
-                          <pre>
-                            <code class="language-csharp">
-  var poop = 4f;
-  // Tell this stuff
-  var yo = "escaped";
-                            </code>
-                          </pre>
-                        </div>
+                          <h3>What it is</h3> 
+                          <p>
+                            Standard type of equipment and inventory system created in Unreal Engine 4 with Blueprints. 
+                          </p>
+                      
+                        <h3>What I did</h3>                      
+                          <p>
+                            A GUI to navigate and use items and an inventory component that handles the actual inventory. 
+                            The inventory has categories and different ruleset for each category. Some items can stack while some are unique.
+                            You can use, drop, equip and unequip items depending on what type of item it is.
+                          </p>                         
+                        
+                          <p><strong>Part of blueprint to add items to inventory:</strong></p>
+                          <div class="gallery">
+                              <a href="images/inventoryadd.png" data-caption="Part of blueprint to add items to inventory">
+                                <img src="images/inventoryadd.png" class="blueprint-image" alt="Part of blueprint to add items to inventory"/>
+                              </a>
+                            </div>
+
                       </div>
                     </div>
                   </div>
@@ -424,6 +710,7 @@ var yo = "escaped";
     <script src="js/animatedModal.min.js"></script>
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script src="js/prism.js"></script>
+    <script src="js/baguetteBox.min.js"></script>
     <script>
         new LazyLoad();
         $("#echo-link").animatedModal({modalTarget:'echomodal', animationDuration: '.4s', color:'#000'});
@@ -436,6 +723,23 @@ var yo = "escaped";
           poster: 'https://s3-eu-west-1.amazonaws.com/originalexe/vidim/videos/Symmetric-Traffic.jpg'
         });
         
+        baguetteBox.run('.gallery', {});
+
+        // Accordion for code
+        var accItem = document.getElementsByClassName('accordionItem');
+        var accHD = document.getElementsByClassName('accordionItemHeading');
+        for (i = 0; i < accHD.length; i++) {
+            accHD[i].addEventListener('click', toggleItem, false);
+        }
+        function toggleItem() {
+            var itemClass = this.parentNode.className;
+            for (i = 0; i < accItem.length; i++) {
+                accItem[i].className = 'accordionItem close';
+            }
+            if (itemClass == 'accordionItem close') {
+                this.parentNode.className = 'accordionItem open';
+            }
+        }
     </script>
   </body>
 </html>
