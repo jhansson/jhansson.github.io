@@ -456,7 +456,7 @@ public override void CollectObservations()
                                         <code class="language-csharp">
 Vector3 DragAndMagnusForce() {
   // Compute the apparent velocity magnitude.
-  velocityMagnitude = rigidBody.velocity.magnitude + 0000000.1f;
+  velocityMagnitude = rigidBody.velocity.magnitude + 0.0000001f;
 
   // Compute the total drag force and the dirctional drag.
   totalDragForce = 0.5f * density * area * cd * (velocityMagnitude * velocityMagnitude);
