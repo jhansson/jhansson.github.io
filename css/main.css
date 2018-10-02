@@ -352,7 +352,7 @@ body {
     padding-top: 10px;
 }
 
-.projects-header {
+.projects-header, .aboutme-header {
   text-align:  center;
 }
 
