@@ -110,8 +110,46 @@
           </div>
 
           <h2 class="projects-header">Older projects</h2>
-          <div class="row">
-            <!-- Movement and interaction -->
+          <div class="row">           
+            
+            <!-- START NIMBLE HANDS -->
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Nimble Hands - Physics Based Thief Game</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="315" src="https://www.youtube.com/embed/nRS-iI4quSE?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                        <h3>What it is</h3>
+                        <p>
+                            Nimble Hands is a game where you as a thief has to navigate tight spaces with your ever growing physics based sack of loot.
+                        </p>
+                        <h3>What I did</h3>
+                        <p>
+                          A ten page Game Design Document that describes story, gameplay, unique mechanics, 
+                          player character, game world, game experience, game mechanics, enemies and challenges,  
+                          level design, art style, music, sound, target audience and monitization.
+                        </p>
+                        <p>
+                          I also created the prototypes in the video to showcase the fun factor with a physics based sack. 
+                          The first prototype was made in Unreal Engine and the more finished version was made in Unity.
+                        </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Nimble Hands end -->
+            
+            <!-- Echo start -->
             <div class="col-6">
               <div class="demo-card-wide mdl-card mdl-shadow--2dp">
                 <div class="mdl-card__title">
@@ -162,44 +200,11 @@
                 </div>
               </div>
             </div>
+            <!-- Echo end -->
             
-            <!-- START NIMBLE HANDS -->
-            <div class="col-6">
-              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-                <div class="mdl-card__title">
-                  <h2 class="mdl-card__title-text">Nimble Hands - Physics Based Thief Game</h2>
-                </div>
-                <div class="mdl-card__supporting-text">
-                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-                    <div class="mdl-tabs__tab-bar">
-                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                      <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
-                    </div>                          
-                    <div class="mdl-tabs__panel is-active" id="video-panel">
-                      <iframe width="660" height="315" src="https://www.youtube.com/embed/nRS-iI4quSE?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                    </div>
-                    <div class="mdl-tabs__panel" id="desc-panel">
-                        <h3>What it is</h3>
-                        <p>
-                            Nimble Hands is a game where you as a thief has to navigate tight spaces with your ever growing physics based sack of loot.
-                        </p>
-                        <h3>What I did</h3>
-                        <p>
-                          A ten page Game Design Document that describes story, gameplay, unique mechanics, 
-                          player character, game world, game experience, game mechanics, enemies and challenges,  
-                          level design, art style, music, sound, target audience and monitization.
-                        </p>
-                        <p>
-                          I also created the prototypes in the video to showcase the fun factor with a physics based sack. 
-                          The first prototype was made in Unreal Engine and the more finished version was made in Unity.
-                        </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="row">
+            <!-- START ENEMY AI WITH GOAP -->
               <div class="col-6">
                   <div class="demo-card-wide mdl-card mdl-shadow--2dp">
                     <div class="mdl-card__title">
@@ -332,7 +337,7 @@ public void Update(...)
                             harder to reach with Behaviour Trees or similar AI solutions.</p>
                             <p>
                               I still think there is too much "hard coding" for me in how the actions are being performed and 
-                              that preconditions and effects are prone to errors. I think the philosophy behind GOAP but with Machine Learning
+                              that preconditions and effects are prone to errors. I think the philosophy behind GOAP coupled with Machine Learning
                               will solve a lot of the issues.
                             </p>
                         </div>
@@ -340,6 +345,7 @@ public void Update(...)
                     </div>
                   </div>
                 </div>
+                <!-- END GOAP  -->
                 <!-- START ML GOLFER -->
                 <div class="col-6">
                   <div class="demo-card-wide mdl-card mdl-shadow--2dp">
@@ -442,7 +448,8 @@ public override void CollectObservations()
                   </div>
                 </div>
               </div>
-          <!-- START ENEMY AI WITH GOAP -->
+          <!-- END ML GOLF -->
+          
           <div class="row">
             <!-- START REALISTIC BALL PHYSICS -->
             <div class="col-6">
@@ -578,7 +585,7 @@ public void CalculateClubCollision(GolfBall golfBall)
                   </div>
                 </div>
               </div>
-            
+            <!-- END BALL PHYSICS -->
           <!-- START GAMEPLAY SCRIPTER IN THROW MOTION -->
           <div class="col-6">
               <div class="demo-card-wide mdl-card mdl-shadow--2dp">
