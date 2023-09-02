@@ -99,6 +99,108 @@
               </div>
             </div>
           </div>
+          <div class="row">
+             <!-- START Moving to S -->
+            <div class="col-12">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Moving to Sweden (unreleased)</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="660" height="315" src="https://www.youtube.com/embed/nRS-iI4quSE?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                        <h3>What it is</h3>
+                        <p>
+                            Moving to Sweden is a game I worked on before I joined Coffee Stain North. The year is 1988 and you move to a small run down village in the Swedish countryside. It's a lighthearted game about starting over, making a home and bringing hope.
+                        </p>
+                        <h3>What I did</h3>
+                        <p>
+                          Pre production: Game Design Document that describes story, gameplay, 
+                          player character, game world, game experience, game mechanics,  
+                          art style, music, sound and target audience with personas.
+                        </p>
+                        <p>
+                          The game is made in Unreal Engine 4 and features several custom made systems made mainly in Blueprint, but also some in C++. 
+                          Some of the systems: 
+                          * Interactions
+                          * Smart placement of objects when decorating
+                          * Inventory
+                          * Customizing (wallpapers, painting)
+                          * Building (mount windows, install things into slots etc)
+                          * Cleaning 
+                          Many of the systems enables the player to be a handyman, like the above systems. But there are also other general systems like weather, calendar, events, shops and dialogues that helps the world come alive.
+                        
+                        </p>
+                      <p>
+                        It was a fun game to work on and I learned a lot. Maybe I'll come back and finish it sometime in the future. Who knows!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Moving end end -->
+            
+            <!-- Proj Y start -->
+            <div class="col-6">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Movement and Interaction Syste</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <iframe width="560" height="315" src="https://www.youtube.com/embed/JCbnJnLDAqU?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    </div>
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                      <h3>What it is</h3>
+                      <p>
+                          A game called Echo which focused on environmental storytelling made in Unreal Engine 4.
+                      </p>
+                      <h3>What I did</h3>
+                      <p>
+                        I was mainly responsible for the character movement and interactions. 
+                        The movement is a custom made physics based system that allows for more realistic
+                        and predictable interactions with the environment than with the default Unreal character.
+                      </p>
+                      <p>
+                        The goal for interacting with objects was to get a fairly realistic movement where it look 
+                        and feel like you as a player are dragging around a physical object.
+                      </p>
+                      <p>
+                        Physics constraints are used to attach the object to the player and IK is then used on the 
+                        hands and arms to position them on the object's surface. Raycasting is used to get locations.
+                      </p>  
+                      <p>Part of Blueprint code to grab an object:</p>
+                      <div class="gallery">
+                        <a href="images/grabbing01.png" data-caption="Part of Blueprint for grabbing objects">
+                          <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects"/>
+                        </a>
+                      </div>
+                      <p>Blueprint for IK on arms when grabbing an object:</p>
+                      <div class="gallery">
+                        <a href="images/grabbing02ik.png" data-caption="Blueprint for IK on character arms">
+                          <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms"/>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Proj Y end -->
+          </div>
 
           <h2 class="projects-header">Older projects</h2>
           <div class="row">           
