@@ -30,7 +30,7 @@
                 <div class="about-me">
                   <span class="hello-box">Hello!</span>
                   <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
-                  <span class="subtitle" id="typewriter">Technical Game Designer</span>
+                  <span class="subtitle" id="typewriter">Technical Game Designer | Gameplay Programmer</span>
                   <p>
                     I'm a technical game designer with an interest in developing games and systems
                     with the user experience in focus. I'm currently working on Goat Simulator 3.
@@ -819,26 +819,54 @@ public void CalculateClubCollision(GolfBall golfBall)
         }
 
       // Function to simulate the typewriter effect
-      function typeWriterEffect(text, element, delay) {
-        let i = 0;
-        element.innerHTML = "";
-        const interval = setInterval(function () {
-          if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
+      const element = document.getElementById("typewriter");
+      const initialText = element.textContent;
+      const titles = initialText.split("|").map(title => title.trim());
+      
+      let currentTitleIndex = 0;
+      let isTyping = true;
+      let currentIndex = 0;
+      
+      function typeWriterEffect() {
+        const currentTitle = titles[currentTitleIndex];
+      
+        if (isTyping) {
+          if (currentIndex < currentTitle.length) {
+            element.innerHTML += currentTitle.charAt(currentIndex);
+            currentIndex++;
           } else {
-            clearInterval(interval);
+            isTyping = false;
+            setTimeout(eraseText, 1000); // Wait for 1 second before erasing
           }
-        }, delay);
+        } else {
+          if (currentIndex > 0) {
+            element.innerHTML = currentTitle.substring(0, currentIndex - 1);
+            currentIndex--;
+          } else {
+            isTyping = true;
+            currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+            setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
+          }
+        }
       }
       
-      // Get the element and text to animate
-      const element = document.getElementById("typewriter");
-      const textToType = "Technical Game Designer";
-      const typingDelay = 100; // Adjust the delay to control typing speed
+      function eraseText() {
+        if (currentIndex > 0) {
+          element.innerHTML = titles[currentTitleIndex].substring(0, currentIndex - 1);
+          currentIndex--;
+          setTimeout(eraseText, 50); // Adjust the erasing speed here
+        } else {
+          isTyping = true;
+          currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+          setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
+        }
+      }
+      
+      // Clear the initial text
+      element.textContent = "";
       
       // Start the typewriter effect
-      typeWriterEffect(textToType, element, typingDelay);
+      typeWriterEffect();
     </script>
   </body>
 </html>
