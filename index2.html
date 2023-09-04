@@ -14,7 +14,6 @@
     <link href="css/main.css?poop=1" rel="stylesheet">
     <link rel="stylesheet" href="css/baguetteBox.min.css">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>    
-    <script src="js/main.js"></script>   
   </head>
   <body>
   <div class="background-thing"></div>
@@ -31,7 +30,7 @@
                 <div class="about-me">
                   <span class="hello-box">Hello!</span>
                   <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
-                  <span class="subtitle">Technical Game Designer @ Coffee Stain North</span>
+                  <span class="subtitle" id="typewriter">Technical Game Designer</span>
                   <p>
                     I'm a technical game designer with an interest in developing games and systems
                     with the user experience in focus. I'm currently working on Goat Simulator 3.
@@ -818,6 +817,28 @@ public void CalculateClubCollision(GolfBall golfBall)
                 this.parentNode.className = 'accordionItem open';
             }
         }
+
+      // Function to simulate the typewriter effect
+      function typeWriterEffect(text, element, delay) {
+        let i = 0;
+        element.innerHTML = "";
+        const interval = setInterval(function () {
+          if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+          } else {
+            clearInterval(interval);
+          }
+        }, delay);
+      }
+      
+      // Get the element and text to animate
+      const element = document.getElementById("typewriter");
+      const textToType = "Technical Game Designer";
+      const typingDelay = 100; // Adjust the delay to control typing speed
+      
+      // Start the typewriter effect
+      typeWriterEffect(textToType, element, typingDelay);
     </script>
   </body>
 </html>
