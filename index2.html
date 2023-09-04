@@ -821,53 +821,54 @@ public void CalculateClubCollision(GolfBall golfBall)
 
       // Function to simulate the typewriter effect
       const element = document.getElementById("typewriter");
-      const initialText = element.textContent;
-      const titles = initialText.split("|").map(title => title.trim());
-      
-      let currentTitleIndex = 0;
-      let isTyping = true;
-      let currentIndex = 0;
-      
-      function typeWriterEffect() {
-        const currentTitle = titles[currentTitleIndex];
-      
-        if (isTyping) {
-          if (currentIndex < currentTitle.length) {
-            element.innerHTML += currentTitle.charAt(currentIndex);
-            currentIndex++;
-          } else {
-            isTyping = false;
-            setTimeout(eraseText, 1000); // Wait for 1 second before erasing
-          }
-        } else {
-          if (currentIndex > 0) {
-            element.innerHTML = currentTitle.substring(0, currentIndex - 1);
-            currentIndex--;
-          } else {
-            isTyping = true;
-            currentTitleIndex = (currentTitleIndex + 1) % titles.length;
-            setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
-          }
-        }
-      }
-      
-      function eraseText() {
-        if (currentIndex > 0) {
-          element.innerHTML = titles[currentTitleIndex].substring(0, currentIndex - 1);
-          currentIndex--;
-          setTimeout(eraseText, 50); // Adjust the erasing speed here
-        } else {
-          isTyping = true;
-          currentTitleIndex = (currentTitleIndex + 1) % titles.length;
-          setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
-        }
-      }
-      
-      // Clear the initial text
-      element.textContent = "";
-      
-      // Start the typewriter effect
-      typeWriterEffect();
+const initialText = element.textContent;
+const titles = initialText.split("|").map(title => title.trim());
+let currentTitleIndex = 0;
+let isTyping = true;
+let currentIndex = 0;
+
+function typeWriterEffect() {
+  const currentTitle = titles[currentTitleIndex];
+
+  if (isTyping) {
+    if (currentIndex < currentTitle.length) {
+      element.textContent += currentTitle.charAt(currentIndex);
+      currentIndex++;
+      setTimeout(typeWriterEffect, 100); // Adjust typing speed here
+    } else {
+      isTyping = false;
+      setTimeout(eraseText, 1000); // Wait for 1 second before erasing
+    }
+  } else {
+    if (currentIndex > 0) {
+      element.textContent = currentTitle.substring(0, currentIndex - 1);
+      currentIndex--;
+      setTimeout(eraseText, 50); // Adjust erasing speed here
+    } else {
+      isTyping = true;
+      currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+      setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
+    }
+  }
+}
+
+function eraseText() {
+  if (currentIndex > 0) {
+    element.textContent = currentTitle.substring(0, currentIndex - 1);
+    currentIndex--;
+    setTimeout(eraseText, 50); // Adjust erasing speed here
+  } else {
+    isTyping = true;
+    currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+    setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
+  }
+}
+
+// Clear the initial text
+element.textContent = "";
+
+// Start the typewriter effect
+typeWriterEffect();
     </script>
   </body>
 </html>
