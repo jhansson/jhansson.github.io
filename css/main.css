@@ -341,6 +341,11 @@ body {
   margin: -10px 0 0 0;
 }
 
+.subtitle {
+    height: 23px;
+    display: block;
+}
+
 .about-me .subtitle {
   color: #666;
   font-size: 17px;
