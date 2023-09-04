@@ -344,6 +344,7 @@ body {
 .subtitle {
     height: 23px;
     display: block;
+    overflow: hidden;
 }
 
 .about-me .subtitle {
