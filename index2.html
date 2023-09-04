@@ -826,10 +826,9 @@ const titles = initialText.split("|").map(title => title.trim());
 let currentTitleIndex = 0;
 let isTyping = true;
 let currentIndex = 0;
+let currentTitle = titles[currentTitleIndex]; // Declare currentTitle here
 
 function typeWriterEffect() {
-  const currentTitle = titles[currentTitleIndex];
-
   if (isTyping) {
     if (currentIndex < currentTitle.length) {
       element.textContent += currentTitle.charAt(currentIndex);
@@ -847,6 +846,7 @@ function typeWriterEffect() {
     } else {
       isTyping = true;
       currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+      currentTitle = titles[currentTitleIndex]; // Update currentTitle
       setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
     }
   }
@@ -860,6 +860,7 @@ function eraseText() {
   } else {
     isTyping = true;
     currentTitleIndex = (currentTitleIndex + 1) % titles.length;
+    currentTitle = titles[currentTitleIndex]; // Update currentTitle
     setTimeout(typeWriterEffect, 1000); // Wait for 1 second before typing the next title
   }
 }
