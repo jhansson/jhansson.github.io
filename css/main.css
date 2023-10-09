@@ -359,11 +359,12 @@ body {
 }
 
 .projects-header {
-    background-color: #dedede;
+    /* background-color: #dedede; */
+    font-family: "Raleway", sans-serif
     margin: 24px 16px;
-    font-size: 28px;
+    font-size: 4rem;
     font-weight: 700;
-    color: #333447;
+    color: #eee;
 }
 
 .projects-header, .aboutme-header {
