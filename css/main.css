@@ -348,7 +348,7 @@ body {
 }
 
 .about-me .subtitle {
-  color: #666;
+  color: #b7b7b7;
   font-size: 17px;
 }
 
@@ -443,9 +443,9 @@ footer {
   padding: 0 12px;
   border: 0;
   border-radius: 16px;
-  background-color: #dedede;
+  background-color: #29292b;
   display: inline-block;
-  color: rgba(0,0,0,.87);
+  color: #888;
   margin: 2px 0;
   font-size: 0;
   white-space: nowrap;
