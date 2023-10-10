@@ -445,11 +445,12 @@ public void Update(...)
                                 </div>
                           <h3>What I learned</h3>
                           <p>I really enjoyed working with GOAP. It gives a flexibility to the AI which is 
-                            harder to reach with Behaviour Trees or similar AI solutions.</p>
+                            harder to reach with Behaviour Trees or State Machines.</p>
                             <p>
-                              I still think there is too much "hard coding" for me in how the actions are being performed and 
-                              that preconditions and effects are prone to errors. I think the philosophy behind GOAP coupled with Machine Learning
-                              will solve a lot of the issues.
+                              The main downside with GOAP is probably the performance issues with a planner.
+                              The question is how important it really is to plan many steps ahead for an AI.
+                              A well designed Utility AI could probably create similar results but without
+                              the Planner overhead.
                             </p>
                         </div>
                       </div>
@@ -695,16 +696,6 @@ public override void CollectObservations()
                             players are, making sure they are all in frame of the camera. This way the camera gets closer
                             to the action when all players are close to each other.
                           </p>   
-                        <h3>What I learned</h3>                        
-                        <p>
-                          In intensive party games, it's better to go for more arcade feeling in the controls. 
-                          The user experience was affected negatively by having the players slide to much on the ice.
-                          By making the controls more responsive the players would have felt more in control of their characters.
-                        </p>
-                        <p>
-                          I also learned that you can make a pretty good prototype for a game in two weeks with
-                          good communication in the team. 
-                        </p>
                         </div>
                       </div>
                     </div>
