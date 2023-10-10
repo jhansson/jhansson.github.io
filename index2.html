@@ -34,7 +34,7 @@
                 <div class="about-me">
                   <span class="hello-box">Hello!</span>
                   <h1 class="font-light">I'm <span class="font-heavy">Jimmy Hansson</span></h1>
-                  <span class="subtitle" id="typewriter">Technical Game Designer | Gameplay Programmer | Golfer</span>
+                  <span class="subtitle" id="typewriter">Technical Game Designer | Gameplay Programmer | AI Designer &amp; Programmer | Avid Golfer</span>
                   <p>
                     I'm a technical game designer with an interest in developing games and systems
                     with the user experience in focus. I'm currently working on Goat Simulator 3 @ Coffee Stain North.
@@ -56,10 +56,16 @@
                           <span class="chip__text">C#</span>
                       </span>                      
                   </div>
-                  <div style="margin-top: 15px">
-                    <a class="linkedin" href="http://www.linkedin.com/in/jimmy-s-hansson">
-                      <img src="icons/linkedin.png" alt="My LinkedIn account" class="initial loading" data-was-processed="true">
-                    </a>
+                  <div style="margin-top: 20px; display: flex;">
+                    <span class="bbutton">                      
+                      <span id="obf">
+                        <script>document.getElementById("obf").innerHTML="<n uers=\"znvygb:wunaffba@tznvy.pbz\" gnetrg=\"_oynax\">Pbagnpg Zr.</n>".replace(/[a-zA-Z]/g,function(c){return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);});document.body.appendChild(eo);</script>
+                        <noscript><span style="unicode-bidi:bidi-override;direction:rtl;">moc.liamg@nossnahj</span></noscript>
+                      </span>
+                    </span>
+                    <span class="bbutton linkedinbutton">                      
+                      <a href="http://www.linkedin.com/in/jimmy-s-hansson">LinkedIn Profile.</a>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -91,13 +97,23 @@
                     <div class="mdl-tabs__panel" id="desc-panel">
                       <h3>Technical Game Designer</h3>
                       <p>
-                          I am a Technical Game Designer at Coffee Stain North, actively involved in the development of Goat
+                          I am a Technical Game Designer at Coffee Stain North, actively involved in the continous development of Goat
                           Simulator 3. 
                       </p>
-                      <p>
-                          In this role, I do brainstorming, design, prototyping, and implementing game mechanics, fixing
-                          bugs, while also acting as a bridge between designers, artists, and programmers.
-                      </p>                      
+                      <h4>Some of the things I do at work: </h4>
+                      <ul>
+                        <li>Brainstorm new ideas</li>
+                        <li>Prototype events, gears and interactables</li>
+                        <li>Take prototypes to final versions</li>
+                        <li>Play table tennis</li>
+                        <li>Fix some bugs, leave som for goatyness</li>
+                      </ul>
+                      <h4>Special areas of responsibility include:</h4>
+                      <ul>
+                        <li>Setup for new playable characters</li>
+                        <li>Physics Assets for Characters and Gears</li>
+                        <li>Tools development for designers</li>
+                      </ul>                     
                     </div>
                   </div>
                 </div>
@@ -113,22 +129,38 @@
                   <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
                     <div class="mdl-tabs__tab-bar">
                       <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                      <a href="#desc-panel" class="mdl-tabs__tab">What I do</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
                     </div>                          
                     <div class="mdl-tabs__panel is-active" id="video-panel">
                       <video autoplay muted loop width="680" height="300">
-                        <source src="video/goat.webm" type="video/webm" />
+                        <source src="video/utility.webm" type="video/webm" />
                       </video>                        </div>
                     <div class="mdl-tabs__panel" id="desc-panel">
-                      <h3>Technical Game Designer</h3>
+                      <h3>Utility AI extension</h3>
                       <p>
-                          I am a Technical Game Designer at Coffee Stain North, actively involved in the development of Goat
-                          Simulator 3. 
+                          An extension to Unreal Engine's Behavior Tree that adds Utility Selector and Action Nodes with considerations.
                       </p>
                       <p>
-                          In this role, I do brainstorming, design, prototyping, and implementing game mechanics, fixing
-                          bugs, while also acting as a bridge between designers, artists, and programmers.
+                          I wanted a more reactive and flexible AI so I created a system where the AI can select an action (task) based
+                          on how useful it is in the current moment. Utility AI is well suited for this as each action has considerations
+                          attached to it that returns a score based on the current world status. 
                       </p>                      
+                      <p>
+                        By extending the Behavior Tree we can still use the strengths of behavior trees for certain situations where we
+                        need a more controlled behavior. In my system each action takes advantage of the new powerful StateTree asset and 
+                        has all its behavior contained in the StateTree. 
+                      </p>
+                      <p>
+                        All navigation for the agent is handled in its own seperate StateTree and lives outside the Behavior Tree. This allows actions
+                        to be layered on top of movement if needed. An example would be a "Fire weapon" action that can let the agent keep moving towards the target
+                        set by an earlier action. An action can send a "stop" event to the movement StateTree to make the player pause movement or set it's own
+                        movement location.
+                      </p>
+                      <p>
+                        Since all actions are state trees, they can gracefully handle interruption on their Exit States. When the utility system finds
+                        a higher scoring action, it can tell the current running action's StateTree to abort. When the state tree has handled its exit states, 
+                        the utility selector choose the new action.
+                      </p>
                     </div>
                   </div>
                 </div>
