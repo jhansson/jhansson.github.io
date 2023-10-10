@@ -605,7 +605,8 @@ footer {
   .about-me h1 { font-size: 2rem; }
   .about-me .font-heavy { font-size: 3rem;}
   .faceshot { height: 340px; border-radius: 10px 10px 0px 0px;}
-
+  .bbutton { margin: 0 5px 0 0; }  
+  .bbutton a { font-size: 13px; padding: 5px 15px; }
 }
 
 @media only screen and (min-width: 45em) {
