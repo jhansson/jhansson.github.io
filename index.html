@@ -171,7 +171,7 @@
             <div class="col-4">
               <div class="demo-card-wide mdl-card mdl-shadow--2dp">
                 <div class="mdl-card__title">
-                  <h2 class="mdl-card__title-text">Movement and Interaction</h2>
+                  <h2 class="mdl-card__title-text">Game Feel Study</h2>
                 </div>
                 <div class="mdl-card__supporting-text">
                   <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
@@ -181,39 +181,13 @@
                     </div>                          
                     <div class="mdl-tabs__panel is-active" id="video-panel">
                       <video autoplay muted loop width="680" height="300">
-                        <source src="video/echo.webm" type="video/webm" />
+                        <source src="video/gamefeel.webm" type="video/webm" />
                       </video>                        </div>
                     <div class="mdl-tabs__panel" id="desc-panel">
-                      <h3>What it is</h3>
+                      <h3>Short FPS Game Feel Study</h3>
                       <p>
-                          A game called Echo which focused on environmental storytelling made in Unreal Engine 4.
+                        I short study I did on adding small things to improve the game feel in a FPS prototype.
                       </p>
-                      <h3>What I did</h3>
-                      <p>
-                        I was mainly responsible for the character movement and interactions. 
-                        The movement is a custom made physics based system that allows for more realistic
-                        and predictable interactions with the environment than with the default Unreal character.
-                      </p>
-                      <p>
-                        The goal for interacting with objects was to get a fairly realistic movement where it look 
-                        and feel like you as a player are dragging around a physical object.
-                      </p>
-                      <p>
-                        Physics constraints are used to attach the object to the player and IK is then used on the 
-                        hands and arms to position them on the object's surface. Raycasting is used to get locations.
-                      </p>  
-                      <p>Part of Blueprint code to grab an object:</p>
-                      <div class="gallery">
-                        <a href="images/grabbing01.png" data-caption="Part of Blueprint for grabbing objects">
-                          <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects"/>
-                        </a>
-                      </div>
-                      <p>Blueprint for IK on arms when grabbing an object:</p>
-                      <div class="gallery">
-                        <a href="images/grabbing02ik.png" data-caption="Blueprint for IK on character arms">
-                          <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms"/>
-                        </a>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -458,111 +432,62 @@ public void Update(...)
                   </div>
                 </div>
                 <!-- END GOAP  -->
-                <!-- START ML GOLFER -->
-                <div class="col-4">
-                  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title">
-                      <h2 class="mdl-card__title-text">Machine Learning: Golf</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                      <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-                        <div class="mdl-tabs__tab-bar">
-                          <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                          <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
-                        </div>                          
-                        <div class="mdl-tabs__panel is-active" id="video-panel">
-                          <video autoplay muted loop width="680" height="300">
-                            <source src="video/mlgolf.webm" type="video/webm" />
-                          </video>
-                        </div>
-                        <div class="mdl-tabs__panel" id="desc-panel">
-                            <h3>What it is</h3>
-                            <p>
-                              AI that has learned to play simple golf by using Machine Learning. Result is from around 30 minutes of training only.
-                            </p>
-                            <h3>What I did</h3>
-                            <p>
-                              I used Unity and ml-agents to train the AI. I made a training environment that used
-                              curriculum training to teach the AI in steps. First it had the green (goal) close by
-                              in the same position making it easy to accidentally hit it. When the AI had high enough success rate, the next stage started
-                              where the green was randomized in position. This way it could realize that it was
-                              not the world position that was important, but the actual position of the green in the world.
-                            </p>
-                            <p>After several different lessons that gradually made things harder and introduced more challenges,
-                              the AI could play randomly generated maps with high success rate even when I added randomness in 
-                              how clean the ball was hit.
-                            </p>
 
-                          <p><strong>Code for the AI observations:</strong></p>
-                          <div class="accordionItem close">
-                              <h2 class="accordionItemHeading">Show/Hide Code</h2>
-                              <div class="accordionItemContent">
-                                  <div class="snipped-code">
-                                      <pre>
-                                        <code class="language-csharp">
-public override void CollectObservations()
-{
-    float rayDistance = 5f;
-    float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
-    float[] rayAnglesOffset = { 0f + 22.5f, 45f + 22.5f, 90f + 22.5f, 135f + 22.5f, 180f + 22.5f, 225f + 22.5f, 270f + 22.5f, 315f + 22.5f };
-    string[] detectableObjects;
-    detectableObjects = new string[] { "ground", "goal", "fairway" };
+ <!-- Echo start -->
+ <div class="col-4">
+  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+    <div class="mdl-card__title">
+      <h2 class="mdl-card__title-text">Movement and Interaction</h2>
+    </div>
+    <div class="mdl-card__supporting-text">
+      <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+        <div class="mdl-tabs__tab-bar">
+          <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+          <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+        </div>                          
+        <div class="mdl-tabs__panel is-active" id="video-panel">
+          <video autoplay muted loop width="680" height="300">
+            <source src="video/echo.webm" type="video/webm" />
+          </video>                        </div>
+        <div class="mdl-tabs__panel" id="desc-panel">
+          <h3>What it is</h3>
+          <p>
+              A game called Echo which focused on environmental storytelling made in Unreal Engine 4.
+          </p>
+          <h3>What I did</h3>
+          <p>
+            I was mainly responsible for the character movement and interactions. 
+            The movement is a custom made physics based system that allows for more realistic
+            and predictable interactions with the environment than with the default Unreal character.
+          </p>
+          <p>
+            The goal for interacting with objects was to get a fairly realistic movement where it look 
+            and feel like you as a player are dragging around a physical object.
+          </p>
+          <p>
+            Physics constraints are used to attach the object to the player and IK is then used on the 
+            hands and arms to position them on the object's surface. Raycasting is used to get locations.
+          </p>  
+          <p>Part of Blueprint code to grab an object:</p>
+          <div class="gallery">
+            <a href="images/grabbing01.png" data-caption="Part of Blueprint for grabbing objects">
+              <img src="images/grabbing01.png" class="blueprint-image" alt="Part of Blueprint for grabbing objects"/>
+            </a>
+          </div>
+          <p>Blueprint for IK on arms when grabbing an object:</p>
+          <div class="gallery">
+            <a href="images/grabbing02ik.png" data-caption="Blueprint for IK on character arms">
+              <img src="images/grabbing02ik.png" class="blueprint-image" alt="Blueprint for IK on character arms"/>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Echo end -->
 
-    // Raytracing environment in different angles
-    AddVectorObs(rayGridPer.Perceive(1f, rayAngles, detectableObjects, 0f, 7f));
-    AddVectorObs(rayGridPer.Perceive(2f, rayAnglesOffset, detectableObjects, 0f, 7f));
-    AddVectorObs(rayGridPer.Perceive(3f, rayAngles, detectableObjects, 0f, 7f));
-    AddVectorObs(rayGridPer.Perceive(6f, rayAnglesOffset, detectableObjects, 0f, 7f));
-    AddVectorObs(rayGridPer.Perceive(10f, rayAngles, detectableObjects, 0f, 7f));
-
-    // Observe relations in distance between different objects
-    AddVectorObs(target.transform.position - goal.transform.position);
-    AddVectorObs(goal.transform.position - area.transform.position);
-    AddVectorObs(Vector3.Distance(target.transform.position, goal.transform.position));
-    AddVectorObs(maxTargetDistance - targetDistance);
-
-    AddVectorObs(shotCount);
-    AddVectorObs(decisionCounter);
-
-    // Observe if the predicted trajectory hits something
-    aimingAtObstacle = 0f;
-    for (int i = 0; i < launchArcRenderer.lr.positionCount; i++)
-    {
-        float hitSomething = 0.0f;
-        Collider[] hits = Physics.OverlapSphere(launchArcRenderer.lr.GetPosition(i), 0.3f);
-        if (hits.Length > 0)
-        {
-            if (hits[0].CompareTag("obstacle"))
-            {
-                hitSomething = 1.0f;
-                aimingAtObstacle = 1.0f;
-            }                
-        }
-        AddVectorObs(hitSomething);
-    }
-
-    AddVectorObs(aimingAtObstacle);
-}
-                                        </code>
-                                      </pre>
-                                    </div>
-                              </div>
-                            </div>
-                            <h3>What I learned</h3>
-                            <p>It's easy for the AI to come to the wrong conclusions about what the different observations actually means.
-                              A lot of trial and error was needed to find a balance between the observations. It's easy to "overload" the AI.
-                            </p>
-                              <p>
-                                Curriculum learning where the AI goes through serveral lessons that gets gradually harder is very effective 
-                                to reach the end goal in much less time than without it if the challenge is fairly hard.
-                              </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          <!-- END ML GOLF -->
+                
           
           <div class="row">
             
@@ -660,47 +585,111 @@ public override void CollectObservations()
             </div>
           </div>
 
-              <div class="col-4">
-                  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__title">
-                      <h2 class="mdl-card__title-text">Gameplay Scripting</h2>
+             <!-- START ML GOLFER -->
+             <div class="col-4">
+              <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                  <h2 class="mdl-card__title-text">Machine Learning: Golf</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                  <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+                    <div class="mdl-tabs__tab-bar">
+                      <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
+                      <a href="#desc-panel" class="mdl-tabs__tab">Description &amp; Code</a>
+                    </div>                          
+                    <div class="mdl-tabs__panel is-active" id="video-panel">
+                      <video autoplay muted loop width="680" height="300">
+                        <source src="video/mlgolf.webm" type="video/webm" />
+                      </video>
                     </div>
-                    <div class="mdl-card__supporting-text">
-                      <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-                        <div class="mdl-tabs__tab-bar">
-                          <a href="#video-panel" class="mdl-tabs__tab is-active">Video</a>
-                          <a href="#desc-panel" class="mdl-tabs__tab">Description</a>
-                        </div>                          
-                        <div class="mdl-tabs__panel is-active" id="video-panel">
-                          <video autoplay muted loop width="680" height="300">
-                            <source src="video/throw.webm" type="video/webm" />
-                          </video>                            </div>
-                        <div class="mdl-tabs__panel" id="desc-panel">
-                            <h3>What it is</h3> 
-                          <p>
-                            It was developed in four weeks by a team of game designers and 3d artists. 
-                            It's a 1-4 player party game where the two sports of dodgeball and figure skating has been mashed together.
-                          </p>
-                      
-                        <h3>What I did</h3>                      
-                          <p>
-                            I was mainly responsible for the character movement, game rules and camera functionalities.
-                          </p>
-                          <p>
-                              The aim for the movement was to find a good balance between sliding on the ice but still
-                              have responsive controls. Character movement is based on the Unreal character movement with 
-                              modifications to make it feel like you're sliding around on ice.
-                          </p>
-                          <p>
-                            For the camera I set up blueprint to make the camera zoom in and out depending on where the 
-                            players are, making sure they are all in frame of the camera. This way the camera gets closer
-                            to the action when all players are close to each other.
-                          </p>   
+                    <div class="mdl-tabs__panel" id="desc-panel">
+                        <h3>What it is</h3>
+                        <p>
+                          AI that has learned to play simple golf by using Machine Learning. Result is from around 30 minutes of training only.
+                        </p>
+                        <h3>What I did</h3>
+                        <p>
+                          I used Unity and ml-agents to train the AI. I made a training environment that used
+                          curriculum training to teach the AI in steps. First it had the green (goal) close by
+                          in the same position making it easy to accidentally hit it. When the AI had high enough success rate, the next stage started
+                          where the green was randomized in position. This way it could realize that it was
+                          not the world position that was important, but the actual position of the green in the world.
+                        </p>
+                        <p>After several different lessons that gradually made things harder and introduced more challenges,
+                          the AI could play randomly generated maps with high success rate even when I added randomness in 
+                          how clean the ball was hit.
+                        </p>
+
+                      <p><strong>Code for the AI observations:</strong></p>
+                      <div class="accordionItem close">
+                          <h2 class="accordionItemHeading">Show/Hide Code</h2>
+                          <div class="accordionItemContent">
+                              <div class="snipped-code">
+                                  <pre>
+                                    <code class="language-csharp">
+public override void CollectObservations()
+{
+float rayDistance = 5f;
+float[] rayAngles = { 0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f };
+float[] rayAnglesOffset = { 0f + 22.5f, 45f + 22.5f, 90f + 22.5f, 135f + 22.5f, 180f + 22.5f, 225f + 22.5f, 270f + 22.5f, 315f + 22.5f };
+string[] detectableObjects;
+detectableObjects = new string[] { "ground", "goal", "fairway" };
+
+// Raytracing environment in different angles
+AddVectorObs(rayGridPer.Perceive(1f, rayAngles, detectableObjects, 0f, 7f));
+AddVectorObs(rayGridPer.Perceive(2f, rayAnglesOffset, detectableObjects, 0f, 7f));
+AddVectorObs(rayGridPer.Perceive(3f, rayAngles, detectableObjects, 0f, 7f));
+AddVectorObs(rayGridPer.Perceive(6f, rayAnglesOffset, detectableObjects, 0f, 7f));
+AddVectorObs(rayGridPer.Perceive(10f, rayAngles, detectableObjects, 0f, 7f));
+
+// Observe relations in distance between different objects
+AddVectorObs(target.transform.position - goal.transform.position);
+AddVectorObs(goal.transform.position - area.transform.position);
+AddVectorObs(Vector3.Distance(target.transform.position, goal.transform.position));
+AddVectorObs(maxTargetDistance - targetDistance);
+
+AddVectorObs(shotCount);
+AddVectorObs(decisionCounter);
+
+// Observe if the predicted trajectory hits something
+aimingAtObstacle = 0f;
+for (int i = 0; i < launchArcRenderer.lr.positionCount; i++)
+{
+    float hitSomething = 0.0f;
+    Collider[] hits = Physics.OverlapSphere(launchArcRenderer.lr.GetPosition(i), 0.3f);
+    if (hits.Length > 0)
+    {
+        if (hits[0].CompareTag("obstacle"))
+        {
+            hitSomething = 1.0f;
+            aimingAtObstacle = 1.0f;
+        }                
+    }
+    AddVectorObs(hitSomething);
+}
+
+AddVectorObs(aimingAtObstacle);
+}
+                                    </code>
+                                  </pre>
+                                </div>
+                          </div>
                         </div>
-                      </div>
+                        <h3>What I learned</h3>
+                        <p>It's easy for the AI to come to the wrong conclusions about what the different observations actually means.
+                          A lot of trial and error was needed to find a balance between the observations. It's easy to "overload" the AI.
+                        </p>
+                          <p>
+                            Curriculum learning where the AI goes through serveral lessons that gets gradually harder is very effective 
+                            to reach the end goal in much less time than without it if the challenge is fairly hard.
+                          </p>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+      <!-- END ML GOLF -->
 
             <!-- START EQUIPMENT AND INVENTORY SYSTEM -->
             
