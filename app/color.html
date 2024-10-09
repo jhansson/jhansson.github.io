@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Guessing Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #changeColorBtn {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="changeColorBtn">Change Color</button>
+
+    <script>
+        const colors = ['red', 'green', 'blue', 'yellow', 'black', 'white'];
+        const button = document.getElementById('changeColorBtn');
+        let englishVoice = null;
+
+        function changeColor() {
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = randomColor;
+button.style.setProperty('background-color', randomColor, 'important');
+
+            speakColor(randomColor);
+        }
+
+        function speakColor(color) {
+            const utterance = new SpeechSynthesisUtterance(color);
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+            }
+            speechSynthesis.speak(utterance);
+        }
+
+        function setEnglishVoice() {
+            const voices = speechSynthesis.getVoices();
+            englishVoice = voices.find(voice => voice.lang.startsWith('en-'));
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = setEnglishVoice;
+        }
+
+        setEnglishVoice();
+        button.addEventListener('click', changeColor);
+    </script>
+</body>
+</html>
