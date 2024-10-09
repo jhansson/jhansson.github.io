@@ -209,31 +209,24 @@
         }
 
         const imageSources = [
-            () => `https://picsum.photos/1920/1080?random=${Math.random()}`,
-            () => `https://source.unsplash.com/random/1920x1080?sig=${Math.random()}`,
-            () => `https://picsum.photos/seed/${Math.random()}/1920/1080`,
-            () => `https://images.pexels.com/photos/${Math.floor(Math.random() * 100000)}/pexels-photo-${Math.floor(Math.random() * 100000)}.jpeg`,
-            () => `https://www.pexels.com/photo/${Math.floor(Math.random() * 100000)}/download/?search_query=&is_download=true`,
-            () => `https://images.unsplash.com/photo-${Math.floor(Math.random() * 100000)}`,
-            () => `https://cdn.pixabay.com/photo/${Math.floor(Math.random() * 100000)}/`,
-            () => `https://www.flickr.com/photos/${Math.floor(Math.random() * 100000)}/`,
-            () => `https://www.lifeofpix.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.publicdomainarchive.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.reshot.com/free-photo/${Math.floor(Math.random() * 100000)}`,
-            () => `https://www.kaboompics.com/cache/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.freestockphotos.org/img/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.stocksnap.io/img/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.splitshire.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.gratisography.com/pictures/${Math.floor(Math.random() * 100000)}.jpg`,
-            () => `https://www.pikwizard.com/photos/${Math.floor(Math.random() * 100000)}.jpg`
+            async () => {
+                const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&client_id=0h4JMGCwkzklON5tsxtCagJ1hH5lJPI2eWh7QcAiA-8`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch image from Unsplash');
+                }
+                const data = await response.json();
+                return data.urls.full; // Use the 'regular' size URL
+            }
+            // Uncomment to use Picsum as an alternative source
+            // () => `https://picsum.photos/1920/1080?random=${Math.random()}`
         ];
 
         async function getRandomImage() {
             const shuffledSources = imageSources.sort(() => 0.5 - Math.random());
             for (const sourceFunc of shuffledSources) {
                 try {
-                    const url = sourceFunc();
-                    await preloadImage(url);
+                    const url = await sourceFunc(); // Await the result of the async function
+                    await preloadImage(url); // Ensure you have this function defined to preload the image
                     return url;
                 } catch (error) {
                     console.error('Failed to load image from source:', error);
@@ -241,6 +234,7 @@
             }
             throw new Error('All image sources failed');
         }
+
 
         function typewriterEffect(element, text, speed = 50) {
             let i = 0;
