@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Viewing Training App</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(238, 238, 238);
+        }
+        #imageContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: none;
+        }
+        #randomImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #controlPanel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        #controlPanel.collapsed {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            max-width: 40px;
+            max-height: 40px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        #controlPanel.collapsed:hover {
+            max-width: 300px;
+            max-height: 300px;
+        }
+        #controlPanel.collapsed:hover #showImageBtn,
+        #controlPanel.collapsed:hover p {
+            display:none;
+        }
+        #targetIdDisplay {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button:disabled {
+            background-color: #eee;
+        }
+
+        #toggleIcon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+        }
+        #controlPanel.collapsed #toggleIcon {
+            display: block;
+        }
+        #controlPanel.collapsed #targetIdDisplay,
+        #controlPanel.collapsed .button,
+        #controlPanel.collapsed p {
+            display: none;
+        }
+        #controlPanel.collapsed:hover #targetIdDisplay,
+        #controlPanel.collapsed:hover .button {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="imageContainer">
+        <img id="randomImage" alt="Random Image">
+    </div>
+    <div id="controlPanel">
+        <div id="toggleIcon">☰</div>
+        <div id="targetIdDisplay">Fetching target image</div>
+        <button id="showImageBtn" class="button">Show Image</button>
+        <p>or</p>
+        <button id="newTargetBtn" class="button">Generate New Target</button>
+    </div>
+
+    <script>
+        const imageElement = document.getElementById('randomImage');
+        const imageContainer = document.getElementById('imageContainer');
+        const targetIdDisplay = document.getElementById('targetIdDisplay');
+        const showImageBtn = document.getElementById('showImageBtn');
+        const newTargetBtn = document.getElementById('newTargetBtn');
+        const controlPanel = document.getElementById('controlPanel');
+        
+        let currentImageUrl = '';
+
+        function generateTargetId() {
+            return Math.random().toString(36).substring(2, 6).toUpperCase() + '-' + 
+                   Math.random().toString(36).substring(2, 6).toUpperCase();
+        }
+
+        function preloadImage(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(url);
+                img.onerror = reject;
+                img.src = url;
+            });
+        }
+
+        const imageSources = [
+            () => `https://picsum.photos/1920/1080?random=${Math.random()}`,
+            () => `https://source.unsplash.com/random/1920x1080?sig=${Math.random()}`,
+            //() => `https://loremflickr.com/1920/1080?random=${Math.random()}`,
+            () => `https://picsum.photos/seed/${Math.random()}/1920/1080`,
+
+            // New sources added below:
+            () => `https://images.pexels.com/photos/${Math.floor(Math.random() * 100000)}/pexels-photo-${Math.floor(Math.random() * 100000)}.jpeg`,
+            () => `https://www.pexels.com/photo/${Math.floor(Math.random() * 100000)}/download/?search_query=&is_download=true`,
+            
+            () => `https://images.unsplash.com/photo-${Math.floor(Math.random() * 100000)}`,
+            
+            () => `https://cdn.pixabay.com/photo/${Math.floor(Math.random() * 100000)}/`,
+            
+            () => `https://www.flickr.com/photos/${Math.floor(Math.random() * 100000)}/`,
+            
+            () => `https://www.lifeofpix.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.publicdomainarchive.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.reshot.com/free-photo/${Math.floor(Math.random() * 100000)}`,
+            
+            () => `https://www.kaboompics.com/cache/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.freestockphotos.org/img/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.stocksnap.io/img/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.splitshire.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.gratisography.com/pictures/${Math.floor(Math.random() * 100000)}.jpg`,
+            
+            () => `https://www.pikwizard.com/photos/${Math.floor(Math.random() * 100000)}.jpg`
+        ];
+
+        async function getRandomImage() {
+            const shuffledSources = imageSources.sort(() => 0.5 - Math.random());
+            for (const sourceFunc of shuffledSources) {
+                try {
+                    const url = sourceFunc();
+                    await preloadImage(url);
+                    return url;
+                } catch (error) {
+                    console.error('Failed to load image from source:', error);
+                }
+            }
+            throw new Error('All image sources failed');
+        }
+
+        async function prepareNewTarget() {
+            controlPanel.classList.remove('collapsed');
+            document.body.style.backgroundColor = 'rgb(238, 238, 238)';
+            imageContainer.style.display = 'none';
+            targetIdDisplay.textContent = 'Fetching target image';
+            showImageBtn.disabled = true;
+            try {
+                currentImageUrl = await getRandomImage();
+                const targetId = generateTargetId();
+                targetIdDisplay.textContent = targetId;                
+                showImageBtn.disabled = false;                
+            } catch (error) {
+                console.error('Failed to load image:', error);
+                targetIdDisplay.textContent = 'Error loading image. Please try again.';
+            }
+        }
+
+        function showImage() {
+            imageElement.src = currentImageUrl;
+            imageContainer.style.display = 'block';
+            showImageBtn.diabled = true;
+            controlPanel.classList.add('collapsed');
+            document.body.style.backgroundColor = 'transparent';
+        }
+
+        showImageBtn.addEventListener('click', showImage);
+        newTargetBtn.addEventListener('click', prepareNewTarget);
+
+        // Initial setup
+        prepareNewTarget();
+    </script>
+</body>
+</html>
