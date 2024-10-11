@@ -3,58 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Guessing Game</title>
+    <title>Color Intuition Training App</title>
     <style>
-        body {
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
             font-family: Arial, sans-serif;
+            transition: background-color 0.5s ease;
         }
-        #changeColorBtn {
-            font-size: 1.5rem;
-            padding: 10px 20px;
+        #content {
+            text-align: center;
+            width: 100%;
+        }
+        #startMessage {
+            font-size: 10vh;
             cursor: pointer;
+            color: black;
         }
     </style>
 </head>
 <body>
-    <button id="changeColorBtn">Change Color</button>
-
+    <div id="content">
+        <div id="startMessage">Click to start</div>
+    </div>
     <script>
-        const colors = ['red', 'green', 'blue', 'yellow', 'black', 'white'];
-        const button = document.getElementById('changeColorBtn');
-        let englishVoice = null;
+        const colors = ['red', 'green', 'blue', 'yellow'];
+        const contentElement = document.getElementById('content');
+        const startMessageElement = document.getElementById('startMessage');
+        let currentColor = null;
+        let isRevealed = false;
+        let isStarted = false;
 
-        function changeColor() {
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.backgroundColor = randomColor;
-button.style.setProperty('background-color', randomColor, 'important');
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-            speakColor(randomColor);
+        function playChime() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5 note
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.5);
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
         }
 
-        function speakColor(color) {
-            const utterance = new SpeechSynthesisUtterance(color);
-            if (englishVoice) {
-                utterance.voice = englishVoice;
-            }
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function displayColor() {
+            currentColor = getRandomColor();
+            document.body.style.backgroundColor = currentColor;
+            playChime();
+            isRevealed = false;
+        }
+
+        function speakColor() {
+            const utterance = new SpeechSynthesisUtterance(currentColor);
+            utterance.lang = 'en-US';
             speechSynthesis.speak(utterance);
+            isRevealed = true;
         }
 
-        function setEnglishVoice() {
-            const voices = speechSynthesis.getVoices();
-            englishVoice = voices.find(voice => voice.lang.startsWith('en-'));
+        function startApp() {
+            isStarted = true;
+            startMessageElement.style.display = 'none';
+            displayColor();
         }
 
-        if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = setEnglishVoice;
-        }
-
-        setEnglishVoice();
-        button.addEventListener('click', changeColor);
+        document.body.addEventListener('click', () => {
+            if (!isStarted) {
+                startApp();
+            } else if (!isRevealed) {
+                speakColor();
+            } else {
+                displayColor();
+            }
+        });
     </script>
 </body>
 </html>
