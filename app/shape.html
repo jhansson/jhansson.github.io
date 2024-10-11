@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intuition Training App</title>
+    <style>
+        body, html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        #content {
+            font-size: 80vh;
+            user-select: none;
+            text-align: center;
+            width: 100%;
+        }
+        #startMessage {
+            font-size: 10vh;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div id="startMessage">Click to start</div>
+        <div id="symbol" style="display: none;"></div>
+    </div>
+    <script>
+        const symbols = [
+            { shape: 'square', filled: false, icon: '&#9633;' },
+            { shape: 'square', filled: true, icon: '&#9632;' },
+            { shape: 'triangle', filled: false, icon: '&#9651;' },
+            { shape: 'triangle', filled: true, icon: '&#9650;' },
+            { shape: 'circle', filled: false, icon: '&#9675;' },
+            { shape: 'circle', filled: true, icon: '&#9679;' },
+            { shape: 'star', filled: false, icon: '&#9734;' },
+            { shape: 'star', filled: true, icon: '&#9733;' }
+        ];
+
+        const contentElement = document.getElementById('content');
+        const startMessageElement = document.getElementById('startMessage');
+        const symbolElement = document.getElementById('symbol');
+        let currentSymbol = null;
+        let isRevealed = false;
+        let isStarted = false;
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playChime() {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5 note
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.01);
+            gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.5);
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function displaySymbol() {
+            currentSymbol = getRandomSymbol();
+            symbolElement.innerHTML = currentSymbol.icon;
+            playChime();
+            isRevealed = false;
+        }
+
+        function speakSymbol() {
+            const text = `${currentSymbol.filled ? 'Filled' : 'Hollow'} ${currentSymbol.shape}`;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+            isRevealed = true;
+        }
+
+        function startApp() {
+            isStarted = true;
+            startMessageElement.style.display = 'none';
+            symbolElement.style.display = 'block';
+            displaySymbol();
+        }
+
+        document.body.addEventListener('click', () => {
+            if (!isStarted) {
+                startApp();
+            } else if (!isRevealed) {
+                speakSymbol();
+            } else {
+                displaySymbol();
+            }
+        });
+    </script>
+</body>
+</html>
