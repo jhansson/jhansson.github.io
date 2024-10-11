@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Remote Viewing Training App</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Share+Tech+Mono&display=swap');
+
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: rgb(238, 238, 238);
+            background-color: #0c1e2c;
+            transition: background-color 0.5s ease;
         }
         #imageContainer {
             position: fixed;
@@ -24,6 +27,8 @@
             height: 100%;
             z-index: -1;
             display: none;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
         #randomImage {
             width: 100%;
@@ -31,91 +36,207 @@
             object-fit: cover;
         }
         #controlPanel {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: rgba(16, 42, 66, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
+            max-width: 500px;
+            width: 450px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+            margin-left: 20px;
         }
         #controlPanel.collapsed {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 10px;
-            max-width: 40px;
-            max-height: 40px;
+            padding: 15px;
+            width: 50px;
+            height: 50px;
             overflow: hidden;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(16, 42, 66, 0.6);
         }
         #controlPanel.collapsed:hover {
-            max-width: 300px;
-            max-height: 300px;
+            width: 200px;
+            height: auto;
         }
-        #controlPanel.collapsed:hover #showImageBtn,
-        #controlPanel.collapsed:hover p {
+        #controlPanel.collapsed p {
             display:none;
         }
+        #targetMessage {
+            font-size: 1.8rem;
+            color: #61dafb;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
         #targetIdDisplay {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #61dafb;
+            font-weight: 700;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        #controlPanel p {
             font-size: 2rem;
-            margin-bottom: 20px;
+            margin: 0;
+            padding: 0;
+            color: #395a74;
+            font-weight: 700;
+            font-family: 'Share Tech Mono', monospace;
         }
         .button {
-            font-size: 1.2rem;
-            padding: 10px 20px;
+            font-size: 1.1rem;
+            padding: 12px 25px;
             margin: 10px;
             cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #61dafb;
+            color: #0c1e2c;
             border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            width: 80%;
         }
         .button:hover {
-            background-color: #45a049;
+            background-color: #4fa8d5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(97, 218, 251, 0.4);
         }
         .button:disabled {
-            background-color: #eee;
+            background-color: #2c3e50;
+            cursor: not-allowed;
         }
-
+        #audioControls {
+            text-align: left;
+        }
+        #playAudio {
+            font-size: 1.4rem;
+            padding: 6px 10px;
+            margin: 8px;
+            margin-bottom: -5px;
+            cursor: pointer;
+            background-color: rgba(5, 4, 26, 0.2);
+            color: #0a1118;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            /*border: 1px solid #7590ad;*/
+        }
         #toggleIcon {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             display: none;
+            color: #61dafb;
         }
         #controlPanel.collapsed #toggleIcon {
             display: block;
         }
         #controlPanel.collapsed #targetIdDisplay,
         #controlPanel.collapsed .button,
-        #controlPanel.collapsed p {
+        #controlPanel.collapsed #targetMessage, 
+        #controlPanel.collapsed #audioControls {
             display: none;
         }
         #controlPanel.collapsed:hover #targetIdDisplay,
-        #controlPanel.collapsed:hover .button {
+        #controlPanel.collapsed:hover #newTargetBtn,
+        #controlPanel.collapsed:hover #targetMessage, 
+        #controlPanel.collapsed:hover #audioControls {
             display: block;
+        }
+        #loadingIndicator {
+            border: 5px solid #253a4d;
+            border-top: 5px solid #61dafb;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .glow {
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #32788b, 0 0 10px #32788b, 0 0 15px #32788b, 0 0 20px #32788b;
+            }
+            to {
+                text-shadow: 0 0 10px #32788b, 0 0 20px #32788b, 0 0 30px #32788b, 0 0 40px #32788b;
+            }
         }
     </style>
 </head>
 <body>
+    <audio id="background-audio" src="thetawaves.mp3" loop>
+        Your browser does not support the audio element.
+    </audio>
     <div id="imageContainer">
         <img id="randomImage" alt="Random Image">
     </div>
     <div id="controlPanel">
         <div id="toggleIcon">☰</div>
-        <div id="targetIdDisplay">Fetching target image</div>
-        <button id="showImageBtn" class="button">Show Image</button>
-        <p>or</p>
-        <button id="newTargetBtn" class="button">Generate New Target</button>
+        <div id="targetMessage">Target Found!</div>
+        <div id="targetIdDisplay">Initializing...</div>
+        <div id="loadingIndicator"></div>
+        <button id="showImageBtn" class="button">Reveal Image</button>
+        <p>OR</p>        
+        <button id="newTargetBtn" class="button">New Target</button>
+        <div id="audioControls">
+            <button id="playAudio" onclick="playAudio()">🔊</button>
+        </div>
     </div>
 
     <script>
+        const audio = document.getElementById('background-audio');
+        var isPlaying = false;
+
+        function playAudio() {
+            if (isPlaying)
+            {
+                audio.pause();
+                isPlaying = false;
+            }
+            else{
+                audio.play();
+                isPlaying = true;
+            }
+            
+        }
+
         const imageElement = document.getElementById('randomImage');
         const imageContainer = document.getElementById('imageContainer');
         const targetIdDisplay = document.getElementById('targetIdDisplay');
+        const targetMessage = document.getElementById('targetMessage');
         const showImageBtn = document.getElementById('showImageBtn');
         const newTargetBtn = document.getElementById('newTargetBtn');
         const controlPanel = document.getElementById('controlPanel');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         
         let currentImageUrl = '';
 
@@ -134,46 +255,24 @@
         }
 
         const imageSources = [
-            () => `https://picsum.photos/1920/1080?random=${Math.random()}`,
-            () => `https://source.unsplash.com/random/1920x1080?sig=${Math.random()}`,
-            //() => `https://loremflickr.com/1920/1080?random=${Math.random()}`,
-            () => `https://picsum.photos/seed/${Math.random()}/1920/1080`,
-
-            // New sources added below:
-            () => `https://images.pexels.com/photos/${Math.floor(Math.random() * 100000)}/pexels-photo-${Math.floor(Math.random() * 100000)}.jpeg`,
-            () => `https://www.pexels.com/photo/${Math.floor(Math.random() * 100000)}/download/?search_query=&is_download=true`,
-            
-            () => `https://images.unsplash.com/photo-${Math.floor(Math.random() * 100000)}`,
-            
-            () => `https://cdn.pixabay.com/photo/${Math.floor(Math.random() * 100000)}/`,
-            
-            () => `https://www.flickr.com/photos/${Math.floor(Math.random() * 100000)}/`,
-            
-            () => `https://www.lifeofpix.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.publicdomainarchive.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.reshot.com/free-photo/${Math.floor(Math.random() * 100000)}`,
-            
-            () => `https://www.kaboompics.com/cache/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.freestockphotos.org/img/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.stocksnap.io/img/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.splitshire.com/wp-content/uploads/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.gratisography.com/pictures/${Math.floor(Math.random() * 100000)}.jpg`,
-            
-            () => `https://www.pikwizard.com/photos/${Math.floor(Math.random() * 100000)}.jpg`
+            async () => {
+                const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&client_id=0h4JMGCwkzklON5tsxtCagJ1hH5lJPI2eWh7QcAiA-8`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch image from Unsplash');
+                }
+                const data = await response.json();
+                return data.urls.full; // Use the 'regular' size URL
+            }
+            // Uncomment to use Picsum as an alternative source
+            // () => `https://picsum.photos/1920/1080?random=${Math.random()}`
         ];
 
         async function getRandomImage() {
             const shuffledSources = imageSources.sort(() => 0.5 - Math.random());
             for (const sourceFunc of shuffledSources) {
                 try {
-                    const url = sourceFunc();
-                    await preloadImage(url);
+                    const url = await sourceFunc(); // Await the result of the async function
+                    await preloadImage(url); // Ensure you have this function defined to preload the image
                     return url;
                 } catch (error) {
                     console.error('Failed to load image from source:', error);
@@ -182,27 +281,64 @@
             throw new Error('All image sources failed');
         }
 
+
+        function typewriterEffect(element, text, speed = 50) {
+            let i = 0;
+            element.textContent = '';
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.add('glow');
+                    setTimeout(() => {
+                        targetMessage.style.opacity = '0';
+                        setTimeout(() => {
+                            targetMessage.textContent = 'Target ID';
+                            targetMessage.style.opacity = '1';
+                        }, 500);
+                    }, 1000);
+                }
+            }
+            type();
+        }
+
         async function prepareNewTarget() {
             controlPanel.classList.remove('collapsed');
-            document.body.style.backgroundColor = 'rgb(238, 238, 238)';
+            document.body.style.backgroundColor = '#0c1e2c';
             imageContainer.style.display = 'none';
-            targetIdDisplay.textContent = 'Fetching target image';
+            targetIdDisplay.textContent = 'Scanning...';
+            targetIdDisplay.classList.remove('glow');
+            targetMessage.textContent = 'Target Found!';
+            targetMessage.style.opacity = '0';
+            targetMessage.style.transform = 'translateY(-20px)';
+            showImageBtn.style.display = 'block';
             showImageBtn.disabled = true;
+            loadingIndicator.style.display = 'block';
             try {
                 currentImageUrl = await getRandomImage();
                 const targetId = generateTargetId();
-                targetIdDisplay.textContent = targetId;                
+                loadingIndicator.style.display = 'none';
+                targetMessage.style.opacity = '1';
+                targetMessage.style.transform = 'translateY(0)';
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for effect
+                typewriterEffect(targetIdDisplay, targetId);
                 showImageBtn.disabled = false;                
             } catch (error) {
                 console.error('Failed to load image:', error);
                 targetIdDisplay.textContent = 'Error loading image. Please try again.';
+                loadingIndicator.style.display = 'none';
             }
         }
 
         function showImage() {
             imageElement.src = currentImageUrl;
             imageContainer.style.display = 'block';
-            showImageBtn.diabled = true;
+            setTimeout(() => {
+                imageContainer.style.opacity = '1';
+            }, 50);
+            showImageBtn.style.display = 'none';
             controlPanel.classList.add('collapsed');
             document.body.style.backgroundColor = 'transparent';
         }
