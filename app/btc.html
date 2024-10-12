@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="https://s2.coinmarketcap.com/static/img/coins/64x64/1.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuristic Bitcoin Stats</title>
+    <title>Bitcoin Price</title>
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
@@ -265,6 +266,10 @@
         const updatePrice = (price) => {
             const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
             priceElement.textContent = formattedPrice;
+            
+            // Set the page title to display the updated price
+            document.title = `BTC: ${formattedPrice}`;
+
             if (price > lastPrice) {
                 priceElement.classList.remove('down');
                 priceElement.classList.add('up');
