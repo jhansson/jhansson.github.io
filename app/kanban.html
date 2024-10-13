@@ -15,9 +15,7 @@
           font-family: 'Poppins', sans-serif;
         }
         .kanban-app {
-          background-color: #2d2e40;
           border-radius: 15px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
           padding: 20px;
           width: 90%;
           max-width: 1200px;
@@ -37,7 +35,6 @@
             margin: 0 auto; /* Optional: ensures the board is centered on the page */
         }
         .column {
-            background-color: #2a2a3a;
             border-radius: 8px;
             padding: 16px;
             width: 300px;
@@ -52,13 +49,14 @@
             margin-right: 8px;
         }
         .card {
-            background-color: #3a3a4a;
+            background-color: rgb(83 87 109 / 22%);
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             cursor: move;
             transition: all 0.3s ease;
+            color: #a2acb0;
         }
         .card:hover {
             transform: translateY(-2px);
@@ -236,10 +234,6 @@
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
-                <div class="card-details">
-                    <span>📅 ${new Date().toLocaleDateString()}</span>
-                    <span>🏷️ Tag</span>
-                </div>
                 <button onclick="editCard('${id}')">✏️ Rename</button>
                 <button onclick="deleteCard('${id}')">🗑️ Delete</button>
             `;
