@@ -372,6 +372,7 @@
             // Create placeholder with same dimensions as draggedCard
             placeholder = createPlaceholder();
             placeholder.style.width = `${draggedCard.offsetWidth}px`;
+            placeholder.style.height = `${draggedCard.offsetHeight}px`;
             
             // Set initial position of clone
             moveAt(e.pageX, e.pageY);
@@ -402,7 +403,7 @@
             
             if (columnUnderMouse) {
                 // Highlight the column under the mouse
-                columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                //columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                 
                 cloneCard.style.display = 'none';
                 const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
