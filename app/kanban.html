@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kanban Board with Firebase</title>
+    <title>Multi-Board Kanban</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f0f0f0;
+        }
+        .board-list {
+            margin-bottom: 20px;
         }
         .board {
             display: flex;
@@ -28,25 +31,33 @@
             margin-bottom: 10px;
             cursor: move;
         }
-        .add-card {
+        .add-card, .add-board {
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Kanban Board</h1>
+    <h1>Multi-Board Kanban</h1>
     <button id="loginBtn">Login with Google</button>
     <div id="userInfo" style="display:none;">
         Logged in as: <span id="userName"></span>
         <button id="logoutBtn">Logout</button>
     </div>
-    <div class="board" id="board"></div>
+    <div id="boardManagement" style="display:none;">
+        <div class="add-board">
+            <input type="text" id="newBoardName" placeholder="New board name">
+            <button onclick="createNewBoard()">Create New Board</button>
+        </div>
+        <select id="boardSelector" onchange="switchBoard()"></select>
+        <button onclick="deleteCurrentBoard()">Delete Current Board</button>
+    </div>
+    <div id="currentBoard"></div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, getDocs, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -63,12 +74,15 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUser = null;
+        let currentBoardId = null;
 
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const userInfo = document.getElementById('userInfo');
         const userName = document.getElementById('userName');
-        const board = document.getElementById('board');
+        const boardManagement = document.getElementById('boardManagement');
+        const boardSelector = document.getElementById('boardSelector');
+        const currentBoard = document.getElementById('currentBoard');
 
         loginBtn.addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
@@ -84,19 +98,64 @@
                 currentUser = user;
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
+                boardManagement.style.display = 'block';
                 userName.textContent = user.displayName;
-                loadBoard();
+                loadBoards();
             } else {
                 currentUser = null;
                 loginBtn.style.display = 'block';
                 userInfo.style.display = 'none';
-                board.innerHTML = '';
+                boardManagement.style.display = 'none';
+                currentBoard.innerHTML = '';
+                boardSelector.innerHTML = '';
             }
         });
 
-        function createColumn(title) {
+        async function loadBoards() {
+            boardSelector.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards'));
+            querySnapshot.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = doc.data().name;
+                boardSelector.appendChild(option);
+            });
+            if (boardSelector.options.length > 0) {
+                currentBoardId = boardSelector.options[0].value;
+                loadBoard(currentBoardId);
+            }
+        }
+
+        window.switchBoard = function() {
+            currentBoardId = boardSelector.value;
+            loadBoard(currentBoardId);
+        }
+
+        window.createNewBoard = async function() {
+            const boardName = document.getElementById('newBoardName').value.trim();
+            if (boardName) {
+                const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards'), {
+                    name: boardName
+                });
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'todo'), { name: 'To Do' });
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'inprogress'), { name: 'In Progress' });
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'done'), { name: 'Done' });
+                loadBoards();
+                document.getElementById('newBoardName').value = '';
+            }
+        }
+
+        window.deleteCurrentBoard = async function() {
+            if (currentBoardId && confirm('Are you sure you want to delete this board?')) {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId));
+                loadBoards();
+            }
+        }
+
+        function createColumn(title, columnId) {
             const column = document.createElement('div');
             column.className = 'column';
+            column.dataset.columnId = columnId;
             column.innerHTML = `
                 <h2>${title}</h2>
                 <div class="cards"></div>
@@ -123,11 +182,11 @@
             const text = input.value.trim();
             if (text) {
                 const column = button.closest('.column');
-                const columnTitle = column.querySelector('h2').textContent;
+                const columnId = column.dataset.columnId;
                 try {
-                    const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'cards'), {
+                    const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards'), {
                         text: text,
-                        column: columnTitle
+                        columnId: columnId
                     });
                     const card = createCard(docRef.id, text);
                     column.querySelector('.cards').appendChild(card);
@@ -154,10 +213,10 @@
             const card = document.querySelector(`[data-id="${cardId}"]`);
             const column = e.target.closest('.column');
             if (column && card) {
-                const newColumnTitle = column.querySelector('h2').textContent;
+                const newColumnId = column.dataset.columnId;
                 try {
-                    await updateDoc(doc(db, 'users', currentUser.uid, 'cards', cardId), {
-                        column: newColumnTitle
+                    await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                        columnId: newColumnId
                     });
                     column.querySelector('.cards').appendChild(card);
                 } catch (error) {
@@ -166,26 +225,22 @@
             }
         }
 
-        async function loadBoard() {
-            board.innerHTML = '';
-            ['To Do', 'In Progress', 'Done'].forEach(title => {
-                const column = createColumn(title);
-                board.appendChild(column);
-            });
-
+        async function loadBoard(boardId) {
+            currentBoard.innerHTML = '';
             try {
-                const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'cards'));
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const card = createCard(doc.id, data.text);
-                    const column = board.querySelector(`h2`);
-                    const targetColumn = Array.from(board.querySelectorAll('.column')).find(col => 
-                        col.querySelector('h2').textContent === data.column
-                    );
+                const columnsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'columns'));
+                columnsSnapshot.forEach(columnDoc => {
+                    const column = createColumn(columnDoc.data().name, columnDoc.id);
+                    currentBoard.appendChild(column);
+                });
+
+                const cardsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'cards'));
+                cardsSnapshot.forEach(cardDoc => {
+                    const data = cardDoc.data();
+                    const card = createCard(cardDoc.id, data.text);
+                    const targetColumn = currentBoard.querySelector(`[data-column-id="${data.columnId}"]`);
                     if (targetColumn) {
                         targetColumn.querySelector('.cards').appendChild(card);
-                    } else {
-                        console.warn(`Column "${data.column}" not found for card: ${data.text}`);
                     }
                 });
             } catch (error) {
@@ -193,8 +248,8 @@
             }
         }
 
-        board.addEventListener('dragover', dragOver);
-        board.addEventListener('drop', drop);
+        currentBoard.addEventListener('dragover', dragOver);
+        currentBoard.addEventListener('drop', drop);
     </script>
 </body>
 </html>
