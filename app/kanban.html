@@ -353,12 +353,14 @@
             div.style.visibility = 'hidden';
             div.style.height = '0';
             div.style.margin = '0';
-            div.style.transition = 'height 0.2s, margin 0.2s';
+            div.style.padding = '0';
+            div.style.boxSizing = 'border-box';
+            div.style.transition = 'height 0.2s, margin 0.2s, padding 0.2s';
             return div;
         }
         
         function dragStart(e) {
-            e.preventDefault(); // Prevent default drag behavior
+            e.preventDefault();
             draggedCard = this;
             
             // Create clone for visual feedback
@@ -369,18 +371,17 @@
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
-            // Create placeholder with same dimensions as draggedCard
+            // Create placeholder with exact dimensions as draggedCard
             placeholder = createPlaceholder();
-            placeholder.style.width = `${draggedCard.offsetWidth}px`;
-            placeholder.style.height = `${draggedCard.offsetHeight}px`;
+            const cardStyle = window.getComputedStyle(draggedCard);
+            placeholder.style.width = cardStyle.width;
+            placeholder.style.height = cardStyle.height;
+            placeholder.style.margin = cardStyle.margin;
+            placeholder.style.padding = cardStyle.padding;
             
-            // Set initial position of clone
             moveAt(e.pageX, e.pageY);
             
-            // Hide original card
-            setTimeout(() => {
-                draggedCard.style.display = 'none';
-            }, 0);
+            draggedCard.style.display = 'none';
             
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
@@ -396,14 +397,12 @@
             
             const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
             
-            // Reset background color for all columns
             document.querySelectorAll('.column').forEach(col => {
                 col.style.backgroundColor = '';
             });
             
             if (columnUnderMouse) {
-                // Highlight the column under the mouse
-                //columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                 
                 cloneCard.style.display = 'none';
                 const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
@@ -417,15 +416,15 @@
                     columnUnderMouse.querySelector('.cards').appendChild(placeholder);
                 }
                 
-                // Show and resize placeholder to match draggedCard
                 placeholder.style.visibility = 'visible';
-                placeholder.style.height = `${draggedCard.offsetHeight}px`;
-                placeholder.style.margin = '12px 0';
+                placeholder.style.height = window.getComputedStyle(draggedCard).height;
+                placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
+                placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
             } else {
-                // Hide placeholder when not over a column
                 placeholder.style.visibility = 'hidden';
                 placeholder.style.height = '0';
                 placeholder.style.margin = '0';
+                placeholder.style.padding = '0';
             }
         }
         
@@ -453,6 +452,18 @@
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
         }
+
+        // Update the CSS for the placeholder
+        const style = document.createElement('style');
+        style.textContent = `
+            .placeholder {
+                background-color: rgba(255, 255, 255, 0.1);
+                border: 2px dashed #4a4a5a;
+                border-radius: 6px;
+                box-sizing: border-box;
+            }
+        `;
+        document.head.appendChild(style);
 
         /*
         const columns = document.querySelectorAll('.column');
