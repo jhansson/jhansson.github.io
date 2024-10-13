@@ -20,6 +20,8 @@
             gap: 20px;
             overflow-x: auto;
             padding-bottom: 20px;
+            justify-content: center; /* Center the board horizontally */
+            margin: 0 auto; /* Optional: ensures the board is centered on the page */
         }
         .column {
             background-color: #2a2a3a;
@@ -215,10 +217,44 @@
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
+                <div class="card-details">
+                    <span>📅 ${new Date().toLocaleDateString()}</span>
+                    <span>🏷️ Tag</span>
+                </div>
+                <button onclick="editCard('${id}')">✏️ Rename</button>
+                <button onclick="deleteCard('${id}')">🗑️ Delete</button>
             `;
             card.addEventListener('dragstart', dragStart);
             return card;
         }
+        
+        // Function to rename a card
+        window.editCard = async function (cardId) {
+            const newTitle = prompt('Enter the new card title:');
+            if (newTitle) {
+                try {
+                    await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                        text: newTitle
+                    });
+                    document.querySelector(`[data-id="${cardId}"] .card-title`).textContent = newTitle;
+                } catch (error) {
+                    console.error("Error renaming card: ", error);
+                }
+            }
+        }
+        
+        // Function to delete a card
+        window.deleteCard = async function (cardId) {
+            if (confirm('Are you sure you want to delete this card?')) {
+                try {
+                    await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId));
+                    document.querySelector(`[data-id="${cardId}"]`).remove();
+                } catch (error) {
+                    console.error("Error deleting card: ", error);
+                }
+            }
+        }
+
 
         // Add this function for smooth card insertion animation
         function insertCardWithAnimation(cardElement, containerElement) {
@@ -285,11 +321,16 @@
             currentBoard.innerHTML = '';
             try {
                 const columnsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'columns'));
-                columnsSnapshot.forEach(columnDoc => {
-                    const column = createColumn(columnDoc.data().name, columnDoc.id);
-                    currentBoard.appendChild(column);
+        
+                const orderedColumns = ['todo', 'inprogress', 'done']; // Define the correct order
+                orderedColumns.forEach(columnId => {
+                    const columnDoc = columnsSnapshot.docs.find(doc => doc.id === columnId);
+                    if (columnDoc) {
+                        const column = createColumn(columnDoc.data().name, columnDoc.id);
+                        currentBoard.appendChild(column);
+                    }
                 });
-
+        
                 const cardsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'cards'));
                 cardsSnapshot.forEach(cardDoc => {
                     const data = cardDoc.data();
@@ -303,6 +344,7 @@
                 console.error("Error loading board: ", error);
             }
         }
+
 
         currentBoard.addEventListener('dragover', dragOver);
         currentBoard.addEventListener('drop', drop);
