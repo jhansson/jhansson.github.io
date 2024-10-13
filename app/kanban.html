@@ -238,12 +238,16 @@
 
         function createColumn(title, columnId) {
             const column = document.createElement('div');
-            var icons = [["todo","📝"], ["inprogress", "👨‍💻"], ["done", "✅"]];
+            var icons = {
+                "todo": "📝",
+                "inprogress": "👨‍💻",
+                "done": "✅"
+            };
             column.className = 'column';
             column.dataset.columnId = columnId;
             column.innerHTML = `
                 <div class="column-header">
-                    <i class="column-icon">${icons[columnId][0]}</i>
+                    <i class="column-icon">${icons[columnId]}</i>
                     <h2>${title}</h2>
                 </div>
                 <div class="cards"></div>
