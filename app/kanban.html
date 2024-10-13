@@ -374,8 +374,8 @@
             // Create placeholder with exact dimensions as draggedCard
             placeholder = createPlaceholder();
             const cardStyle = window.getComputedStyle(draggedCard);
-            placeholder.style.width = cardStyle.width;
-            placeholder.style.height = cardStyle.height;
+            //placeholder.style.width = cardStyle.width;
+            placeholder.style.minHeight = cardStyle.height;
             placeholder.style.margin = cardStyle.margin;
             placeholder.style.padding = cardStyle.padding;
             
@@ -417,7 +417,7 @@
                 }
                 
                 placeholder.style.visibility = 'visible';
-                placeholder.style.height = window.getComputedStyle(draggedCard).height;
+                placeholder.style.minHeight = window.getComputedStyle(draggedCard).height;
                 placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
                 placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
             } else {
