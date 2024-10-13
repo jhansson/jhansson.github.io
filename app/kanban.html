@@ -55,7 +55,7 @@
             padding: 16px;
             width: 300px;
             min-width: 300px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.2s ease-in-out;
         }
         .column-header {
             display: flex;
@@ -82,7 +82,7 @@
             cursor: move;
             transition: all 0.3s ease;
             color: #a2acb0;
-            transition: transform 0.1s ease-in-out;
+            transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
         }
         .card:hover {
             transform: translateY(-2px);
@@ -100,6 +100,11 @@
         .card button {
             padding: 3px;
             font-size: .6rem;
+        }
+        .placeholder {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #4a4a5a;
+            border-radius: 6px;
         }
         .add-card {
             margin-top: 16px;
@@ -339,40 +344,93 @@
 
         let draggedCard = null;
         let cloneCard = null;
+        let placeholder = null;
+        
+        function createPlaceholder() {
+            const div = document.createElement('div');
+            div.className = 'card placeholder';
+            div.style.height = '0';
+            div.style.transition = 'height 0.2s';
+            return div;
+        }
         
         function dragStart(e) {
-            draggedCard = this; // Reference to the dragged card
-        
-            // Clone the card for visual feedback
+            draggedCard = this;
+            
+            // Create clone for visual feedback
             cloneCard = this.cloneNode(true);
             cloneCard.style.position = 'absolute';
             cloneCard.style.pointerEvents = 'none';
             cloneCard.style.opacity = '0.8';
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
-        
+            
+            // Create placeholder
+            placeholder = createPlaceholder();
+            
+            // Set initial position of clone
             moveAt(e.pageX, e.pageY);
-        
-            function moveAt(pageX, pageY) {
-                cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
-                cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
-            }
-        
-            // Move the cloned card with the mouse
-            document.addEventListener('mousemove', function onMouseMove(e) {
-                moveAt(e.pageX, e.pageY);
-            });
-        
+            
+            // Hide original card
+            setTimeout(() => {
+                draggedCard.style.display = 'none';
+            }, 0);
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            
             e.dataTransfer.setData('text/plain', draggedCard.dataset.id);
             e.dataTransfer.effectAllowed = 'move';
-        
-            // Remove the clone when dragging ends
-            this.addEventListener('dragend', function() {
-                cloneCard.remove();
-                document.removeEventListener('mousemove', onMouseMove);
-            });
         }
-
+        
+        function moveAt(pageX, pageY) {
+            cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
+            cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
+        }
+        
+        function onMouseMove(e) {
+            moveAt(e.pageX, e.pageY);
+            
+            // Hide clone when over a column to show placeholder
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
+            if (columnUnderMouse) {
+                cloneCard.style.display = 'none';
+                const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
+                cloneCard.style.display = 'block';
+                
+                if (cardUnderMouse && cardUnderMouse !== placeholder) {
+                    const rect = cardUnderMouse.getBoundingClientRect();
+                    const nextElement = (e.clientY - rect.top) < (rect.height / 2) ? cardUnderMouse : cardUnderMouse.nextElementSibling;
+                    columnUnderMouse.querySelector('.cards').insertBefore(placeholder, nextElement);
+                } else if (!cardUnderMouse) {
+                    columnUnderMouse.querySelector('.cards').appendChild(placeholder);
+                }
+                
+                // Show and resize placeholder
+                placeholder.style.height = `${draggedCard.offsetHeight}px`;
+                placeholder.style.margin = '12px 0';
+            }
+        }
+        
+        function onMouseUp(e) {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
+            if (columnUnderMouse) {
+                const newColumnId = columnUnderMouse.dataset.columnId;
+                updateCardColumn(draggedCard.dataset.id, newColumnId);
+                columnUnderMouse.querySelector('.cards').insertBefore(draggedCard, placeholder);
+            }
+            
+            // Clean up
+            cloneCard.remove();
+            placeholder.remove();
+            draggedCard.style.display = 'block';
+            draggedCard = null;
+            cloneCard = null;
+            placeholder = null;
+        }
         
         function dragOver(e) {
             e.preventDefault();
@@ -380,7 +438,7 @@
         }
 
         const columns = document.querySelectorAll('.column');
-
+        
         columns.forEach(column => {
             column.addEventListener('dragover', function(e) {
                 e.preventDefault();
@@ -394,16 +452,9 @@
             column.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.style.backgroundColor = ''; // Reset the background
-                const cardId = e.dataTransfer.getData('text/plain');
-                const card = document.querySelector(`[data-id="${cardId}"]`);
-        
-                if (card) {
-                    this.querySelector('.cards').appendChild(card);
-                    updateCardColumn(cardId, this.dataset.columnId); // Update card's column in Firebase
-                }
             });
         });
-
+        
         async function updateCardColumn(cardId, newColumnId) {
             try {
                 await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
@@ -412,6 +463,21 @@
             } catch (error) {
                 console.error('Error updating card column:', error);
             }
+        }
+        
+        // Update the createCard function to use the new drag event listeners
+        function createCard(id, text) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.draggable = true;
+            card.dataset.id = id;
+            card.innerHTML = `
+                <div class="card-title">${text}</div>
+                <button onclick="editCard('${id}')">✏️</button>
+                <button onclick="deleteCard('${id}')">🗑️</button>
+            `;
+            card.addEventListener('mousedown', dragStart);
+            return card;
         }
 
 
