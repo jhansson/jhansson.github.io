@@ -461,7 +461,10 @@
             }
         }
 
-
+        document.querySelectorAll('.column').forEach(column => {
+            column.addEventListener('dragover', dragOver);
+            column.addEventListener('drop', drop);
+        });
         currentBoard.addEventListener('dragover', dragOver);
         currentBoard.addEventListener('drop', drop);
     </script>
