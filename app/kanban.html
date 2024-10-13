@@ -105,6 +105,7 @@
             background-color: rgba(255, 255, 255, 0.1);
             border: 2px dashed #4a4a5a;
             border-radius: 6px;
+            box-sizing: border-box;
         }
         .add-card {
             margin-top: 16px;
@@ -350,8 +351,10 @@
         function createPlaceholder() {
             const div = document.createElement('div');
             div.className = 'card placeholder';
+            div.style.visibility = 'hidden';
             div.style.height = '0';
-            div.style.transition = 'height 0.2s';
+            div.style.margin = '0';
+            div.style.transition = 'height 0.2s, margin 0.2s';
             return div;
         }
         
@@ -366,8 +369,9 @@
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
-            // Create placeholder
+            // Create placeholder with same dimensions as draggedCard
             placeholder = createPlaceholder();
+            placeholder.style.width = `${draggedCard.offsetWidth}px`;
             
             // Set initial position of clone
             moveAt(e.pageX, e.pageY);
@@ -407,9 +411,15 @@
                     columnUnderMouse.querySelector('.cards').appendChild(placeholder);
                 }
                 
-                // Show and resize placeholder
+                // Show and resize placeholder to match draggedCard
+                placeholder.style.visibility = 'visible';
                 placeholder.style.height = `${draggedCard.offsetHeight}px`;
                 placeholder.style.margin = '12px 0';
+            } else {
+                // Hide placeholder when not over a column
+                placeholder.style.visibility = 'hidden';
+                placeholder.style.height = '0';
+                placeholder.style.margin = '0';
             }
         }
         
