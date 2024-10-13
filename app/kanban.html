@@ -44,6 +44,9 @@
             display: flex;
             align-items: center;
             margin-bottom: 16px;
+            background-color: #444657;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .column-header i {
             margin-right: 8px;
@@ -69,6 +72,10 @@
         .card-details {
             font-size: 0.9em;
             color: #b0b0b0;
+        }
+        .card button {
+            padding: 3px;
+            font-size: .6rem;
         }
         .add-card {
             margin-top: 16px;
@@ -234,8 +241,8 @@
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
-                <button onclick="editCard('${id}')">✏️ Rename</button>
-                <button onclick="deleteCard('${id}')">🗑️ Delete</button>
+                <button onclick="editCard('${id}')">✏️</button>
+                <button onclick="deleteCard('${id}')">🗑️</button>
             `;
             card.addEventListener('dragstart', dragStart);
             return card;
