@@ -272,7 +272,6 @@
         function createCard(id, text) {
             const card = document.createElement('div');
             card.className = 'card';
-            card.draggable = true;
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
@@ -359,6 +358,7 @@
         }
         
         function dragStart(e) {
+            e.preventDefault(); // Prevent default drag behavior
             draggedCard = this;
             
             // Create clone for visual feedback
@@ -383,9 +383,6 @@
             
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
-            
-            e.dataTransfer.setData('text/plain', draggedCard.dataset.id);
-            e.dataTransfer.effectAllowed = 'move';
         }
         
         function moveAt(pageX, pageY) {
@@ -396,9 +393,17 @@
         function onMouseMove(e) {
             moveAt(e.pageX, e.pageY);
             
-            // Hide clone when over a column to show placeholder
             const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
+            
+            // Reset background color for all columns
+            document.querySelectorAll('.column').forEach(col => {
+                col.style.backgroundColor = '';
+            });
+            
             if (columnUnderMouse) {
+                // Highlight the column under the mouse
+                columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                
                 cloneCard.style.display = 'none';
                 const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
                 cloneCard.style.display = 'block';
@@ -448,6 +453,7 @@
             e.dataTransfer.dropEffect = 'move';
         }
 
+        /*
         const columns = document.querySelectorAll('.column');
         
         columns.forEach(column => {
@@ -465,6 +471,7 @@
                 this.style.backgroundColor = ''; // Reset the background
             });
         });
+        */
         
         async function updateCardColumn(cardId, newColumnId) {
             try {
@@ -524,13 +531,13 @@
                 console.error("Error loading board: ", error);
             }
         }
-
+/*
         document.querySelectorAll('.column').forEach(column => {
             column.addEventListener('dragover', dragOver);
             column.addEventListener('drop', drop);
         });
         currentBoard.addEventListener('dragover', dragOver);
-        currentBoard.addEventListener('drop', drop);
+        currentBoard.addEventListener('drop', drop);*/
     </script>
 </body>
 </html>
