@@ -487,10 +487,10 @@
             
             if (isPlaying) {
                 stopBinauralBeat(activeOscillators);
-                
+                activeOscillators = startBinauralBeat(baseFrequency, beatFrequency);                
             }
 
-            activeOscillators = startBinauralBeat(baseFrequency, beatFrequency);
+            //activeOscillators = startBinauralBeat(baseFrequency, beatFrequency);
             saveSettings();
         }
 
@@ -500,9 +500,9 @@
                 activeOscillators = null;
                 isPlaying = false;
                 document.getElementById('playAudio').textContent = '🔊';
-            } else {
+            } else {                
+                isPlaying = true;  
                 applySettings();
-                isPlaying = true;
                 document.getElementById('playAudio').textContent = '🔇';
             }
         }
