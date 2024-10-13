@@ -215,10 +215,6 @@
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
-                <div class="card-details">
-                    <span>📅 ${new Date().toLocaleDateString()}</span>
-                    <span>🏷️ Tag</span>
-                </div>
             `;
             card.addEventListener('dragstart', dragStart);
             return card;
