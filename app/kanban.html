@@ -6,52 +6,89 @@
     <title>Multi-Board Kanban</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #1e1e2e;
+            color: #e0e0e0;
         }
-        .board-list {
+        .board-controls {
             margin-bottom: 20px;
         }
         .board {
             display: flex;
             gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
         }
         .column {
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            padding: 10px;
-            width: 250px;
+            background-color: #2a2a3a;
+            border-radius: 8px;
+            padding: 16px;
+            width: 300px;
+            min-width: 300px;
+        }
+        .column-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .column-header i {
+            margin-right: 8px;
         }
         .card {
-            background-color: white;
-            border-radius: 3px;
-            padding: 10px;
-            margin-bottom: 10px;
+            background-color: #3a3a4a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             cursor: move;
+            transition: all 0.3s ease;
         }
-        .add-card, .add-board {
-            margin-top: 10px;
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .card-details {
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+        .add-card {
+            margin-top: 16px;
+        }
+        input, select, button {
+            background-color: #3a3a4a;
+            border: 1px solid #4a4a5a;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4a4a5a;
         }
     </style>
 </head>
 <body>
-    <h1>Multi-Board Kanban</h1>
-    <button id="loginBtn">Login with Google</button>
+    <h1>Modern Kanban Board</h1>
     <div id="userInfo" style="display:none;">
         Logged in as: <span id="userName"></span>
         <button id="logoutBtn">Logout</button>
     </div>
-    <div id="boardManagement" style="display:none;">
-        <div class="add-board">
-            <input type="text" id="newBoardName" placeholder="New board name">
-            <button onclick="createNewBoard()">Create New Board</button>
-        </div>
+    <div id="boardManagement" class="board-controls" style="display:none;">
+        <input type="text" id="newBoardName" placeholder="New board name">
+        <button onclick="createNewBoard()">Create New Board</button>
         <select id="boardSelector" onchange="switchBoard()"></select>
         <button onclick="deleteCurrentBoard()">Delete Current Board</button>
     </div>
-    <div id="currentBoard"></div>
+    <div id="currentBoard" class="board"></div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -157,10 +194,13 @@
             column.className = 'column';
             column.dataset.columnId = columnId;
             column.innerHTML = `
-                <h2>${title}</h2>
+                <div class="column-header">
+                    <i class="column-icon">📌</i>
+                    <h2>${title}</h2>
+                </div>
                 <div class="cards"></div>
                 <div class="add-card">
-                    <input type="text" placeholder="New card...">
+                    <input type="text" placeholder="New card title...">
                     <button onclick="addCard(this)">Add</button>
                 </div>
             `;
@@ -171,12 +211,30 @@
             const card = document.createElement('div');
             card.className = 'card';
             card.draggable = true;
-            card.textContent = text;
             card.dataset.id = id;
+            card.innerHTML = `
+                <div class="card-title">${text}</div>
+                <div class="card-details">
+                    <span>📅 ${new Date().toLocaleDateString()}</span>
+                    <span>🏷️ Tag</span>
+                </div>
+            `;
             card.addEventListener('dragstart', dragStart);
             return card;
         }
 
+        // Add this function for smooth card insertion animation
+        function insertCardWithAnimation(cardElement, containerElement) {
+            cardElement.style.opacity = '0';
+            cardElement.style.transform = 'translateY(-20px)';
+            containerElement.appendChild(cardElement);
+            setTimeout(() => {
+                cardElement.style.opacity = '1';
+                cardElement.style.transform = 'translateY(0)';
+            }, 50);
+        }
+
+        // Update the addCard function to use the animation
         window.addCard = async function(button) {
             const input = button.previousElementSibling;
             const text = input.value.trim();
@@ -186,10 +244,11 @@
                 try {
                     const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards'), {
                         text: text,
-                        columnId: columnId
+                        columnId: columnId,
+                        createdAt: new Date().toISOString()
                     });
                     const card = createCard(docRef.id, text);
-                    column.querySelector('.cards').appendChild(card);
+                    insertCardWithAnimation(card, column.querySelector('.cards'));
                     input.value = '';
                 } catch (error) {
                     console.error("Error adding card: ", error);
