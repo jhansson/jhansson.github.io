@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board with Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .board {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            padding: 10px;
+            width: 250px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 3px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: move;
+        }
+        .add-card {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kanban Board</h1>
+    <button id="loginBtn">Login with Google</button>
+    <div id="userInfo" style="display:none;">
+        Logged in as: <span id="userName"></span>
+        <button id="logoutBtn">Logout</button>
+    </div>
+    <div class="board" id="board"></div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZyZVomEVx6A25HHtYb0cNS0mNF-GKAUw",
+            authDomain: "jhkanban.firebaseapp.com",
+            projectId: "jhkanban",
+            storageBucket: "jhkanban.appspot.com",
+            messagingSenderId: "582897201706",
+            appId: "1:582897201706:web:64eef888e6996b487bc953"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+        const board = document.getElementById('board');
+
+        loginBtn.addEventListener('click', () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider);
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                userName.textContent = user.displayName;
+                loadBoard();
+            } else {
+                currentUser = null;
+                loginBtn.style.display = 'block';
+                userInfo.style.display = 'none';
+                board.innerHTML = '';
+            }
+        });
+
+        function createColumn(title) {
+            const column = document.createElement('div');
+            column.className = 'column';
+            column.innerHTML = `
+                <h2>${title}</h2>
+                <div class="cards"></div>
+                <div class="add-card">
+                    <input type="text" placeholder="New card...">
+                    <button onclick="addCard(this)">Add</button>
+                </div>
+            `;
+            return column;
+        }
+
+        function createCard(id, text) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.draggable = true;
+            card.textContent = text;
+            card.dataset.id = id;
+            card.addEventListener('dragstart', dragStart);
+            return card;
+        }
+
+        window.addCard = async function(button) {
+            const input = button.previousElementSibling;
+            const text = input.value.trim();
+            if (text) {
+                const column = button.closest('.column');
+                const columnTitle = column.querySelector('h2').textContent;
+                try {
+                    const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'cards'), {
+                        text: text,
+                        column: columnTitle
+                    });
+                    const card = createCard(docRef.id, text);
+                    column.querySelector('.cards').appendChild(card);
+                    input.value = '';
+                } catch (error) {
+                    console.error("Error adding card: ", error);
+                }
+            }
+        }
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        async function drop(e) {
+            e.preventDefault();
+            const cardId = e.dataTransfer.getData('text/plain');
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            const column = e.target.closest('.column');
+            if (column && card) {
+                const newColumnTitle = column.querySelector('h2').textContent;
+                try {
+                    await updateDoc(doc(db, 'users', currentUser.uid, 'cards', cardId), {
+                        column: newColumnTitle
+                    });
+                    column.querySelector('.cards').appendChild(card);
+                } catch (error) {
+                    console.error("Error updating card: ", error);
+                }
+            }
+        }
+
+        async function loadBoard() {
+            board.innerHTML = '';
+            ['To Do', 'In Progress', 'Done'].forEach(title => {
+                const column = createColumn(title);
+                board.appendChild(column);
+            });
+
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'cards'));
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const card = createCard(doc.id, data.text);
+                    const column = board.querySelector(`h2:contains('${data.column}')`).closest('.column');
+                    column.querySelector('.cards').appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading board: ", error);
+            }
+        }
+
+        board.addEventListener('dragover', dragOver);
+        board.addEventListener('drop', drop);
+    </script>
+</body>
+</html>
