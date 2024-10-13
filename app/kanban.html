@@ -267,6 +267,7 @@
             return column;
         }
 
+         // Update the createCard function to use the new drag event listeners
         function createCard(id, text) {
             const card = document.createElement('div');
             card.className = 'card';
@@ -277,7 +278,7 @@
                 <button onclick="editCard('${id}')">✏️</button>
                 <button onclick="deleteCard('${id}')">🗑️</button>
             `;
-            card.addEventListener('dragstart', dragStart);
+            card.addEventListener('mousedown', dragStart);
             return card;
         }
         
@@ -465,20 +466,7 @@
             }
         }
         
-        // Update the createCard function to use the new drag event listeners
-        function createCard(id, text) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.draggable = true;
-            card.dataset.id = id;
-            card.innerHTML = `
-                <div class="card-title">${text}</div>
-                <button onclick="editCard('${id}')">✏️</button>
-                <button onclick="deleteCard('${id}')">🗑️</button>
-            `;
-            card.addEventListener('mousedown', dragStart);
-            return card;
-        }
+       
 
 
         async function drop(e) {
