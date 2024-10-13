@@ -55,6 +55,7 @@
             padding: 16px;
             width: 300px;
             min-width: 300px;
+            transition: background-color 0.3s ease;
         }
         .column-header {
             display: flex;
@@ -81,6 +82,7 @@
             cursor: move;
             transition: all 0.3s ease;
             color: #a2acb0;
+            transition: transform 0.1s ease-in-out;
         }
         .card:hover {
             transform: translateY(-2px);
@@ -335,15 +337,83 @@
             }
         }
 
+        let draggedCard = null;
+        let cloneCard = null;
+        
         function dragStart(e) {
-            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+            draggedCard = this; // Reference to the dragged card
+        
+            // Clone the card for visual feedback
+            cloneCard = this.cloneNode(true);
+            cloneCard.style.position = 'absolute';
+            cloneCard.style.pointerEvents = 'none';
+            cloneCard.style.opacity = '0.8';
+            cloneCard.style.zIndex = '1000';
+            document.body.appendChild(cloneCard);
+        
+            moveAt(e.pageX, e.pageY);
+        
+            function moveAt(pageX, pageY) {
+                cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
+                cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
+            }
+        
+            // Move the cloned card with the mouse
+            document.addEventListener('mousemove', function onMouseMove(e) {
+                moveAt(e.pageX, e.pageY);
+            });
+        
+            e.dataTransfer.setData('text/plain', draggedCard.dataset.id);
             e.dataTransfer.effectAllowed = 'move';
+        
+            // Remove the clone when dragging ends
+            this.addEventListener('dragend', function() {
+                cloneCard.remove();
+                document.removeEventListener('mousemove', onMouseMove);
+            });
         }
 
+        /*
         function dragOver(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
+        }*/
+
+        const columns = document.querySelectorAll('.column');
+
+        columns.forEach(column => {
+            column.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; // Highlight the column
+            });
+        
+            column.addEventListener('dragleave', function() {
+                this.style.backgroundColor = ''; // Remove highlight when leaving the column
+            });
+        
+            column.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.backgroundColor = ''; // Reset the background
+                const cardId = e.dataTransfer.getData('text/plain');
+                const card = document.querySelector(`[data-id="${cardId}"]`);
+        
+                if (card) {
+                    this.querySelector('.cards').appendChild(card);
+                    updateCardColumn(cardId, this.dataset.columnId); // Update card's column in Firebase
+                }
+            });
+        });
+
+        async function updateCardColumn(cardId, newColumnId) {
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                    columnId: newColumnId
+                });
+            } catch (error) {
+                console.error('Error updating card column:', error);
+            }
         }
+
 
         async function drop(e) {
             e.preventDefault();
