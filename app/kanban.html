@@ -178,8 +178,15 @@
                 querySnapshot.forEach(doc => {
                     const data = doc.data();
                     const card = createCard(doc.id, data.text);
-                    const column = board.querySelector(`h2:contains('${data.column}')`).closest('.column');
-                    column.querySelector('.cards').appendChild(card);
+                    const column = board.querySelector(`h2`);
+                    const targetColumn = Array.from(board.querySelectorAll('.column')).find(col => 
+                        col.querySelector('h2').textContent === data.column
+                    );
+                    if (targetColumn) {
+                        targetColumn.querySelector('.cards').appendChild(card);
+                    } else {
+                        console.warn(`Column "${data.column}" not found for card: ${data.text}`);
+                    }
                 });
             } catch (error) {
                 console.error("Error loading board: ", error);
