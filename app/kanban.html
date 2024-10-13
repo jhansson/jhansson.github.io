@@ -6,12 +6,25 @@
     <title>Multi-Board Kanban</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #1e1e2e;
-            color: #e0e0e0;
+          background: linear-gradient(135deg, #1f1c2c, #928DAB); /* Adjust colors as needed */
+          height: 100vh;
+          margin: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-family: 'Poppins', sans-serif;
         }
+        .kanban-app {
+          background-color: #2d2e40;
+          border-radius: 15px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+          padding: 20px;
+          width: 90%;
+          max-width: 1200px;
+          height: 80vh;
+          overflow-y: auto;
+        }
+        
         .board-controls {
             margin-bottom: 20px;
         }
@@ -79,19 +92,25 @@
     </style>
 </head>
 <body>
-    <h1>Modern Kanban Board</h1>
-    <button id="loginBtn">Login with Google</button>
-    <div id="userInfo" style="display:none;">
-        Logged in as: <span id="userName"></span>
-        <button id="logoutBtn">Logout</button>
+    <div class="kanban-app">
+        <div class="header">
+            <h1>Kanban</h1>
+            <div>
+              <button id="loginBtn">Login with Google</button>
+                <div id="userInfo" style="display:none;">
+                    Logged in as: <span id="userName"></span>
+                    <button id="logoutBtn">Logout</button>
+                </div>
+                <div id="boardManagement" class="board-controls" style="display:none;">
+                    <input type="text" id="newBoardName" placeholder="New board name">
+                    <button onclick="createNewBoard()">Create New Board</button>
+                    <select id="boardSelector" onchange="switchBoard()"></select>
+                    <button onclick="deleteCurrentBoard()">Delete Current Board</button>
+                </div>
+            </div>
+          </div>        
+        <div id="currentBoard" class="board"></div>
     </div>
-    <div id="boardManagement" class="board-controls" style="display:none;">
-        <input type="text" id="newBoardName" placeholder="New board name">
-        <button onclick="createNewBoard()">Create New Board</button>
-        <select id="boardSelector" onchange="switchBoard()"></select>
-        <button onclick="deleteCurrentBoard()">Delete Current Board</button>
-    </div>
-    <div id="currentBoard" class="board"></div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
