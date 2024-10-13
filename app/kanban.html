@@ -31,6 +31,12 @@
             display: inline-block;
             float: right;
         }
+
+        #userName {
+            color: #6a6c83;
+            font-size: 0.9rem;
+            padding: 8px;
+        }
         
         .board-controls {
             display: inline-block;
@@ -121,9 +127,9 @@
                     <button id="logoutBtn">Logout</button>
                 </div>
                 <div id="boardManagement" class="board-controls" style="display:none;">
-                    <input type="text" id="newBoardName" placeholder="New board name">
-                    <button onclick="createNewBoard()">Create New Board</button>
                     <select id="boardSelector" onchange="switchBoard()"></select>
+                    <input type="text" id="newBoardName" placeholder="New board name">
+                    <button onclick="createNewBoard()">Create New Board</button>                    
                     <button onclick="deleteCurrentBoard()">Delete Current Board</button>
                 </div>
             </div>
