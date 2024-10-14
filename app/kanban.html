@@ -18,7 +18,7 @@
         }
 
         body {
-          background: linear-gradient(-45deg, #30323c, #303342, #2f2a39, #25292e);
+          background: linear-gradient(-45deg, #23202b, #23202b, #23202b, #23202b);
           background-size: 400% 400%;
           animation: gradient 15s ease infinite;
         }
@@ -80,7 +80,7 @@
             min-width: 300px;
             display: flex;
             flex-direction: column;
-            background-color: rgb(0 0 0 / 24%);
+            /*background-color: rgb(0 0 0 / 24%);*/
         }
         .column-header {
             margin-bottom: 16px;
@@ -91,14 +91,15 @@
             display: ruby;
         }
         .column-header h2 {
-            font-size: 1.5rem;
+            font-size: 1rem;
             color: #c8cfd3;
             margin: 0;
+            text-transform: capitalize;
+            font-weight: normal;
         }
         .column-header i {
             margin: 0 8px;
             font-style: normal;
-            display:none;
         }
         .cards {
             flex: 1;
@@ -316,9 +317,9 @@
         function createColumn(title, columnId) {
             const column = document.createElement('div');
             var icons = {
-                "todo": "📝",
-                "inprogress": "👨‍💻",
-                "done": "✅"
+                "todo": "•",
+                "inprogress": "•",
+                "done": "•"
             };
             column.className = 'column';
             column.dataset.columnId = columnId;
