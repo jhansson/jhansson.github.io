@@ -368,7 +368,7 @@
             cloneCard = this.cloneNode(true);
             cloneCard.style.position = 'absolute';
             cloneCard.style.pointerEvents = 'none';
-            cloneCard.style.opacity = '0.8';
+            cloneCard.style.opacity = '1.0';
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
@@ -376,7 +376,7 @@
             placeholder = createPlaceholder();
             const cardStyle = window.getComputedStyle(draggedCard);
             //placeholder.style.width = cardStyle.width;
-            placeholder.style.minHeight = cardStyle.height;
+            //placeholder.style.minHeight = cardStyle.height;
             placeholder.style.margin = cardStyle.margin;
             placeholder.style.padding = cardStyle.padding;
             
