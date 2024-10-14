@@ -74,7 +74,7 @@
             font-style: normal;
         }
         .card {
-            background-color: rgb(83 87 109 / 22%);
+            background-color: #353844; /*rgb(83 87 109 / 22%);*/
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 12px;
@@ -435,21 +435,6 @@
                 placeholder.style.visibility = 'hidden';
             }
         }
-
-        // Add a debounce function to smooth out rapid calls
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        //document.addEventListener('mousemove', debounce(onMouseMove, 10));
         
         function onMouseUp(e) {
             if (!draggedCard || !placeholder) return;
@@ -472,8 +457,6 @@
             cloneCard = null;
             placeholder = null;
         }
-
-        const debouncedOnMouseMove = debounce(onMouseMove, 10);
         
         function dragOver(e) {
             e.preventDefault();
