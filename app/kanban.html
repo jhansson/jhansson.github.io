@@ -360,15 +360,16 @@
         let cloneCard = null;
         let placeholder = null;
         
-        function createPlaceholder() {
+        function createPlaceholder(originalCard) {
             const div = document.createElement('div');
             div.className = 'card placeholder';
-            div.style.visibility = 'hidden';
-            div.style.height = '0';
-            div.style.margin = '0';
-            div.style.padding = '0';
+            const style = window.getComputedStyle(originalCard);
+            div.style.width = style.width;
+            div.style.height = style.height;
+            div.style.margin = style.margin;
+            div.style.padding = style.padding;
             div.style.boxSizing = 'border-box';
-            div.style.transition = 'height 0.2s, margin 0.2s, padding 0.2s';
+            div.style.visibility = 'hidden';
             return div;
         }
         
@@ -381,18 +382,14 @@
             cloneCard.classList.add('card-dragging');
             
             // Set the width of the clone to match the original card
-            const originalWidth = getComputedStyle(draggedCard).width;
-            cloneCard.style.width = originalWidth;
+            const originalStyle = getComputedStyle(draggedCard);
+            cloneCard.style.width = originalStyle.width;
+            cloneCard.style.height = originalStyle.height;
             
             document.body.appendChild(cloneCard);
             
-            // Create placeholder
-            placeholder = createPlaceholder();
-            const cardStyle = window.getComputedStyle(draggedCard);
-            placeholder.style.height = cardStyle.height;
-            placeholder.style.width = cardStyle.width;
-            placeholder.style.margin = cardStyle.margin;
-            placeholder.style.padding = cardStyle.padding;
+            // Create placeholder with exact dimensions as draggedCard
+            placeholder = createPlaceholder(draggedCard);
             
             moveAt(e.pageX, e.pageY);
             
@@ -418,25 +415,43 @@
                 const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
                 cloneCard.style.display = 'block';
                 
+                const cardsContainer = columnUnderMouse.querySelector('.cards');
+                
                 if (cardUnderMouse && cardUnderMouse !== placeholder) {
                     const rect = cardUnderMouse.getBoundingClientRect();
-                    const nextElement = (e.clientY - rect.top) < (rect.height / 2) ? cardUnderMouse : cardUnderMouse.nextElementSibling;
-                    columnUnderMouse.querySelector('.cards').insertBefore(placeholder, nextElement);
+                    const mouseY = e.clientY;
+                    
+                    // Calculate the insertion point based on the mouse position relative to the card's center
+                    if (mouseY < rect.top + rect.height / 2) {
+                        cardsContainer.insertBefore(placeholder, cardUnderMouse);
+                    } else {
+                        cardsContainer.insertBefore(placeholder, cardUnderMouse.nextElementSibling);
+                    }
                 } else if (!cardUnderMouse) {
-                    columnUnderMouse.querySelector('.cards').appendChild(placeholder);
+                    // If no card is under the mouse, append to the end of the column
+                    cardsContainer.appendChild(placeholder);
                 }
                 
                 placeholder.style.visibility = 'visible';
-                placeholder.style.minHeight = '60px';
-                placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
-                placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
             } else {
                 placeholder.style.visibility = 'hidden';
-                placeholder.style.height = '0';
-                placeholder.style.margin = '0';
-                placeholder.style.padding = '0';
             }
         }
+
+        // Add a debounce function to smooth out rapid calls
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        document.addEventListener('mousemove', debounce(onMouseMove, 10));
         
         function onMouseUp(e) {
             document.removeEventListener('mousemove', onMouseMove);
