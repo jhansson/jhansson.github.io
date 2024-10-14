@@ -74,7 +74,7 @@
             font-style: normal;
         }
         .card {
-            background-color: #353844; /*rgb(83 87 109 / 22%);*/
+            background-color: rgb(83 87 109 / 22%);
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 12px;
@@ -101,16 +101,8 @@
             padding: 3px;
             font-size: .6rem;
         }
-        .card-dragging {
-            position: absolute;
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 1 !important;
-            transform: rotate(3deg);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-        }
         .placeholder {
-            /*background-color: rgba(255, 255, 255, 0.0);*/
+            background-color: rgba(255, 255, 255, 0.0);
             border: 2px dashed #eee;
             border-radius: 6px;
             box-sizing: border-box;
@@ -360,16 +352,15 @@
         let cloneCard = null;
         let placeholder = null;
         
-        function createPlaceholder(originalCard) {
+        function createPlaceholder() {
             const div = document.createElement('div');
             div.className = 'card placeholder';
-            const style = window.getComputedStyle(originalCard);
-            div.style.width = style.width;
-            div.style.height = style.height;
-            div.style.margin = style.margin;
-            div.style.padding = style.padding;
-            div.style.boxSizing = 'border-box';
             div.style.visibility = 'hidden';
+            div.style.height = '0';
+            div.style.margin = '0';
+            div.style.padding = '0';
+            div.style.boxSizing = 'border-box';
+            div.style.transition = 'height 0.2s, margin 0.2s, padding 0.2s';
             return div;
         }
         
@@ -377,80 +368,80 @@
             e.preventDefault();
             draggedCard = this;
             
+            // Create clone for visual feedback
             cloneCard = this.cloneNode(true);
-            cloneCard.classList.add('card-dragging');
-            
-            const originalStyle = getComputedStyle(draggedCard);
-            cloneCard.style.width = originalStyle.width;
-            cloneCard.style.height = originalStyle.height;
-            
+            cloneCard.style.position = 'absolute';
+            cloneCard.style.pointerEvents = 'none';
+            cloneCard.style.opacity = '1.0'; // Change this to 1.0 for full opacity
+            cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
-            placeholder = createPlaceholder(draggedCard);
+            // Create placeholder with exact dimensions as draggedCard
+            placeholder = createPlaceholder();
+            const cardStyle = window.getComputedStyle(draggedCard);
+            placeholder.style.minHeight = '60px';
+            placeholder.style.minWidth = '300px';
+            placeholder.style.margin = cardStyle.margin;
+            placeholder.style.padding = cardStyle.padding;
             
             moveAt(e.pageX, e.pageY);
             
-            draggedCard.style.visibility = 'hidden';
+            draggedCard.style.display = 'none';
             
+            document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         }
         
         function moveAt(pageX, pageY) {
-            if (!cloneCard) return;
-            const rect = cloneCard.getBoundingClientRect();
-            cloneCard.style.left = pageX - rect.width / 2 + 'px';
-            cloneCard.style.top = pageY - rect.height / 2 + 'px';
+            cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
+            cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
         }
         
         function onMouseMove(e) {
-            if (!cloneCard || !placeholder) return;
-            
             moveAt(e.pageX, e.pageY);
             
-            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY)?.closest('.column');
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');            
             
-            if (columnUnderMouse) {
+            if (columnUnderMouse) {                
                 cloneCard.style.display = 'none';
-                const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY)?.closest('.card:not(.placeholder)');
+                const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
                 cloneCard.style.display = 'block';
-                
-                const cardsContainer = columnUnderMouse.querySelector('.cards');
                 
                 if (cardUnderMouse && cardUnderMouse !== placeholder) {
                     const rect = cardUnderMouse.getBoundingClientRect();
-                    const mouseY = e.clientY;
-                    
-                    if (mouseY < rect.top + rect.height / 2) {
-                        cardsContainer.insertBefore(placeholder, cardUnderMouse);
-                    } else {
-                        cardsContainer.insertBefore(placeholder, cardUnderMouse.nextElementSibling);
-                    }
+                    const nextElement = (e.clientY - rect.top) < (rect.height / 2) ? cardUnderMouse : cardUnderMouse.nextElementSibling;
+                    columnUnderMouse.querySelector('.cards').insertBefore(placeholder, nextElement);
                 } else if (!cardUnderMouse) {
-                    cardsContainer.appendChild(placeholder);
+                    columnUnderMouse.querySelector('.cards').appendChild(placeholder);
                 }
                 
                 placeholder.style.visibility = 'visible';
+                placeholder.style.minHeight = '60px';
+                placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
+                placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
             } else {
                 placeholder.style.visibility = 'hidden';
+                placeholder.style.height = '0';
+                placeholder.style.margin = '0';
+                placeholder.style.padding = '0';
             }
         }
         
         function onMouseUp(e) {
-            if (!draggedCard || !placeholder) return;
-            
+            document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
             
-            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY)?.closest('.column');
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
             if (columnUnderMouse) {
                 const newColumnId = columnUnderMouse.dataset.columnId;
                 updateCardColumn(draggedCard.dataset.id, newColumnId);
                 columnUnderMouse.querySelector('.cards').insertBefore(draggedCard, placeholder);
             }
             
-            if (cloneCard) cloneCard.remove();
+            // Clean up
+            cloneCard.remove();
             placeholder.remove();
-            draggedCard.style.visibility = 'visible';
-            
+            draggedCard.style.display = 'block';
             draggedCard = null;
             cloneCard = null;
             placeholder = null;
