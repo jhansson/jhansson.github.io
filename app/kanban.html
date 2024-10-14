@@ -392,7 +392,6 @@
             
             draggedCard.style.visibility = 'hidden';
             
-            document.addEventListener('mousemove', debouncedOnMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         }
         
@@ -439,7 +438,6 @@
         function onMouseUp(e) {
             if (!draggedCard || !placeholder) return;
             
-            document.removeEventListener('mousemove', debouncedOnMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
             
             const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY)?.closest('.column');
