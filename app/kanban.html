@@ -376,7 +376,7 @@
             placeholder = createPlaceholder();
             const cardStyle = window.getComputedStyle(draggedCard);
             //placeholder.style.width = cardStyle.width;
-            //placeholder.style.minHeight = cardStyle.height;
+            placeholder.style.minHeight = '60px';
             placeholder.style.margin = cardStyle.margin;
             placeholder.style.padding = cardStyle.padding;
             
@@ -418,7 +418,7 @@
                 }
                 
                 placeholder.style.visibility = 'visible';
-                placeholder.style.minHeight = window.getComputedStyle(draggedCard).height;
+                placeholder.style.minHeight = '60px';
                 placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
                 placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
             } else {
