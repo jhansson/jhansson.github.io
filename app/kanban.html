@@ -143,6 +143,7 @@
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            outline: 2px solid #4a4a5a;
         }
         .card-title {
             margin-bottom: 8px;
@@ -342,32 +343,56 @@
             const card = document.createElement('div');
             card.className = 'card';
             card.dataset.id = id;
-            card.innerHTML = `
-                <div class="card-title">${text}</div>
-                <button class="edit-btn" onclick="editCard('${id}')">✏️</button>
-                <button class="delete-btn" onclick="deleteCard('${id}')">🗑️</button>
-            `;
+            card.innerHTML = `<div class="card-title">${text}</div>`;
+            
             card.addEventListener('mousedown', function(e) {
-                if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
-                    dragStart.call(this, e);
-                }
+                dragStart.call(this, e);
             });
+            
+            card.addEventListener('dblclick', function(e) {
+                editCard(id);
+            });
+
             return card;
         }
         
         // Function to rename a card
         window.editCard = async function (cardId) {
-            const newTitle = prompt('Enter the new card title:');
-            if (newTitle) {
-                try {
-                    await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
-                        text: newTitle
-                    });
-                    document.querySelector(`[data-id="${cardId}"] .card-title`).textContent = newTitle;
-                } catch (error) {
-                    console.error("Error renaming card: ", error);
+            const cardElement = document.querySelector(`[data-id="${cardId}"]`);
+            const cardTitle = cardElement.querySelector('.card-title');
+            const currentText = cardTitle.textContent;
+            
+            cardTitle.contentEditable = true;
+            cardTitle.focus();
+            
+            const range = document.createRange();
+            range.selectNodeContents(cardTitle);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            const finishEditing = async () => {
+                cardTitle.contentEditable = false;
+                const newText = cardTitle.textContent.trim();
+                if (newText !== currentText) {
+                    try {
+                        await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                            text: newText
+                        });
+                    } catch (error) {
+                        console.error("Error renaming card: ", error);
+                        cardTitle.textContent = currentText;
+                    }
                 }
-            }
+            };
+            
+            cardTitle.addEventListener('blur', finishEditing);
+            cardTitle.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
         }
         
         // Function to delete a card
@@ -378,6 +403,23 @@
                     document.querySelector(`[data-id="${cardId}"]`).remove();
                 } catch (error) {
                     console.error("Error deleting card: ", error);
+                }
+            }
+        }
+
+        async function deleteCardOnKeyPress(e) {
+            if (e.key === 'Delete') {
+                const card = e.target.closest('.card');
+                if (card) {
+                    const cardId = card.dataset.id;
+                    if (confirm('Are you sure you want to delete this card?')) {
+                        try {
+                            await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId));
+                            card.remove();
+                        } catch (error) {
+                            console.error("Error deleting card: ", error);
+                        }
+                    }
                 }
             }
         }
@@ -572,6 +614,8 @@
                         targetColumn.querySelector('.cards').appendChild(card);
                     }
                 });
+
+                currentBoard.addEventListener('keydown', deleteCardOnKeyPress);
             } catch (error) {
                 console.error("Error loading board: ", error);
             }
