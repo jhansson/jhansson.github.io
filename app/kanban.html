@@ -377,6 +377,7 @@
             const cardStyle = window.getComputedStyle(draggedCard);
             //placeholder.style.width = cardStyle.width;
             placeholder.style.minHeight = '60px';
+            placeholder.style.minWidth = '300px';
             placeholder.style.margin = cardStyle.margin;
             placeholder.style.padding = cardStyle.padding;
             
@@ -396,15 +397,9 @@
         function onMouseMove(e) {
             moveAt(e.pageX, e.pageY);
             
-            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');            
             
-            document.querySelectorAll('.column').forEach(col => {
-                col.style.backgroundColor = '';
-            });
-            
-            if (columnUnderMouse) {
-                //columnUnderMouse.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                
+            if (columnUnderMouse) {                
                 cloneCard.style.display = 'none';
                 const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
                 cloneCard.style.display = 'block';
