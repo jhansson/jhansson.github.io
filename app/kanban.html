@@ -102,8 +102,8 @@
             font-size: .6rem;
         }
         .placeholder {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 2px dashed #4a4a5a;
+            background-color: rgba(255, 255, 255, 0.0);
+            border: 2px dashed #eee;
             border-radius: 6px;
             box-sizing: border-box;
             min-height: 60px;
@@ -368,7 +368,7 @@
             cloneCard = this.cloneNode(true);
             cloneCard.style.position = 'absolute';
             cloneCard.style.pointerEvents = 'none';
-            cloneCard.style.opacity = '1.0';
+            //cloneCard.style.opacity = '1.0';
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
@@ -453,28 +453,6 @@
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
         }
-
-
-
-        /*
-        const columns = document.querySelectorAll('.column');
-        
-        columns.forEach(column => {
-            column.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                this.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; // Highlight the column
-            });
-        
-            column.addEventListener('dragleave', function() {
-                this.style.backgroundColor = ''; // Remove highlight when leaving the column
-            });
-        
-            column.addEventListener('drop', function(e) {
-                e.preventDefault();
-                this.style.backgroundColor = ''; // Reset the background
-            });
-        });
-        */
         
         async function updateCardColumn(cardId, newColumnId) {
             try {
@@ -484,10 +462,7 @@
             } catch (error) {
                 console.error('Error updating card column:', error);
             }
-        }
-        
-       
-
+        }        
 
         async function drop(e) {
             e.preventDefault();
@@ -534,13 +509,6 @@
                 console.error("Error loading board: ", error);
             }
         }
-/*
-        document.querySelectorAll('.column').forEach(column => {
-            column.addEventListener('dragover', dragOver);
-            column.addEventListener('drop', drop);
-        });
-        currentBoard.addEventListener('dragover', dragOver);
-        currentBoard.addEventListener('drop', drop);*/
     </script>
 </body>
 </html>
