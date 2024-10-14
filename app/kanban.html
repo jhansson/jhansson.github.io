@@ -6,25 +6,29 @@
     <title>Multi-Board Kanban</title>
     <style>
         body {
-          background: linear-gradient(0deg, #282a35, #30323c);
-          height: 100vh;
-          margin: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-family: 'Poppins', sans-serif;
+            background: linear-gradient(0deg, #282a35, #30323c);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
         }
+        
         .kanban-app {
-          border-radius: 15px;
-          padding: 20px;
-          width: 90%;
-          max-width: 1200px;
-          height: 80vh;
-          overflow-y: auto;
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             padding: 0 98px;
+            margin-bottom: 20px;
         }
 
         #userInfo {
@@ -46,23 +50,23 @@
             display: flex;
             gap: 20px;
             overflow-x: auto;
+            flex: 1;
             padding-bottom: 20px;
-            justify-content: center; /* Center the board horizontally */
-            margin: 0 auto; /* Optional: ensures the board is centered on the page */
         }
         .column {
             border-radius: 8px;
             padding: 16px;
             width: 300px;
             min-width: 300px;
-            transition: background-color 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.1);
         }
         .column-header {
-            display: flex;
-            align-items: center;
             margin-bottom: 16px;
             background-color: #444657;
             border-radius: 6px;
+            padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .column-header h2 {
@@ -73,8 +77,37 @@
             margin: 0 8px;
             font-style: normal;
         }
+        .cards {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        /* Scrollbar styles for WebKit browsers */
+        .cards::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .cards::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .cards::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        .cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Scrollbar styles for Firefox */
+        .cards {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.1);
+        }
         .card {
-            background-color: #353844; /*rgb(83 87 109 / 22%);*/
+            background-color: rgb(83 87 109 / 22%);
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 12px;
@@ -82,7 +115,6 @@
             cursor: move;
             transition: all 0.3s ease;
             color: #a2acb0;
-            transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
         }
         .card:hover {
             transform: translateY(-2px);
@@ -119,6 +151,8 @@
         }
         .add-card {
             margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         input, select, button {
             background-color: #3a3a4a;
