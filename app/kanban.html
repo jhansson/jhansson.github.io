@@ -101,6 +101,14 @@
             padding: 3px;
             font-size: .6rem;
         }
+        .card-dragging {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 1 !important;
+            transform: rotate(3deg);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
         .placeholder {
             background-color: rgba(255, 255, 255, 0.0);
             border: 2px dashed #eee;
@@ -370,31 +378,34 @@
             
             // Create clone for visual feedback
             cloneCard = this.cloneNode(true);
-            cloneCard.style.position = 'absolute';
-            cloneCard.style.pointerEvents = 'none';
-            cloneCard.style.opacity = '1.0'; // Change this to 1.0 for full opacity
-            cloneCard.style.zIndex = '1000';
+            cloneCard.classList.add('card-dragging');
+            
+            // Set the width of the clone to match the original card
+            const originalWidth = getComputedStyle(draggedCard).width;
+            cloneCard.style.width = originalWidth;
+            
             document.body.appendChild(cloneCard);
             
-            // Create placeholder with exact dimensions as draggedCard
+            // Create placeholder
             placeholder = createPlaceholder();
             const cardStyle = window.getComputedStyle(draggedCard);
-            placeholder.style.minHeight = '60px';
-            placeholder.style.minWidth = '300px';
+            placeholder.style.height = cardStyle.height;
+            placeholder.style.width = cardStyle.width;
             placeholder.style.margin = cardStyle.margin;
             placeholder.style.padding = cardStyle.padding;
             
             moveAt(e.pageX, e.pageY);
             
-            draggedCard.style.display = 'none';
+            draggedCard.style.visibility = 'hidden';
             
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         }
         
         function moveAt(pageX, pageY) {
-            cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
-            cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
+            const rect = cloneCard.getBoundingClientRect();
+            cloneCard.style.left = pageX - rect.width / 2 + 'px';
+            cloneCard.style.top = pageY - rect.height / 2 + 'px';
         }
         
         function onMouseMove(e) {
@@ -441,7 +452,7 @@
             // Clean up
             cloneCard.remove();
             placeholder.remove();
-            draggedCard.style.display = 'block';
+            draggedCard.style.visibility = 'visible';
             draggedCard = null;
             cloneCard = null;
             placeholder = null;
