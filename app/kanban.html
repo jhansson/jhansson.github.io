@@ -361,15 +361,17 @@
         let cloneCard = null;
         let placeholder = null;
         
-        function createPlaceholder() {
+        function createPlaceholder(originalCard) {
             const div = document.createElement('div');
             div.className = 'card placeholder';
-            div.style.visibility = 'hidden';
-            div.style.height = '0';
-            div.style.margin = '0';
-            div.style.padding = '0';
+            const rect = originalCard.getBoundingClientRect();
+            div.style.width = `${rect.width}px`;
+            div.style.height = `${rect.height}px`;
+            const style = window.getComputedStyle(originalCard);
+            div.style.margin = style.margin;
+            div.style.padding = style.padding;
             div.style.boxSizing = 'border-box';
-            div.style.transition = 'height 0.2s, margin 0.2s, padding 0.2s';
+            div.style.visibility = 'hidden';
             return div;
         }
         
@@ -380,20 +382,16 @@
             // Create clone for visual feedback
             cloneCard = this.cloneNode(true);
             cloneCard.classList.add('card-dragging');
-            
-            // Set the width of the clone to match the original card
-            const originalWidth = getComputedStyle(draggedCard).width;
-            cloneCard.style.width = originalWidth;
-            
+
+            const rect = draggedCard.getBoundingClientRect();
+            cloneCard.style.width = `${rect.width}px`;
+            cloneCard.style.height = `${rect.height}px`;
+                       
             document.body.appendChild(cloneCard);
             
             // Create placeholder
-            placeholder = createPlaceholder();
-            const cardStyle = window.getComputedStyle(draggedCard);
-            placeholder.style.height = cardStyle.height;
-            placeholder.style.width = cardStyle.width;
-            placeholder.style.margin = cardStyle.margin;
-            placeholder.style.padding = '6px';
+            placeholder = createPlaceholder(draggedCard);
+            draggedCard.parentNode.insertBefore(placeholder, draggedCard.nextSibling);
             
             moveAt(e.pageX, e.pageY);
             
