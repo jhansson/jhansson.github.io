@@ -345,14 +345,38 @@
             card.dataset.id = id;
             card.innerHTML = `<div class="card-title">${text}</div>`;
             
+            let dragTimeout;
+            let isDragging = false;
+            
             card.addEventListener('mousedown', function(e) {
-                dragStart.call(this, e);
+                dragTimeout = setTimeout(() => {
+                    isDragging = true;
+                    dragStart.call(this, e);
+                }, 500);
+            });
+            
+            card.addEventListener('mouseup', function() {
+                clearTimeout(dragTimeout);
+                if (!isDragging) {
+                    // This allows for clicking (e.g., to focus for delete) without dragging
+                    this.focus();
+                }
+                isDragging = false;
             });
             
             card.addEventListener('dblclick', function(e) {
+                clearTimeout(dragTimeout);
+                isDragging = false;
                 editCard(id);
             });
-
+        
+            card.tabIndex = 0; // Make the card focusable
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Delete') {
+                    deleteCard(id);
+                }
+            });
+        
             return card;
         }
         
@@ -406,24 +430,6 @@
                 }
             }
         }
-
-        async function deleteCardOnKeyPress(e) {
-            if (e.key === 'Delete') {
-                const card = e.target.closest('.card');
-                if (card) {
-                    const cardId = card.dataset.id;
-                    if (confirm('Are you sure you want to delete this card?')) {
-                        try {
-                            await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId));
-                            card.remove();
-                        } catch (error) {
-                            console.error("Error deleting card: ", error);
-                        }
-                    }
-                }
-            }
-        }
-
 
         // Add this function for smooth card insertion animation
         function insertCardWithAnimation(cardElement, containerElement) {
@@ -483,11 +489,11 @@
             // Create clone for visual feedback
             cloneCard = this.cloneNode(true);
             cloneCard.classList.add('card-dragging');
-
+        
             const rect = draggedCard.getBoundingClientRect();
             cloneCard.style.width = `${rect.width}px`;
             cloneCard.style.height = `${rect.height}px`;
-                       
+                        
             document.body.appendChild(cloneCard);
             
             // Create placeholder
@@ -614,8 +620,9 @@
                         targetColumn.querySelector('.cards').appendChild(card);
                     }
                 });
-
-                currentBoard.addEventListener('keydown', deleteCardOnKeyPress);
+        
+                // Remove this line as it's no longer needed
+                // currentBoard.addEventListener('keydown', deleteCardOnKeyPress);
             } catch (error) {
                 console.error("Error loading board: ", error);
             }
