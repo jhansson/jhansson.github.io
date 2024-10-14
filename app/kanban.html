@@ -276,10 +276,14 @@
             card.dataset.id = id;
             card.innerHTML = `
                 <div class="card-title">${text}</div>
-                <button onclick="editCard('${id}')">✏️</button>
-                <button onclick="deleteCard('${id}')">🗑️</button>
+                <button class="edit-btn" onclick="editCard('${id}')">✏️</button>
+                <button class="delete-btn" onclick="deleteCard('${id}')">🗑️</button>
             `;
-            card.addEventListener('mousedown', dragStart);
+            card.addEventListener('mousedown', function(e) {
+                if (!e.target.classList.contains('edit-btn') && !e.target.classList.contains('delete-btn')) {
+                    dragStart.call(this, e);
+                }
+            });
             return card;
         }
         
@@ -368,14 +372,13 @@
             cloneCard = this.cloneNode(true);
             cloneCard.style.position = 'absolute';
             cloneCard.style.pointerEvents = 'none';
-            //cloneCard.style.opacity = '1.0';
+            cloneCard.style.opacity = '1.0'; // Change this to 1.0 for full opacity
             cloneCard.style.zIndex = '1000';
             document.body.appendChild(cloneCard);
             
             // Create placeholder with exact dimensions as draggedCard
             placeholder = createPlaceholder();
             const cardStyle = window.getComputedStyle(draggedCard);
-            //placeholder.style.width = cardStyle.width;
             placeholder.style.minHeight = '60px';
             placeholder.style.minWidth = '300px';
             placeholder.style.margin = cardStyle.margin;
