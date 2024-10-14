@@ -393,7 +393,7 @@
             placeholder.style.height = cardStyle.height;
             placeholder.style.width = cardStyle.width;
             placeholder.style.margin = cardStyle.margin;
-            placeholder.style.padding = cardStyle.padding;
+            placeholder.style.padding = '6px';
             
             moveAt(e.pageX, e.pageY);
             
@@ -404,8 +404,9 @@
         }
         
         function moveAt(pageX, pageY) {
-            cloneCard.style.left = pageX - cloneCard.offsetWidth / 2 + 'px';
-            cloneCard.style.top = pageY - cloneCard.offsetHeight / 2 + 'px';
+            const rect = cloneCard.getBoundingClientRect();
+            cloneCard.style.left = pageX - rect.width / 2 + 'px';
+            cloneCard.style.top = pageY - rect.height / 2 + 'px';
         }
         
         function onMouseMove(e) {
@@ -452,7 +453,7 @@
             // Clean up
             cloneCard.remove();
             placeholder.remove();
-            draggedCard.style.display = 'block';
+            draggedCard.style.visibility = 'visible';
             draggedCard = null;
             cloneCard = null;
             placeholder = null;
