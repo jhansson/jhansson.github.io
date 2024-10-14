@@ -52,6 +52,7 @@
             overflow-x: auto;
             flex: 1;
             padding-bottom: 20px;
+            margin: 0 auto;
         }
         .column {
             border-radius: 8px;
@@ -60,7 +61,7 @@
             min-width: 300px;
             display: flex;
             flex-direction: column;
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgb(0 0 0 / 10%);
         }
         .column-header {
             margin-bottom: 16px;
@@ -68,6 +69,7 @@
             border-radius: 6px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: ruby;
         }
         .column-header h2 {
             font-size: 1rem;
@@ -80,7 +82,7 @@
         .cards {
             flex: 1;
             overflow-y: auto;
-            padding-right: 8px;
+            padding-right: 0px;
         }
         /* Scrollbar styles for WebKit browsers */
         .cards::-webkit-scrollbar {
@@ -104,7 +106,7 @@
         /* Scrollbar styles for Firefox */
         .cards {
             scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.1);
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.0);
         }
         .card {
             background-color: rgb(83 87 109 / 22%);
