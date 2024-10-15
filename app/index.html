@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Apps</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <style>
+        :root {
+            --background-color: #4a0e78;
+            --text-color: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .app-card {
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-color);
+            position: relative;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            z-index: 1;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-icon {
+            font-size: 6rem;
+            margin-bottom: -0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .app-name {
+            font-size: 1.4rem;
+            text-align: center;
+            padding: 0 0.5rem;
+            font-family: "Signika Negative", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .bitcoin { background-color: #2980b9; }
+        .kanban { background-color: #27ae60; }
+        .viewing { background-color: #8e44ad; }
+        .color { background-color: #d35400; }
+        .shapes { background-color: #c0392b; }
+
+        #wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            padding: 50px;
+        }
+ </style>
+</head>
+<body>
+    <div id="wrapper">
+    <div class="container">
+        <div class="app-grid" id="appGrid"></div>
+    </div>
+</div>
+    <script>
+        VANTA.NET({
+          el: "#wrapper",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 1.00,
+          scaleMobile: 1.00
+        })
+      
+        const apps = [
+            { name: "BitChart", icon: "ri-line-chart-line", color: "bitcoin", url: "btc.html" },
+            { name: "TaskFlow", icon: "ri-task-line", color: "kanban", url: "kanban.html" },
+            { name: "ViewMaster", icon: "ri-eye-line", color: "viewing", url: "rv.html" },
+            { name: "HueGuess", icon: "ri-palette-line", color: "color", url: "color.html" },
+            { name: "ShapeShift", icon: "ri-shape-2-line", color: "shapes", url: "shape.html" }
+        ];
+
+        const appGrid = document.getElementById('appGrid');
+
+        function createAppCard(app) {
+            const card = document.createElement('a');
+            card.className = `app-card ${app.color}`;
+            card.href = app.url;
+            card.innerHTML = `
+                <i class="app-icon ${app.icon}"></i>
+                <div class="app-name">${app.name}</div>
+            `;
+            return card;
+        }
+
+        function renderApps() {
+            apps.forEach(app => {
+                const card = createAppCard(app);
+                appGrid.appendChild(card);
+            });
+        }
+
+        renderApps();
+    </script>    
+</body>
+</html>
