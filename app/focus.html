@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Square</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #container {
+            position: relative;
+            width: 90vmin;
+            height: 90vmin;
+        }
+        .square {
+            position: absolute;
+            border: 0 solid black;
+            box-sizing: border-box;
+        }
+        #outer {
+            width: 100%;
+            height: 100%;
+            animation: drawBorder 2s forwards;
+        }
+        #middle {
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            animation: drawBorder 2s 0.5s forwards;
+        }
+        #inner {
+            top: 30%;
+            left: 30%;
+            width: 40%;
+            height: 40%;
+            animation: drawBorder 2s 1s forwards;
+        }
+        #circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            background-color: black;
+            animation: growCircle 1s 2s forwards;
+        }
+        @keyframes drawBorder {
+            to { border-width: var(--border-width); }
+        }
+        @keyframes growCircle {
+            to { transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="outer" class="square"></div>
+        <div id="middle" class="square"></div>
+        <div id="inner" class="square"></div>
+        <div id="circle"></div>
+    </div>
+
+    <script>
+        // Easy-to-tweak values
+        let borderWidth = 25; // px
+        let circleSizePercent = 10; // %
+
+        function updateSizes() {
+            const container = document.getElementById('container');
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+            container.style.width = `${size}px`;
+            container.style.height = `${size}px`;
+
+            // Update circle size
+            const circle = document.getElementById('circle');
+            const circleSize = size * (circleSizePercent / 100);
+            circle.style.width = `${circleSize}px`;
+            circle.style.height = `${circleSize}px`;
+
+            // Update border width
+            document.documentElement.style.setProperty('--border-width', `${borderWidth}px`);
+        }
+
+        window.addEventListener('resize', updateSizes);
+        updateSizes();
+
+        // Function to update values
+        function updateValues(newBorderWidth, newCircleSize) {
+            borderWidth = newBorderWidth;
+            circleSizePercent = newCircleSize;
+            updateSizes();
+        }
+
+        // Example usage:
+        // updateValues(10, 15); // Sets border width to 10px and circle size to 15%
+    </script>
+</body>
+</html>
