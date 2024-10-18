@@ -735,7 +735,7 @@
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const wikiContent = document.getElementById('wikiContent');
-                wikiContent.innerHTML = marked(docSnap.data().content); // Using marked.js to render Markdown
+                wikiContent.innerHTML = marked.parse(docSnap.data().content); // Using marked.js to render Markdown
             }
         }
 
