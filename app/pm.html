@@ -3,122 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Management App</title>
+    <title>Multi-Board Kanban</title>
     <link rel="icon" href="https://static-00.iconduck.com/assets.00/kanban-icon-128x128-7t7999na.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.7/tinymce.min.js"></script>
     <style>
         body {
-            background: linear-gradient(-45deg, #23202b, #23202b, #23202b, #23202b);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
+            background: linear-gradient(0deg, #282a35, #30323c);
             height: 100vh;
             margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-family: 'Inter', sans-serif;
-            color: #e0e0e0;
             overflow: hidden;
+        }
+
+        body {
+          background: linear-gradient(-45deg, #23202b, #23202b, #23202b, #23202b);
+          background-size: 400% 400%;
+          animation: gradient 15s ease infinite;
         }
         
         @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
         }
         
-        .app-container {
+        .kanban-app {
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
         }
-        
+
         .header {
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0 98px;
+            margin-bottom: 20px;
+        }
+
+        #userInfo {
+            display: inline-block;
+            float: right;
+        }
+
+        #userName {
+            color: #6a6c83;
+            font-size: 0.9rem;
+            padding: 8px;
         }
         
-        .content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
+        .board-controls {
+            display: inline-block;
+            margin-bottom: 20px;
         }
-        
-        .sidebar {
-            width: 250px;
-            background-color: rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .kanban-board {
+        .board {
             display: flex;
             gap: 20px;
             overflow-x: auto;
+            flex: 1;
             padding-bottom: 20px;
+            margin: 0 auto;
         }
-        
         .column {
-            background-color: rgba(83, 87, 109, 0.22);
             border-radius: 8px;
             padding: 16px;
             width: 300px;
             min-width: 300px;
             display: flex;
             flex-direction: column;
+            /*background-color: rgb(0 0 0 / 24%);*/
         }
-        
         .column-header {
             padding: 0px 10px;
-            display: flex;
-            align-items: center;
+            display: ruby;
         }
-        
         .column-header h2 {
-            font-size: 0.9rem;
+            font-size: .9rem;
             color: #c8cfd3;
             margin: 0;
             text-transform: uppercase;
             font-weight: normal;
+            vertical-align: sub;
         }
-        
         .column-header i {
-            margin-right: 8px;
+            margin-left: -12px;
             font-style: normal;
-            font-size: 1.5rem;
+            vertical-align: middle;
+            font-size: 3rem;
+            padding-top: 10px;
         }
-        
         .cards {
             flex: 1;
             overflow-y: auto;
-            padding-right: 8px;
+            padding-right: 0px;
+        }
+        /* Scrollbar styles for WebKit browsers */
+        .cards::-webkit-scrollbar {
+            width: 8px;
         }
         
+        .cards::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .cards::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        
+        .cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Scrollbar styles for Firefox */
+        .cards {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.0);
+        }
         .card {
-            background-color: rgba(83, 87, 109, 0.3);
+            background-color: rgb(83 87 109 / 22%);
             border-radius: 6px;
             padding: 12px;
             margin-bottom: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             cursor: move;
             transition: all 0.3s ease;
+            color: #a2acb0;
         }
-        
         .card:hover {
-            background-color: rgba(83, 87, 109, 0.4);
+            background-color: rgb(83 87 109 / 28%);
+            transition: all 0.3s ease;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        
         .card-title {
-            margin: 0 0 8px 0;
+            margin: 6px;
             color: #e1e1e1;
         }
         
+        .card-details {
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+        .card button {
+            padding: 3px;
+            font-size: .6rem;
+        }
+        .card-dragging {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 1 !important;
+            transform: rotate(3deg);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .placeholder {
+            background-color: rgba(255, 255, 255, 0.0);
+            border: 2px dashed #eee;
+            border-radius: 6px;
+            box-sizing: border-box;
+            min-height: 60px;
+        }
+        .add-card {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
         input, select, button {
             background-color: #3a3a4a;
             border: 1px solid #4a4a5a;
@@ -126,87 +188,94 @@
             padding: 8px 12px;
             border-radius: 4px;
             font-family: 'Inter', sans-serif;
-            margin-bottom: 8px;
         }
-        
         button {
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        
         button:hover {
             background-color: #4a4a5a;
         }
-        
-        .wiki-content {
-            background-color: rgba(83, 87, 109, 0.22);
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            background-color: #3a3a4a;
+            border: none;
+            color: #e0e0e0;
+            border-radius: 4px;
+        }
+        .tab-button.active {
+            background-color: #4a4a5a;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        #wikiContent {
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
         }
-        
-        #editForm {
-            margin-top: 20px;
-        }
-        
-        #pageTitle {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        
-        .tox-tinymce {
-            border-radius: 4px;
-            overflow: hidden;
-        }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="kanban-app">
         <div class="header">
-            <h1>Project Management App</h1>
-            <div id="userControls">
-                <button id="loginBtn">Login with Google</button>
+            <div>
+              <button id="loginBtn">Login with Google</button>
                 <div id="userInfo" style="display:none;">
                     <span id="userName"></span>
                     <button id="logoutBtn">Logout</button>
                 </div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="sidebar">
-                <h2>Projects</h2>
-                <select id="projectSelector" onchange="switchProject()"></select>
-                <input type="text" id="newProjectName" placeholder="New project name">
-                <button onclick="createNewProject()">Create New Project</button>
-                <button onclick="deleteCurrentProject()">Delete Current Project</button>
-                <div id="wikiPageList"></div>
-            </div>
-            <div class="main-content">
-                <div id="projectView" style="display:none;">
-                    <h2 id="currentProjectName"></h2>
-                    <button onclick="showKanbanBoard()">Kanban Board</button>
-                    <button onclick="showWiki()">Wiki</button>
-                    <div id="kanbanBoard" class="kanban-board"></div>
-                    <div id="wikiView" style="display:none;">
-                        <div id="wikiContent" class="wiki-content"></div>
-                        <div id="editForm" style="display:none;">
-                            <input type="text" id="pageTitle" placeholder="Page Title">
-                            <textarea id="pageBody"></textarea>
-                            <button onclick="savePage()">Save Page</button>
-                        </div>
-                    </div>
+                <div id="boardManagement" class="board-controls" style="display:none;">
+                    <select id="boardSelector" onchange="switchBoard()"></select>
+                    <input type="text" id="newBoardName" placeholder="New board name">
+                    <button onclick="createNewBoard()">Create New Board</button>                    
+                    <button onclick="deleteCurrentBoard()">Delete Current Board</button>
                 </div>
+            </div>
+          </div>
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="kanban">Kanban Board</button>
+            <button class="tab-button" data-tab="wiki">Wiki</button>
+        </div>
+        
+        <div id="kanbanTab" class="tab-content active">
+            <div id="currentBoard" class="board"></div>
+        </div>
+        
+        <div id="wikiTab" class="tab-content">
+            <div id="wikiControls">
+                <select id="wikiPageSelector"></select>
+                <button onclick="createNewWikiPage()">New Page</button>
+                <button onclick="editCurrentWikiPage()">Edit Page</button>
+                <button onclick="deleteCurrentWikiPage()">Delete Page</button>
+            </div>
+            <div id="wikiContent"></div>
+            <div id="wikiEditor" style="display: none;">
+                <textarea id="wikiPageContent" rows="10" cols="50"></textarea>
+                <button onclick="saveWikiPage()">Save</button>
+                <button onclick="cancelWikiEdit()">Cancel</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Import Firebase modules
+        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, updateDoc, getDocs, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-        // Firebase configuration
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCZyZVomEVx6A25HHtYb0cNS0mNF-GKAUw",
             authDomain: "jhkanban.firebaseapp.com",
@@ -221,24 +290,18 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         let currentUser = null;
-        let currentProjectId = null;
-        let currentWikiPageId = null;
+        let currentBoardId = null;
 
-        // DOM elements
         const loginBtn = document.getElementById('loginBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const userInfo = document.getElementById('userInfo');
         const userName = document.getElementById('userName');
-        const projectSelector = document.getElementById('projectSelector');
-        const projectView = document.getElementById('projectView');
-        const currentProjectName = document.getElementById('currentProjectName');
-        const kanbanBoard = document.getElementById('kanbanBoard');
-        const wikiView = document.getElementById('wikiView');
-        const wikiContent = document.getElementById('wikiContent');
-        const editForm = document.getElementById('editForm');
-        const wikiPageList = document.getElementById('wikiPageList');
+        const boardManagement = document.getElementById('boardManagement');
+        const boardSelector = document.getElementById('boardSelector');
+        const currentBoard = document.getElementById('currentBoard');
+        // Add new variables for wiki functionality
+        let currentWikiPageId = null;
 
-        // Authentication event listeners
         loginBtn.addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider);
@@ -253,68 +316,63 @@
                 currentUser = user;
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
+                boardManagement.style.display = 'block';
                 userName.textContent = user.displayName;
-                loadProjects();
+                loadBoards();
             } else {
                 currentUser = null;
                 loginBtn.style.display = 'block';
                 userInfo.style.display = 'none';
-                projectView.style.display = 'none';
-                projectSelector.innerHTML = '';
-                wikiPageList.innerHTML = '';
+                boardManagement.style.display = 'none';
+                currentBoard.innerHTML = '';
+                boardSelector.innerHTML = '';
             }
         });
 
-        // Project management functions
-        async function loadProjects() {
-            projectSelector.innerHTML = '';
-            const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects'));
+        async function loadBoards() {
+            boardSelector.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards'));
             querySnapshot.forEach(doc => {
                 const option = document.createElement('option');
                 option.value = doc.id;
                 option.textContent = doc.data().name;
-                projectSelector.appendChild(option);
+                boardSelector.appendChild(option);
             });
-            if (projectSelector.options.length > 0) {
-                currentProjectId = projectSelector.options[0].value;
-                switchProject();
+            if (boardSelector.options.length > 0) {
+                currentBoardId = boardSelector.options[0].value;
+                loadBoard(currentBoardId);
             }
         }
 
-        window.switchProject = async function() {
-            currentProjectId = projectSelector.value;
-            const projectDoc = await getDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId));
-            currentProjectName.textContent = projectDoc.data().name;
-            projectView.style.display = 'block';
-            loadKanbanBoard();
-            loadWikiPages();
+        window.switchBoard = function() {
+            currentBoardId = boardSelector.value;
+            loadBoard(currentBoardId);
         }
 
-        window.createNewProject = async function() {
-            const projectName = document.getElementById('newProjectName').value.trim();
-            if (projectName) {
-                const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'projects'), {
-                    name: projectName
+        window.createNewBoard = async function() {
+            const boardName = document.getElementById('newBoardName').value.trim();
+            if (boardName) {
+                const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards'), {
+                    name: boardName
                 });
-                await setDoc(doc(db, 'users', currentUser.uid, 'projects', docRef.id, 'columns', 'todo'), { name: 'To Do' });
-                await setDoc(doc(db, 'users', currentUser.uid, 'projects', docRef.id, 'columns', 'inprogress'), { name: 'In Progress' });
-                await setDoc(doc(db, 'users', currentUser.uid, 'projects', docRef.id, 'columns', 'done'), { name: 'Done' });
-                loadProjects();
-                document.getElementById('newProjectName').value = '';
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'todo'), { name: 'To Do' });
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'inprogress'), { name: 'In Progress' });
+                await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'done'), { name: 'Done' });
+                loadBoards();
+                document.getElementById('newBoardName').value = '';
             }
         }
 
-        window.deleteCurrentProject = async function() {
-            if (currentProjectId && confirm('Are you sure you want to delete this project?')) {
-                await deleteDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId));
-                loadProjects();
+        window.deleteCurrentBoard = async function() {
+            if (currentBoardId && confirm('Are you sure you want to delete this board?')) {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId));
+                loadBoards();
             }
         }
 
-        // Kanban board functions
         function createColumn(title, columnId) {
             const column = document.createElement('div');
-            const icons = {
+            var icons = {
                 "todo": "#45c6e4",
                 "inprogress": "#8470f5",
                 "done": "#6bdeac"
@@ -335,17 +393,111 @@
             return column;
         }
 
+         // Update the createCard function to use the new drag event listeners
         function createCard(id, text) {
             const card = document.createElement('div');
             card.className = 'card';
             card.dataset.id = id;
             card.innerHTML = `<div class="card-title">${text}</div>`;
-            card.draggable = true;
-            card.addEventListener('dragstart', dragStart);
-            card.addEventListener('dblclick', () => editCard(id));
+            
+            let dragTimeout;
+            let isDragging = false;
+            
+            card.addEventListener('mousedown', function(e) {
+                dragTimeout = setTimeout(() => {
+                    isDragging = true;
+                    dragStart.call(this, e);
+                }, 250);
+            });
+            
+            card.addEventListener('mouseup', function() {
+                clearTimeout(dragTimeout);
+                if (!isDragging) {
+                    // This allows for clicking (e.g., to focus for delete) without dragging
+                    this.focus();
+                }
+                isDragging = false;
+            });
+            
+            card.addEventListener('dblclick', function(e) {
+                clearTimeout(dragTimeout);
+                isDragging = false;
+                editCard(id);
+            });
+        
+            card.tabIndex = 0; // Make the card focusable
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Delete') {
+                    deleteCard(id);
+                }
+            });
+        
             return card;
         }
+        
+        // Function to rename a card
+        window.editCard = async function (cardId) {
+            const cardElement = document.querySelector(`[data-id="${cardId}"]`);
+            const cardTitle = cardElement.querySelector('.card-title');
+            const currentText = cardTitle.textContent;
+            
+            cardTitle.contentEditable = true;
+            cardTitle.focus();
+            
+            const range = document.createRange();
+            range.selectNodeContents(cardTitle);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            const finishEditing = async () => {
+                cardTitle.contentEditable = false;
+                const newText = cardTitle.textContent.trim();
+                if (newText !== currentText) {
+                    try {
+                        await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                            text: newText
+                        });
+                    } catch (error) {
+                        console.error("Error renaming card: ", error);
+                        cardTitle.textContent = currentText;
+                    }
+                }
+            };
+            
+            cardTitle.addEventListener('blur', finishEditing);
+            cardTitle.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
+        }
+        
+        // Function to delete a card
+        window.deleteCard = async function (cardId) {
+            if (confirm('Are you sure you want to delete this card?')) {
+                try {
+                    await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId));
+                    document.querySelector(`[data-id="${cardId}"]`).remove();
+                } catch (error) {
+                    console.error("Error deleting card: ", error);
+                }
+            }
+        }
 
+        // Add this function for smooth card insertion animation
+        function insertCardWithAnimation(cardElement, containerElement) {
+            cardElement.style.opacity = '0';
+            cardElement.style.transform = 'translateY(-20px)';
+            containerElement.appendChild(cardElement);
+            setTimeout(() => {
+                cardElement.style.opacity = '1';
+                cardElement.style.transform = 'translateY(0)';
+            }, 50);
+        }
+
+        // Update the addCard function to use the animation
         window.addCard = async function(button) {
             const input = button.previousElementSibling;
             const text = input.value.trim();
@@ -353,13 +505,13 @@
                 const column = button.closest('.column');
                 const columnId = column.dataset.columnId;
                 try {
-                    const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'cards'), {
+                    const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards'), {
                         text: text,
                         columnId: columnId,
                         createdAt: new Date().toISOString()
                     });
                     const card = createCard(docRef.id, text);
-                    column.querySelector('.cards').appendChild(card);
+                    insertCardWithAnimation(card, column.querySelector('.cards'));
                     input.value = '';
                 } catch (error) {
                     console.error("Error adding card: ", error);
@@ -367,187 +519,275 @@
             }
         }
 
-        window.editCard = async function(cardId) {
-            const cardElement = document.querySelector(`[data-id="${cardId}"]`);
-            const cardTitle = cardElement.querySelector('.card-title');
-            const currentText = cardTitle.textContent;
-            const newText = prompt("Edit card text:", currentText);
-            if (newText !== null && newText !== currentText) {
+        let draggedCard = null;
+        let cloneCard = null;
+        let placeholder = null;
+        
+        function createPlaceholder(originalCard) {
+            const div = document.createElement('div');
+            div.className = 'card placeholder';
+            const rect = originalCard.getBoundingClientRect();
+            div.style.width = `${rect.width}px`;
+            div.style.height = `${rect.height}px`;
+            const style = window.getComputedStyle(originalCard);
+            div.style.margin = style.margin;
+            div.style.padding = style.padding;
+            div.style.boxSizing = 'border-box';
+            div.style.visibility = 'hidden';
+            return div;
+        }
+
+        function disableTextSelection() {
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.body.style.mozUserSelect = 'none';
+            document.body.style.msUserSelect = 'none';
+        }
+
+        function enableTextSelection() {
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+            document.body.style.mozUserSelect = '';
+            document.body.style.msUserSelect = '';
+        }
+        
+        function dragStart(e) {
+            e.preventDefault();
+            draggedCard = this;
+            
+            // Disable text selection
+            disableTextSelection();
+            
+            // Create clone for visual feedback
+            cloneCard = this.cloneNode(true);
+            cloneCard.classList.add('card-dragging');
+        
+            const rect = draggedCard.getBoundingClientRect();
+            cloneCard.style.width = `${rect.width}px`;
+            cloneCard.style.height = `${rect.height}px`;
+                        
+            document.body.appendChild(cloneCard);
+            
+            // Create placeholder
+            placeholder = createPlaceholder(draggedCard);
+            draggedCard.parentNode.insertBefore(placeholder, draggedCard.nextSibling);
+            
+            moveAt(e.pageX, e.pageY);
+            
+            draggedCard.style.visibility = 'hidden';
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+        
+        function moveAt(pageX, pageY) {
+            const rect = cloneCard.getBoundingClientRect();
+            cloneCard.style.left = pageX - rect.width / 2 + 'px';
+            cloneCard.style.top = pageY - rect.height / 2 + 'px';
+        }
+        
+        function onMouseMove(e) {
+            moveAt(e.pageX, e.pageY);
+            
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');            
+            
+            if (columnUnderMouse) {                
+                cloneCard.style.display = 'none';
+                const cardUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.card:not(.placeholder)');
+                cloneCard.style.display = 'block';
+                
+                if (cardUnderMouse && cardUnderMouse !== placeholder) {
+                    const rect = cardUnderMouse.getBoundingClientRect();
+                    const nextElement = (e.clientY - rect.top) < (rect.height / 2) ? cardUnderMouse : cardUnderMouse.nextElementSibling;
+                    columnUnderMouse.querySelector('.cards').insertBefore(placeholder, nextElement);
+                } else if (!cardUnderMouse) {
+                    columnUnderMouse.querySelector('.cards').appendChild(placeholder);
+                }
+                
+                placeholder.style.visibility = 'visible';
+                placeholder.style.minHeight = '60px';
+                placeholder.style.margin = window.getComputedStyle(draggedCard).margin;
+                placeholder.style.padding = window.getComputedStyle(draggedCard).padding;
+            } else {
+                placeholder.style.visibility = 'hidden';
+                placeholder.style.height = '0';
+                placeholder.style.margin = '0';
+                placeholder.style.padding = '0';
+            }
+        }
+        
+        function onMouseUp(e) {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            
+            // Enable text selection
+            enableTextSelection();
+            
+            const columnUnderMouse = document.elementFromPoint(e.clientX, e.clientY).closest('.column');
+            if (columnUnderMouse) {
+                const newColumnId = columnUnderMouse.dataset.columnId;
+                updateCardColumn(draggedCard.dataset.id, newColumnId);
+                columnUnderMouse.querySelector('.cards').insertBefore(draggedCard, placeholder);
+            }
+            
+            // Clean up
+            cloneCard.remove();
+            placeholder.remove();
+            draggedCard.style.visibility = 'visible';
+            draggedCard = null;
+            cloneCard = null;
+            placeholder = null;
+        }
+        
+        function dragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        async function updateCardColumn(cardId, newColumnId) {
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                    columnId: newColumnId
+                });
+            } catch (error) {
+                console.error('Error updating card column:', error);
+            }
+        }        
+
+        async function drop(e) {
+            e.preventDefault();
+            const cardId = e.dataTransfer.getData('text/plain');
+            const card = document.querySelector(`[data-id="${cardId}"]`);
+            const column = e.target.closest('.column');
+            if (column && card) {
+                const newColumnId = column.dataset.columnId;
                 try {
-                    await updateDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'cards', cardId), {
-                        text: newText
+                    await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'cards', cardId), {
+                        columnId: newColumnId
                     });
-                    cardTitle.textContent = newText;
+                    column.querySelector('.cards').appendChild(card);
                 } catch (error) {
                     console.error("Error updating card: ", error);
                 }
             }
         }
 
-       function dragStart(e) {
-        e.dataTransfer.setData('text/plain', e.target.dataset.id);
-    }
-
-    function dragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    }
-
-    async function drop(e) {
-        e.preventDefault();
-        const cardId = e.dataTransfer.getData('text/plain');
-        const card = document.querySelector(`[data-id="${cardId}"]`);
-        const column = e.target.closest('.column');
-        if (column && card) {
-            const newColumnId = column.dataset.columnId;
+        async function loadBoard(boardId) {
+            currentBoard.innerHTML = '';
             try {
-                await updateDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'cards', cardId), {
-                    columnId: newColumnId
+                const columnsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'columns'));
+        
+                const orderedColumns = ['todo', 'inprogress', 'done']; // Define the correct order
+                orderedColumns.forEach(columnId => {
+                    const columnDoc = columnsSnapshot.docs.find(doc => doc.id === columnId);
+                    if (columnDoc) {
+                        const column = createColumn(columnDoc.data().name, columnDoc.id);
+                        currentBoard.appendChild(column);
+                    }
                 });
-                column.querySelector('.cards').appendChild(card);
-            } catch (error) {
-                console.error("Error updating card: ", error);
-            }
-        }
-    }
+        
+                const cardsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', boardId, 'cards'));
+                cardsSnapshot.forEach(cardDoc => {
+                    const data = cardDoc.data();
+                    const card = createCard(cardDoc.id, data.text);
+                    const targetColumn = currentBoard.querySelector(`[data-column-id="${data.columnId}"]`);
+                    if (targetColumn) {
+                        targetColumn.querySelector('.cards').appendChild(card);
+                    }
+                });
 
-    async function loadKanbanBoard() {
-        kanbanBoard.innerHTML = '';
-        try {
-            const columnsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'columns'));
-            const orderedColumns = ['todo', 'inprogress', 'done'];
-            orderedColumns.forEach(columnId => {
-                const columnDoc = columnsSnapshot.docs.find(doc => doc.id === columnId);
-                if (columnDoc) {
-                    const column = createColumn(columnDoc.data().name, columnDoc.id);
-                    column.addEventListener('dragover', dragOver);
-                    column.addEventListener('drop', drop);
-                    kanbanBoard.appendChild(column);
-                }
-            });
-
-            const cardsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'cards'));
-            cardsSnapshot.forEach(cardDoc => {
-                const data = cardDoc.data();
-                const card = createCard(cardDoc.id, data.text);
-                const targetColumn = kanbanBoard.querySelector(`[data-column-id="${data.columnId}"]`);
-                if (targetColumn) {
-                    targetColumn.querySelector('.cards').appendChild(card);
-                }
-            });
-        } catch (error) {
-            console.error("Error loading Kanban board: ", error);
-        }
-    }
-
-    // Wiki functions
-    async function loadWikiPages() {
-        wikiPageList.innerHTML = '<h3>Wiki Pages</h3>';
-        const pagesSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki'));
-        pagesSnapshot.forEach(pageDoc => {
-            const pageLink = document.createElement('div');
-            pageLink.textContent = pageDoc.data().title;
-            pageLink.onclick = () => loadWikiPage(pageDoc.id);
-            wikiPageList.appendChild(pageLink);
-        });
-        const newPageBtn = document.createElement('button');
-        newPageBtn.textContent = 'New Page';
-        newPageBtn.onclick = showEditForm;
-        wikiPageList.appendChild(newPageBtn);
-    }
-
-    async function loadWikiPage(pageId) {
-        currentWikiPageId = pageId;
-        const pageDoc = await getDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki', pageId));
-        const pageData = pageDoc.data();
-        wikiContent.innerHTML = `
-            <h2>${pageData.title}</h2>
-            <div>${pageData.body}</div>
-            <button onclick="editCurrentPage()">Edit</button>
-        `;
-        showWiki();
-    }
-
-    window.showEditForm = function(pageId = null) {
-        editForm.style.display = 'block';
-        wikiContent.style.display = 'none';
-        if (pageId) {
-            loadPageForEdit(pageId);
-        } else {
-            document.getElementById('pageTitle').value = '';
-            tinymce.get('pageBody').setContent('');
-        }
-    }
-
-    async function loadPageForEdit(pageId) {
-        const pageDoc = await getDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki', pageId));
-        const pageData = pageDoc.data();
-        document.getElementById('pageTitle').value = pageData.title;
-        tinymce.get('pageBody').setContent(pageData.body);
-    }
-
-    window.savePage = async function() {
-        const title = document.getElementById('pageTitle').value.trim();
-        const body = tinymce.get('pageBody').getContent();
-        if (title && body) {
-            try {
-                if (currentWikiPageId) {
-                    await updateDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki', currentWikiPageId), {
-                        title,
-                        body,
-                        updatedAt: new Date().toISOString()
-                    });
-                } else {
-                    await addDoc(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki'), {
-                        title,
-                        body,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    });
-                }
                 loadWikiPages();
-                editForm.style.display = 'none';
-                wikiContent.style.display = 'block';
-                loadWikiPage(currentWikiPageId);
+        
+                // Remove this line as it's no longer needed
+                // currentBoard.addEventListener('keydown', deleteCardOnKeyPress);
             } catch (error) {
-                console.error("Error saving wiki page: ", error);
+                console.error("Error loading board: ", error);
             }
         }
-    }
 
-    window.editCurrentPage = function() {
-        showEditForm(currentWikiPageId);
-    }
+        // Add new functions for wiki functionality
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+        }
 
-    window.showKanbanBoard = function() {
-        kanbanBoard.style.display = 'flex';
-        wikiView.style.display = 'none';
-    }
+        async function loadWikiPages() {
+            const wikiPageSelector = document.getElementById('wikiPageSelector');
+            wikiPageSelector.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages'));
+            querySnapshot.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = doc.data().title;
+                wikiPageSelector.appendChild(option);
+            });
+            if (wikiPageSelector.options.length > 0) {
+                currentWikiPageId = wikiPageSelector.options[0].value;
+                loadWikiPage(currentWikiPageId);
+            }
+        }
 
-    window.showWiki = function() {
-        kanbanBoard.style.display = 'none';
-        wikiView.style.display = 'block';
-        wikiContent.style.display = 'block';
-        editForm.style.display = 'none';
-    }
+        async function loadWikiPage(pageId) {
+            const docRef = doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', pageId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const wikiContent = document.getElementById('wikiContent');
+                wikiContent.innerHTML = marked(docSnap.data().content); // Using marked.js to render Markdown
+            }
+        }
 
-    // Initialize TinyMCE
-    tinymce.init({
-        selector: '#pageBody',
-        height: 500,
-        menubar: false,
-        plugins: [
-            'advlist autolink lists link image charmap print preview anchor',
-            'searchreplace visualblocks code fullscreen',
-            'insertdatetime media table paste code help wordcount'
-        ],
-        toolbar: 'undo redo | formatselect | bold italic backcolor | \
-            alignleft aligncenter alignright alignjustify | \
-            bullist numlist outdent indent | removeformat | help'
-    });
+        window.createNewWikiPage = async function() {
+            const title = prompt('Enter the title for the new wiki page:');
+            if (title) {
+                const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages'), {
+                    title: title,
+                    content: '',
+                    createdAt: new Date().toISOString()
+                });
+                loadWikiPages();
+            }
+        }
 
-    // Initialize the app
-    showKanbanBoard();
-</script>
+        window.editCurrentWikiPage = async function() {
+            const docRef = doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', currentWikiPageId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const wikiPageContent = document.getElementById('wikiPageContent');
+                wikiPageContent.value = docSnap.data().content;
+                document.getElementById('wikiContent').style.display = 'none';
+                document.getElementById('wikiEditor').style.display = 'block';
+            }
+        }
+
+        window.saveWikiPage = async function() {
+            const content = document.getElementById('wikiPageContent').value;
+            await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', currentWikiPageId), {
+                content: content
+            });
+            loadWikiPage(currentWikiPageId);
+            document.getElementById('wikiContent').style.display = 'block';
+            document.getElementById('wikiEditor').style.display = 'none';
+        }
+
+        window.cancelWikiEdit = function() {
+            document.getElementById('wikiContent').style.display = 'block';
+            document.getElementById('wikiEditor').style.display = 'none';
+        }
+
+        window.deleteCurrentWikiPage = async function() {
+            if (confirm('Are you sure you want to delete this wiki page?')) {
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', currentWikiPageId));
+                loadWikiPages();
+            }
+        }
+
+        // Add event listeners for tab navigation
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => switchTab(button.dataset.tab));
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
