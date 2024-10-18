@@ -7,23 +7,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    <!-- TinyMCE Rich Text Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.7/tinymce.min.js"></script>
     <style>
-        body {
+        body, html {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            height: 100%;
         }
         .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            height: 100%;
         }
-        h1 {
+        .sidebar {
+            width: 250px;
+            background-color: #f4f4f4;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        h1, h2 {
             color: #333;
         }
         #loginStatus, #pageList, #pageContent, #editForm {
@@ -36,11 +44,12 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin-bottom: 10px;
         }
         button:hover {
             background-color: #45a049;
         }
-        input[type="text"], textarea {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -52,28 +61,33 @@
             padding: 0;
         }
         #pageList li {
-            background-color: #f9f9f9;
+            background-color: #fff;
             margin-bottom: 5px;
             padding: 10px;
             border-radius: 4px;
+            cursor: pointer;
         }
         #pageList li:hover {
-            background-color: #f0f0f0;
+            background-color: #e0e0e0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Game Dev Wiki</h1>
-        <div id="loginStatus"></div>
-        <div id="pageList"></div>
-        <div id="pageContent"></div>
-        <div id="editForm" style="display: none;">
-            <input type="text" id="pageTitle" placeholder="Page Title">
-            <textarea id="pageBody" placeholder="Page Content"></textarea>
-            <button onclick="savePage()">Save Page</button>
+        <div class="sidebar">
+            <h1>Game Dev Wiki</h1>
+            <div id="loginStatus"></div>
+            <button onclick="showEditForm()">Add New Page</button>
+            <div id="pageList"></div>
         </div>
-        <button onclick="showEditForm()">Add New Page</button>
+        <div class="content">
+            <div id="pageContent"></div>
+            <div id="editForm" style="display: none;">
+                <input type="text" id="pageTitle" placeholder="Page Title">
+                <textarea id="pageBody"></textarea>
+                <button onclick="savePage()">Save Page</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -91,6 +105,22 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
+        let currentPageId = null;
+
+        // Initialize TinyMCE
+        tinymce.init({
+            selector: '#pageBody',
+            height: 500,
+            menubar: false,
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table paste code help wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | bold italic backcolor | \
+                alignleft aligncenter alignright alignjustify | \
+                bullist numlist outdent indent | removeformat | help'
+        });
 
         // Check authentication state
         auth.onAuthStateChanged((user) => {
@@ -129,13 +159,14 @@
         }
 
         function loadPage(pageId) {
+            currentPageId = pageId;
             const userId = currentUser.uid;
             db.collection('users').doc(userId).collection('wiki').doc(pageId).get().then((doc) => {
                 if (doc.exists) {
                     const page = doc.data();
                     document.getElementById('pageContent').innerHTML = `
                         <h2>${page.title}</h2>
-                        <p>${page.body}</p>
+                        <div>${page.body}</div>
                         <button onclick="editPage('${doc.id}')">Edit</button>
                         <button onclick="deletePage('${doc.id}')">Delete</button>
                     `;
@@ -146,35 +177,36 @@
         function showEditForm(pageId = null) {
             const form = document.getElementById('editForm');
             form.style.display = 'block';
+            document.getElementById('pageContent').innerHTML = '';
             if (pageId) {
-                db.collection('pages').doc(pageId).get().then((doc) => {
+                const userId = currentUser.uid;
+                db.collection('users').doc(userId).collection('wiki').doc(pageId).get().then((doc) => {
                     if (doc.exists) {
                         const page = doc.data();
                         document.getElementById('pageTitle').value = page.title;
-                        document.getElementById('pageBody').value = page.body;
+                        tinymce.get('pageBody').setContent(page.body);
                     }
                 });
             } else {
                 document.getElementById('pageTitle').value = '';
-                document.getElementById('pageBody').value = '';
+                tinymce.get('pageBody').setContent('');
             }
-            form.onsubmit = (e) => {
-                e.preventDefault();
-                savePage(pageId);
-            };
         }
 
-        function savePage(pageId = null) {
+        function savePage() {
             const userId = currentUser.uid;
             const title = document.getElementById('pageTitle').value;
-            const body = document.getElementById('pageBody').value;
+            const body = tinymce.get('pageBody').getContent();
             const timestamp = firebase.firestore.FieldValue.serverTimestamp();
             
-            if (pageId) {
-                db.collection('users').doc(userId).collection('wiki').doc(pageId).update({ 
+            if (currentPageId) {
+                db.collection('users').doc(userId).collection('wiki').doc(currentPageId).update({ 
                     title, 
                     body, 
                     updatedAt: timestamp 
+                }).then(() => {
+                    loadPage(currentPageId);
+                    loadPages();
                 });
             } else {
                 db.collection('users').doc(userId).collection('wiki').add({ 
@@ -182,13 +214,17 @@
                     body, 
                     createdAt: timestamp, 
                     updatedAt: timestamp 
+                }).then((docRef) => {
+                    currentPageId = docRef.id;
+                    loadPage(currentPageId);
+                    loadPages();
                 });
             }
             document.getElementById('editForm').style.display = 'none';
-            loadPages();
         }
 
         function editPage(pageId) {
+            currentPageId = pageId;
             showEditForm(pageId);
         }
 
@@ -198,6 +234,7 @@
                 db.collection('users').doc(userId).collection('wiki').doc(pageId).delete().then(() => {
                     loadPages();
                     document.getElementById('pageContent').innerHTML = '';
+                    currentPageId = null;
                 });
             }
         }
