@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Dev Wiki</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        #loginStatus, #pageList, #pageContent, #editForm {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #pageList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #pageList li {
+            background-color: #f9f9f9;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #pageList li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Dev Wiki</h1>
+        <div id="loginStatus"></div>
+        <div id="pageList"></div>
+        <div id="pageContent"></div>
+        <div id="editForm" style="display: none;">
+            <input type="text" id="pageTitle" placeholder="Page Title">
+            <textarea id="pageBody" placeholder="Page Content"></textarea>
+            <button onclick="savePage()">Save Page</button>
+        </div>
+        <button onclick="showEditForm()">Add New Page</button>
+    </div>
+
+    <script>
+        // Initialize Firebase (replace with your own config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZyZVomEVx6A25HHtYb0cNS0mNF-GKAUw",
+            authDomain: "jhkanban.firebaseapp.com",
+            projectId: "jhkanban",
+            storageBucket: "jhkanban.appspot.com",
+            messagingSenderId: "582897201706",
+            appId: "1:582897201706:web:64eef888e6996b487bc953"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let currentUser = null;
+
+        // Check authentication state
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginStatus').innerHTML = `Logged in as ${user.email} <button onclick="logout()">Logout</button>`;
+                loadPages();
+            } else {
+                currentUser = null;
+                document.getElementById('loginStatus').innerHTML = '<button onclick="login()">Login with Google</button>';
+                document.getElementById('pageList').innerHTML = '';
+                document.getElementById('pageContent').innerHTML = '';
+                document.getElementById('editForm').style.display = 'none';
+            }
+        });
+
+        function login() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider);
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        function loadPages() {
+            db.collection('pages').get().then((snapshot) => {
+                const pageList = document.getElementById('pageList');
+                pageList.innerHTML = '<h2>Pages</h2>';
+                snapshot.forEach((doc) => {
+                    const page = doc.data();
+                    pageList.innerHTML += `<li onclick="loadPage('${doc.id}')">${page.title}</li>`;
+                });
+            });
+        }
+
+        function loadPage(pageId) {
+            db.collection('pages').doc(pageId).get().then((doc) => {
+                if (doc.exists) {
+                    const page = doc.data();
+                    document.getElementById('pageContent').innerHTML = `
+                        <h2>${page.title}</h2>
+                        <p>${page.body}</p>
+                        <button onclick="editPage('${doc.id}')">Edit</button>
+                        <button onclick="deletePage('${doc.id}')">Delete</button>
+                    `;
+                }
+            });
+        }
+
+        function showEditForm(pageId = null) {
+            const form = document.getElementById('editForm');
+            form.style.display = 'block';
+            if (pageId) {
+                db.collection('pages').doc(pageId).get().then((doc) => {
+                    if (doc.exists) {
+                        const page = doc.data();
+                        document.getElementById('pageTitle').value = page.title;
+                        document.getElementById('pageBody').value = page.body;
+                    }
+                });
+            } else {
+                document.getElementById('pageTitle').value = '';
+                document.getElementById('pageBody').value = '';
+            }
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                savePage(pageId);
+            };
+        }
+
+        function savePage(pageId = null) {
+            const title = document.getElementById('pageTitle').value;
+            const body = document.getElementById('pageBody').value;
+            if (pageId) {
+                db.collection('pages').doc(pageId).update({ title, body });
+            } else {
+                db.collection('pages').add({ title, body });
+            }
+            document.getElementById('editForm').style.display = 'none';
+            loadPages();
+        }
+
+        function editPage(pageId) {
+            showEditForm(pageId);
+        }
+
+        function deletePage(pageId) {
+            if (confirm('Are you sure you want to delete this page?')) {
+                db.collection('pages').doc(pageId).delete().then(() => {
+                    loadPages();
+                    document.getElementById('pageContent').innerHTML = '';
+                });
+            }
+        }
+    </script>
+</body>
+</html>
