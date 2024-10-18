@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #282a35;
+            color: #e0e0e0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+        }
+
+        .project-dashboard, .kanban-wiki-section {
+            display: none;
+        }
+
+        /* Project Dashboard */
+        #projectDashboard {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        #projectList {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        #projectList li {
+            background-color: #333;
+            padding: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #projectList li:hover {
+            background-color: #444;
+        }
+
+        #newProjectName {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .kanban-wiki-section {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background-color: #333;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .tab:hover {
+            background-color: #444;
+        }
+
+        .tab.active {
+            background-color: #555;
+        }
+
+        .kanban-container, .wiki-container {
+            display: none;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Kanban styles (from original) */
+        .kanban-app {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .board {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+        }
+
+        .column {
+            background-color: #333;
+            border-radius: 8px;
+            padding: 16px;
+            width: 300px;
+        }
+
+        .column-header {
+            margin-bottom: 10px;
+        }
+
+        .cards {
+            min-height: 60px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background-color: #444;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* Wiki styles (from original) */
+        .wiki-sidebar {
+            width: 250px;
+            background-color: #333;
+            padding: 20px;
+        }
+
+        .wiki-content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #444;
+        }
+
+        #wikiList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #wikiList li {
+            background-color: #444;
+            padding: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        #wikiList li:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>Project Management App</h1>
+            <div id="loginSection">
+                <button id="loginBtn">Login with Google</button>
+                <div id="userInfo" style="display:none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Dashboard Section -->
+        <div id="projectDashboard" class="project-dashboard">
+            <h2>My Projects</h2>
+            <ul id="projectList"></ul>
+            <input type="text" id="newProjectName" placeholder="New project name">
+            <button onclick="createNewProject()">Create Project</button>
+        </div>
+
+        <!-- Kanban and Wiki Section -->
+        <div id="kanbanWikiSection" class="kanban-wiki-section">
+            <div class="tabs">
+                <div id="kanbanTab" class="tab active" onclick="showKanban()">Kanban</div>
+                <div id="wikiTab" class="tab" onclick="showWiki()">Wiki</div>
+            </div>
+
+            <div id="kanbanContainer" class="kanban-container kanban-app">
+                <div id="currentBoard" class="board"></div>
+            </div>
+
+            <div id="wikiContainer" class="wiki-container">
+                <div class="wiki-sidebar">
+                    <h2>Wiki Pages</h2>
+                    <ul id="wikiList"></ul>
+                </div>
+                <div class="wiki-content">
+                    <div id="pageContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZyZVomEVx6A25HHtYb0cNS0mNF-GKAUw",
+            authDomain: "jhkanban.firebaseapp.com",
+            projectId: "jhkanban",
+            storageBucket: "jhkanban.appspot.com",
+            messagingSenderId: "582897201706",
+            appId: "1:582897201706:web:64eef888e6996b487bc953"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUser = null;
+        let currentProjectId = null;
+
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+        const projectDashboard = document.getElementById('projectDashboard');
+        const kanbanWikiSection = document.getElementById('kanbanWikiSection');
+        const kanbanContainer = document.getElementById('kanbanContainer');
+        const wikiContainer = document.getElementById('wikiContainer');
+
+        loginBtn.addEventListener('click', () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider);
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                userName.textContent = user.displayName;
+                projectDashboard.style.display = 'block';
+                loadProjects();
+            } else {
+                currentUser = null;
+                loginBtn.style.display = 'block';
+                userInfo.style.display = 'none';
+                projectDashboard.style.display = 'none';
+                kanbanWikiSection.style.display = 'none';
+            }
+        });
+
+        async function createNewProject() {
+            const projectName = document.getElementById('newProjectName').value.trim();
+            if (projectName) {
+                await addDoc(collection(db, 'users', currentUser.uid, 'projects'), {
+                    name: projectName
+                });
+                loadProjects();
+                document.getElementById('newProjectName').value = '';
+            }
+        }
+
+        async function loadProjects() {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects'));
+            querySnapshot.forEach(doc => {
+                projectList.innerHTML += `<li onclick="selectProject('${doc.id}')">${doc.data().name}</li>`;
+            });
+        }
+
+        function selectProject(projectId) {
+            currentProjectId = projectId;
+            projectDashboard.style.display = 'none';
+            kanbanWikiSection.style.display = 'flex';
+            loadKanban();
+            loadWiki();
+        }
+
+        // Kanban Functions
+        async function loadKanban() {
+            kanbanContainer.innerHTML = '';
+            const columnsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'kanban', 'columns'));
+            columnsSnapshot.forEach(doc => {
+                const column = createColumn(doc.data().name, doc.id);
+                kanbanContainer.appendChild(column);
+            });
+
+            const cardsSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'kanban', 'cards'));
+            cardsSnapshot.forEach(cardDoc => {
+                const card = createCard(cardDoc.id, cardDoc.data().text);
+                const column = document.querySelector(`[data-column-id="${cardDoc.data().columnId}"]`);
+                column.querySelector('.cards').appendChild(card);
+            });
+        }
+
+        function createColumn(title, columnId) {
+            const column = document.createElement('div');
+            column.className = 'column';
+            column.dataset.columnId = columnId;
+            column.innerHTML = `
+                <div class="column-header">
+                    <h2>${title}</h2>
+                </div>
+                <div class="cards"></div>
+            `;
+            return column;
+        }
+
+        function createCard(id, text) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.id = id;
+            card.innerHTML = `<div class="card-title">${text}</div>`;
+            return card;
+        }
+
+        // Wiki Functions
+        async function loadWiki() {
+            const wikiList = document.getElementById('wikiList');
+            wikiList.innerHTML = '';
+            const pagesSnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki'));
+            pagesSnapshot.forEach(doc => {
+                const page = doc.data();
+                wikiList.innerHTML += `<li onclick="loadWikiPage('${doc.id}')">${page.title}</li>`;
+            });
+        }
+
+        async function loadWikiPage(pageId) {
+            const pageDoc = await getDoc(doc(db, 'users', currentUser.uid, 'projects', currentProjectId, 'wiki', pageId));
+            document.getElementById('pageContent').innerHTML = `
+                <h2>${pageDoc.data().title}</h2>
+                <p>${pageDoc.data().body}</p>
+            `;
+        }
+
+        // Tab switching
+        function showKanban() {
+            document.getElementById('kanbanTab').classList.add('active');
+            document.getElementById('wikiTab').classList.remove('active');
+            kanbanContainer.style.display = 'block';
+            wikiContainer.style.display = 'none';
+        }
+
+        function showWiki() {
+            document.getElementById('wikiTab').classList.add('active');
+            document.getElementById('kanbanTab').classList.remove('active');
+            kanbanContainer.style.display = 'none';
+            wikiContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
