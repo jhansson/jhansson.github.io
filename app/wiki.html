@@ -117,7 +117,8 @@
         }
 
         function loadPages() {
-            db.collection('pages').get().then((snapshot) => {
+            const userId = currentUser.uid;
+            db.collection('users').doc(userId).collection('wiki').get().then((snapshot) => {
                 const pageList = document.getElementById('pageList');
                 pageList.innerHTML = '<h2>Pages</h2>';
                 snapshot.forEach((doc) => {
@@ -128,7 +129,8 @@
         }
 
         function loadPage(pageId) {
-            db.collection('pages').doc(pageId).get().then((doc) => {
+            const userId = currentUser.uid;
+            db.collection('users').doc(userId).collection('wiki').doc(pageId).get().then((doc) => {
                 if (doc.exists) {
                     const page = doc.data();
                     document.getElementById('pageContent').innerHTML = `
@@ -163,12 +165,24 @@
         }
 
         function savePage(pageId = null) {
+            const userId = currentUser.uid;
             const title = document.getElementById('pageTitle').value;
             const body = document.getElementById('pageBody').value;
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+            
             if (pageId) {
-                db.collection('pages').doc(pageId).update({ title, body });
+                db.collection('users').doc(userId).collection('wiki').doc(pageId).update({ 
+                    title, 
+                    body, 
+                    updatedAt: timestamp 
+                });
             } else {
-                db.collection('pages').add({ title, body });
+                db.collection('users').doc(userId).collection('wiki').add({ 
+                    title, 
+                    body, 
+                    createdAt: timestamp, 
+                    updatedAt: timestamp 
+                });
             }
             document.getElementById('editForm').style.display = 'none';
             loadPages();
@@ -180,7 +194,8 @@
 
         function deletePage(pageId) {
             if (confirm('Are you sure you want to delete this page?')) {
-                db.collection('pages').doc(pageId).delete().then(() => {
+                const userId = currentUser.uid;
+                db.collection('users').doc(userId).collection('wiki').doc(pageId).delete().then(() => {
                     loadPages();
                     document.getElementById('pageContent').innerHTML = '';
                 });
