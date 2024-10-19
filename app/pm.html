@@ -218,13 +218,14 @@
         }
         .tab-content {
             display: none;
+            height: calc(100vh - 100px); /* Adjust based on your header height */
+            overflow: auto;
         }
         .tab-content.active {
-            display: block;
+            display: flex;
         }
         #wikiTab {
-            display: flex;
-            height: 100%;
+            flex-direction: row;
         }
         #wikiPageList {
             width: 250px;
@@ -244,9 +245,10 @@
             color: #ffffff;
         }
         #wikiMainContent {
+            display: flex;
+            flex-direction: column;
             flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
+            overflow: auto;
         }
         #wikiContent {
             background-color: rgba(255, 255, 255, 0.1);
@@ -255,7 +257,9 @@
             margin-top: 20px;
         }
         #wikiEditor {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .editor-toolbar {
             background-color: rgba(255, 255, 255, 0.1);
@@ -272,6 +276,20 @@
             background-color: rgba(255, 255, 255, 0.05);
             color: #e0e0e0;
             border-color: rgba(255, 255, 255, 0.2);
+        }
+        .EasyMDEContainer {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .EasyMDEContainer .CodeMirror {
+            flex-grow: 1;
+        }
+        .editor-toolbar {
+            flex-shrink: 0;
+        }
+        #wikiEditorButtons {
+            padding: 10px 0;
         }
     </style>
 </head>
@@ -314,8 +332,10 @@
                 <div id="wikiContent"></div>
                 <div id="wikiEditor" style="display: none;">
                     <textarea id="wikiPageContent"></textarea>
-                    <button onclick="saveWikiPage()">Save</button>
-                    <button onclick="cancelWikiEdit()">Cancel</button>
+                    <div id="wikiEditorButtons">
+                        <button onclick="saveWikiPage()">Save</button>
+                        <button onclick="cancelWikiEdit()">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -763,6 +783,10 @@
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
             document.getElementById(tabName + 'Tab').classList.add('active');
             document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
+
+            if (tabName === 'wiki' && !document.getElementById('wikiPageListItems').children.length) {
+                loadWikiPages();
+            }
         }
 
         async function loadWikiPages() {
@@ -818,7 +842,7 @@
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 document.getElementById('wikiContent').style.display = 'none';
-                document.getElementById('wikiEditor').style.display = 'block';
+                document.getElementById('wikiEditor').style.display = 'flex';
                 
                 if (!easyMDE) {
                     easyMDE = new EasyMDE({
@@ -860,10 +884,12 @@
             }
         }
 
-        // Add event listeners for tab navigation
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => switchTab(button.dataset.tab));
         });
+
+        // Initialize with Kanban tab active
+        switchTab('kanban');
     </script>
     
 </body>
