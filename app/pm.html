@@ -359,6 +359,54 @@
         #wikiEditorButtons {
             padding: 10px 0;
         }
+        /* Style the select container */
+        .left-section {
+          position: relative;
+          display: inline-block;
+        }
+        
+        /* Style the select element */
+        #boardSelector {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          background-color: #44475a;
+          color: #f8f8f2;
+          padding: 8px 16px;
+          padding-right: 30px; /* Space for the custom arrow */
+          border: none;
+          border-radius: 4px;
+          font-size: 1em;
+          cursor: pointer;
+        }
+        
+        /* Create a custom arrow */
+        .left-section::after {
+          content: '\25BC';
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          transform: translateY(-50%);
+          color: #f8f8f2;
+          pointer-events: none;
+        }
+        
+        /* Style the options */
+        #boardSelector option {
+          background-color: #282a36;
+          color: #f8f8f2;
+        }
+        
+        /* Hover effect for the select */
+        #boardSelector:hover {
+          background-color: #6272a4;
+        }
+        
+        /* Focus style for the select */
+        #boardSelector:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px rgba(98, 114, 164, 0.5);
+        }
     </style>
 </head>
 <body>
