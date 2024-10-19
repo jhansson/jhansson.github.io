@@ -139,7 +139,7 @@
         }
         .board {
             display: flex;
-            gap: 20px;
+            gap: 100px;
             overflow-x: auto;
             flex: 1;
             padding-bottom: 20px;
@@ -513,9 +513,11 @@
             if (user) {
                 currentUser = user;
                 document.querySelector('.header').style.display = 'flex';
+                loginBtn.style.display = 'none';
                 loadBoards();
             } else {
                 currentUser = null;
+                loginBtn.style.display = 'block';
                 document.querySelector('.header').style.display = 'none';
                 currentBoard.innerHTML = '';
                 boardSelector.innerHTML = '';
