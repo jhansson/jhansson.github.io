@@ -6,6 +6,8 @@
     <title>Multi-Board Kanban</title>
     <link rel="icon" href="https://static-00.iconduck.com/assets.00/kanban-icon-128x128-7t7999na.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
@@ -252,6 +254,25 @@
             padding: 20px;
             margin-top: 20px;
         }
+        #wikiEditor {
+            margin-top: 20px;
+        }
+        .editor-toolbar {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .editor-toolbar button {
+            color: #e0e0e0 !important;
+        }
+        .editor-toolbar button:hover,
+        .editor-toolbar button.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .CodeMirror {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #e0e0e0;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -292,7 +313,7 @@
                 </div>
                 <div id="wikiContent"></div>
                 <div id="wikiEditor" style="display: none;">
-                    <textarea id="wikiPageContent" rows="10" cols="50"></textarea>
+                    <textarea id="wikiPageContent"></textarea>
                     <button onclick="saveWikiPage()">Save</button>
                     <button onclick="cancelWikiEdit()">Cancel</button>
                 </div>
@@ -784,23 +805,37 @@
                     createdAt: new Date().toISOString()
                 });
                 loadWikiPages();
-                loadWikiPage(docRef.id);
+                currentWikiPageId = docRef.id;
+                editCurrentWikiPage(); // Open the editor immediately for the new page
             }
         }
 
+        let easyMDE;
+
+        // Modified editCurrentWikiPage function
         window.editCurrentWikiPage = async function() {
             const docRef = doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', currentWikiPageId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                const wikiPageContent = document.getElementById('wikiPageContent');
-                wikiPageContent.value = docSnap.data().content;
                 document.getElementById('wikiContent').style.display = 'none';
                 document.getElementById('wikiEditor').style.display = 'block';
+                
+                if (!easyMDE) {
+                    easyMDE = new EasyMDE({
+                        element: document.getElementById('wikiPageContent'),
+                        spellChecker: false,
+                        autofocus: true,
+                        placeholder: "Write your content here...",
+                        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen"],
+                    });
+                }
+                
+                easyMDE.value(docSnap.data().content);
             }
         }
 
-        window.saveWikiPage = async function() {
-            const content = document.getElementById('wikiPageContent').value;
+         window.saveWikiPage = async function() {
+            const content = easyMDE.value();
             await updateDoc(doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', currentWikiPageId), {
                 content: content
             });
@@ -812,6 +847,10 @@
         window.cancelWikiEdit = function() {
             document.getElementById('wikiContent').style.display = 'block';
             document.getElementById('wikiEditor').style.display = 'none';
+            if (easyMDE) {
+                easyMDE.toTextArea();
+                easyMDE = null;
+            }
         }
 
         window.deleteCurrentWikiPage = async function() {
