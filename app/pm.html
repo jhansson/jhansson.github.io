@@ -220,6 +220,32 @@
         .tab-content.active {
             display: block;
         }
+        #wikiTab {
+            display: flex;
+            height: 100%;
+        }
+        #wikiPageList {
+            width: 250px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #wikiPageList ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #wikiPageList li {
+            cursor: pointer;
+            padding: 5px 0;
+        }
+        #wikiPageList li:hover {
+            color: #ffffff;
+        }
+        #wikiMainContent {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
         #wikiContent {
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
@@ -255,17 +281,21 @@
         </div>
         
         <div id="wikiTab" class="tab-content">
-            <div id="wikiControls">
-                <select id="wikiPageSelector"></select>
+            <div id="wikiPageList">
                 <button onclick="createNewWikiPage()">New Page</button>
-                <button onclick="editCurrentWikiPage()">Edit Page</button>
-                <button onclick="deleteCurrentWikiPage()">Delete Page</button>
+                <ul id="wikiPageListItems"></ul>
             </div>
-            <div id="wikiContent"></div>
-            <div id="wikiEditor" style="display: none;">
-                <textarea id="wikiPageContent" rows="10" cols="50"></textarea>
-                <button onclick="saveWikiPage()">Save</button>
-                <button onclick="cancelWikiEdit()">Cancel</button>
+            <div id="wikiMainContent">
+                <div id="wikiControls">
+                    <button onclick="editCurrentWikiPage()">Edit Page</button>
+                    <button onclick="deleteCurrentWikiPage()">Delete Page</button>
+                </div>
+                <div id="wikiContent"></div>
+                <div id="wikiEditor" style="display: none;">
+                    <textarea id="wikiPageContent" rows="10" cols="50"></textarea>
+                    <button onclick="saveWikiPage()">Save</button>
+                    <button onclick="cancelWikiEdit()">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
@@ -715,27 +745,33 @@
         }
 
         async function loadWikiPages() {
-            const wikiPageSelector = document.getElementById('wikiPageSelector');
-            wikiPageSelector.innerHTML = '';
+            const wikiPageListItems = document.getElementById('wikiPageListItems');
+            wikiPageListItems.innerHTML = '';
             const querySnapshot = await getDocs(collection(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages'));
             querySnapshot.forEach(doc => {
-                const option = document.createElement('option');
-                option.value = doc.id;
-                option.textContent = doc.data().title;
-                wikiPageSelector.appendChild(option);
+                const li = document.createElement('li');
+                li.textContent = doc.data().title;
+                li.onclick = () => loadWikiPage(doc.id);
+                wikiPageListItems.appendChild(li);
             });
-            if (wikiPageSelector.options.length > 0) {
-                currentWikiPageId = wikiPageSelector.options[0].value;
-                loadWikiPage(currentWikiPageId);
+            if (querySnapshot.docs.length > 0) {
+                loadWikiPage(querySnapshot.docs[0].id);
+            } else {
+                document.getElementById('wikiContent').innerHTML = 'No pages yet. Create a new page to get started!';
             }
         }
 
         async function loadWikiPage(pageId) {
+            currentWikiPageId = pageId;
             const docRef = doc(db, 'users', currentUser.uid, 'boards', currentBoardId, 'wikiPages', pageId);
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const wikiContent = document.getElementById('wikiContent');
-                wikiContent.innerHTML = marked.parse(docSnap.data().content); // Using marked.js to render Markdown
+                wikiContent.innerHTML = `<h2>${docSnap.data().title}</h2>` + marked.parse(docSnap.data().content);
+                // Highlight the selected page in the list
+                document.querySelectorAll('#wikiPageListItems li').forEach(li => {
+                    li.style.fontWeight = li.textContent === docSnap.data().title ? 'bold' : 'normal';
+                });
             }
         }
 
@@ -748,6 +784,7 @@
                     createdAt: new Date().toISOString()
                 });
                 loadWikiPages();
+                loadWikiPage(docRef.id);
             }
         }
 
