@@ -50,8 +50,76 @@
         }
 
         .header {
-            padding: 0 98px;
-            margin-bottom: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 20px;
+          background-color: #282a36;
+        }
+        
+        .left-section select {
+          background-color: transparent;
+          color: #f8f8f2;
+          border: none;
+          font-size: 1.2em;
+          cursor: pointer;
+        }
+        
+        .center-section {
+          display: flex;
+          gap: 10px;
+        }
+        
+        .center-section button {
+          background-color: #44475a;
+          color: #f8f8f2;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        
+        .center-section button.active {
+          background-color: #6272a4;
+        }
+        
+        .right-section .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+        
+        .dropbtn {
+          background-color: #44475a;
+          color: #f8f8f2;
+          padding: 8px 16px;
+          border: none;
+          cursor: pointer;
+          border-radius: 4px;
+        }
+        
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          right: 0;
+          background-color: #282a36;
+          min-width: 160px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+        }
+        
+        .dropdown-content a {
+          color: #f8f8f2;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+        
+        .dropdown-content a:hover {
+          background-color: #44475a;
+        }
+        
+        .dropdown:hover .dropdown-content {
+          display: block;
         }
 
         #userInfo {
@@ -296,25 +364,26 @@
 <body>
     <div class="kanban-app">
         <div class="header">
-            <div>
-              <button id="loginBtn">Login with Google</button>
-                <div id="userInfo" style="display:none;">
-                    <span id="userName"></span>
-                    <button id="logoutBtn">Logout</button>
-                </div>
-                <div id="boardManagement" class="board-controls" style="display:none;">
-                    <select id="boardSelector" onchange="switchBoard()"></select>
-                    <input type="text" id="newBoardName" placeholder="New board name">
-                    <button onclick="createNewBoard()">Create New Board</button>                    
-                    <button onclick="deleteCurrentBoard()">Delete Current Board</button>
-                </div>
-            </div>
+          <div class="left-section">
+            <select id="boardSelector" onchange="switchBoard()">
+              <option>Nova Mekanikum</option>
+            </select>
           </div>
-        <div class="tab-navigation">
+          <div class="center-section">
             <button class="tab-button active" data-tab="kanban">Kanban Board</button>
             <button class="tab-button" data-tab="wiki">Wiki</button>
-        </div>
-        
+          </div>
+          <div class="right-section">
+            <div class="dropdown">
+              <button class="dropbtn">Menu</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="createNewBoard()">Create New Board</a>
+                <a href="#" onclick="deleteCurrentBoard()">Delete Board</a>
+                <a href="#" id="logoutBtn">Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>        
         <div id="kanbanTab" class="tab-content active">
             <div id="currentBoard" class="board"></div>
         </div>
@@ -379,23 +448,26 @@
             signInWithPopup(auth, provider);
         });
 
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth);
-        });
+        function logout() {
+            signOut(auth).then(() => {
+                // Sign-out successful.
+                console.log("User signed out");
+            }).catch((error) => {
+                // An error happened.
+                console.error("Error signing out:", error);
+            });
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', logout);
 
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUser = user;
-                loginBtn.style.display = 'none';
-                userInfo.style.display = 'block';
-                boardManagement.style.display = 'block';
-                userName.textContent = user.displayName;
+                document.querySelector('.header').style.display = 'flex';
                 loadBoards();
             } else {
                 currentUser = null;
-                loginBtn.style.display = 'block';
-                userInfo.style.display = 'none';
-                boardManagement.style.display = 'none';
+                document.querySelector('.header').style.display = 'none';
                 currentBoard.innerHTML = '';
                 boardSelector.innerHTML = '';
             }
@@ -422,7 +494,7 @@
         }
 
         window.createNewBoard = async function() {
-            const boardName = document.getElementById('newBoardName').value.trim();
+            const boardName = prompt('Enter a name for the new board:');
             if (boardName) {
                 const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'boards'), {
                     name: boardName
@@ -431,7 +503,6 @@
                 await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'inprogress'), { name: 'In Progress' });
                 await setDoc(doc(db, 'users', currentUser.uid, 'boards', docRef.id, 'columns', 'done'), { name: 'Done' });
                 loadBoards();
-                document.getElementById('newBoardName').value = '';
             }
         }
 
@@ -777,17 +848,21 @@
             }
         }
 
-        // Add new functions for wiki functionality
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
             document.getElementById(tabName + 'Tab').classList.add('active');
             document.querySelector(`.tab-button[data-tab="${tabName}"]`).classList.add('active');
-
+        
             if (tabName === 'wiki' && !document.getElementById('wikiPageListItems').children.length) {
                 loadWikiPages();
             }
         }
+        
+        // Add this event listener after your existing code
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => switchTab(button.dataset.tab));
+        });
 
         async function loadWikiPages() {
             const wikiPageListItems = document.getElementById('wikiPageListItems');
