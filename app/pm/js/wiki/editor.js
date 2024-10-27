@@ -7,7 +7,7 @@ export function initializeEditor(content) {
             spellChecker: false,
             autofocus: true,
             placeholder: "Write your content here...",
-            toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen"],
+            toolbar: ["bold", "italic", "strikethrough", "code", "unordered-list", "ordered-list", "link", "image"],
         });
     }
     
