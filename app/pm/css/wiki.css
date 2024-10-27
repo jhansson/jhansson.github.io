@@ -110,6 +110,23 @@
 .wiki-page-item {
     display: flex;
     align-items: center;
+    cursor: grab;
+}
+
+.dragging {
+    cursor: grabbing;
+}
+
+.drop-indicator {
+    height: 2px;
+    background-color: #0066ff;
+    margin: 4px 0;
+    animation: glow 1.5s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
 
 .wiki-page-arrow {
