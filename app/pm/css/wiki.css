@@ -151,7 +151,7 @@
 }
 
 .wiki-page-title {
-    flex-grow: 1;
+    cursor: pointer;
 }
 
 .wiki-page-title:hover {
