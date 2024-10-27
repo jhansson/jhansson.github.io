@@ -89,6 +89,14 @@
     margin-bottom: 20px;
 }
 
+#wikiContent :is(h1,.h1,h2,.h2,h3,.h3,h4,.h4,h5,.h5,h6,.h6) {
+    margin-top: 0rem;
+}
+
+#wikiContent :is(h1,.h1,h2,.h2,h3,.h3,h4,.h4,h5,.h5,h6,.h6):not(:first-child) {
+    margin-top: 3rem;
+}
+
 #wikiPageListItems ul {
     list-style-type: none;
     padding-left: 20px;

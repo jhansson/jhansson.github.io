@@ -98,7 +98,7 @@ async function loadWikiPage(pageId) {
     if (docSnap.exists()) {
         const page = docSnap.data();
         const wikiContent = document.getElementById('wikiContent');
-        wikiContent.innerHTML = `<h2>${page.title}</h2>` + marked.parse(page.content);
+        wikiContent.innerHTML = `<h1>${page.title}</h1>` + marked.parse(page.content);
         
         document.querySelectorAll('#wikiPageListItems li .wiki-page-title').forEach(span => {
             span.style.fontWeight = span.textContent === page.title ? 'bold' : 'normal';
