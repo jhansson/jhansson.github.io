@@ -1,0 +1,223 @@
+body {
+    background: #101014;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+.kanban-app {
+    border-radius: 15px;
+    padding: 20px;
+    width: 90%;
+    max-width: 1200px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  /*background-color: #282a36;*/
+  border-bottom: 1px solid #343437;
+}
+
+.left-section select {
+  background-color: transparent;
+  color: #f8f8f2;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+.center-section {
+  display: flex;
+  gap: 10px;
+}
+
+.center-section button {
+  background-color: #101014;
+  color: #f8f8f2;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.center-section button.active {
+  background-color: #101014;
+  text-decoration: underline;
+}
+
+.center-section button:hover {
+  background-color: #1e1e25;
+}
+
+.right-section .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: #1c1c20;
+  color: #f8f8f2;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #1c1c20;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: #f8f8f2;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #44475a;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+#userInfo {
+    display: inline-block;
+    float: right;
+}
+
+#userName {
+    color: #6a6c83;
+    font-size: 0.9rem;
+    padding: 8px;
+}
+
+input, select, button {
+    background-color: #1c1c20;
+    border: 1px solid #3e3e41;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+}
+button {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+button:hover {
+    background-color: #3e3e41;
+}
+.tab-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.tab-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: #1c1c20;
+    border: none;
+    color: #e0e0e0;
+    border-radius: 4px;
+}
+.tab-button.active {
+    background-color: #3e3e41;
+}
+.tab-content {
+    display: none;
+    height: calc(100vh - 100px); /* Adjust based on your header height */
+    overflow: auto;
+}
+.tab-content.active {
+    display: flex;
+}
+
+
+/* Style the select container */
+.left-section {
+position: relative;
+display: inline-block;
+}
+
+/* Style the select element */
+#boardSelector {
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+color: #f8f8f2;
+padding: 8px 16px;
+padding-right: 30px; /* Space for the custom arrow */
+border: none;
+border-radius: 4px;
+font-size: 1em;
+cursor: pointer;
+}
+
+/* Create a custom arrow */
+.left-section::after {
+content: '\02C5';
+position: absolute;
+top: 50%;
+right: 10px;
+transform: translateY(-50%);
+color: #f8f8f2;
+pointer-events: none;
+}
+
+/* Style the options */
+#boardSelector option {
+background-color: #1f1f27;
+color: #f8f8f2;
+}
+
+/* Hover effect for the select */
+#boardSelector:hover {
+background-color: #1f1f27;
+}
+
+/* Focus style for the select */
+#boardSelector:focus {
+outline: none;
+}
+
+::-webkit-scrollbar {
+  width: 18px;
+  height: 18px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1c1c20;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4a4a4a;
+  border-radius: 6px;
+  border: 3px solid #1c1c20;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5a5a;
+}
+
+::-webkit-scrollbar-corner {
+  background: #1c1c20;
+}

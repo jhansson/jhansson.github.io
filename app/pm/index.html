@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Board Kanban</title>
+    <link rel="icon" href="https://static-00.iconduck.com/assets.00/kanban-icon-128x128-7t7999na.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/kanban.css">
+    <link rel="stylesheet" href="css/wiki.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.css">
+    <link rel="stylesheet" href="css/gantt.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
+</head>
+<body>
+    <a href="#" id="loginBtn">Login</a>
+    <div class="kanban-app">
+        <div class="header">
+          <div class="left-section">
+            <select id="boardSelector" onchange="switchBoard()">
+              <option>Nova Mekanikum</option>
+            </select>
+          </div>
+          <div class="center-section">
+            <button class="tab-button active" data-tab="kanban">Kanban Board</button>
+            <button class="tab-button" data-tab="gantt">Timeline</button>
+            <button class="tab-button" data-tab="wiki">Wiki</button>            
+          </div>
+          <div class="right-section">
+            <div class="dropdown">
+              <button class="dropbtn">Menu</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="createNewBoard()">Create New Board</a>
+                <a href="#" onclick="deleteCurrentBoard()">Delete Board</a>
+                <a href="#" id="logoutBtn">Logout</a>                
+              </div>
+            </div>
+          </div>
+        </div>        
+        <div id="kanbanTab" class="tab-content active">
+            <div id="currentBoard" class="board"></div>
+        </div>
+        
+        <div id="wikiTab" class="tab-content">
+            <div id="wikiPageList">
+                <button onclick="createNewWikiPage()">New Page</button>
+                <ul id="wikiPageListItems"></ul>
+            </div>
+            <div id="wikiMainContent">
+                <div id="wikiControls">
+                    <button onclick="editCurrentWikiPage()">Edit Page</button>
+                    <button onclick="deleteCurrentWikiPage()">Delete Page</button>
+                    <button onclick="createSubPage()">Create Subpage</button>
+                </div>
+                <div id="wikiContent"></div>
+                <div id="wikiEditor" style="display: none;">
+                    <textarea id="wikiPageContent"></textarea>
+                    <div id="wikiEditorButtons">
+                        <button onclick="saveWikiPage()">Save</button>
+                        <button onclick="cancelWikiEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ganttTab" class="tab-content">
+            <div id="ganttControls">
+                <button onclick="addGanttTask()">Add Task</button>
+                <button onclick="editGanttTask()">Edit Task</button>
+                <button onclick="deleteGanttTask()">Delete Task</button>
+            </div>
+            <div id="ganttChart"></div>
+            <div id="ganttViewControls">
+                <button data-view-mode="Day">Day</button>
+                <button data-view-mode="Week">Week</button>
+                <button data-view-mode="Month">Month</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Add/Edit Task</h2>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <label for="taskName">Task Name:</label>
+                <input type="text" id="taskName" required>
+                <label for="taskStart">Start Date:</label>
+                <input type="date" id="taskStart" required>
+                <label for="taskEnd">End Date:</label>
+                <input type="date" id="taskEnd" required>
+                <label for="taskProgress">Progress (%):</label>
+                <input type="number" id="taskProgress" min="0" max="100" required>
+                <button type="submit">Save Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

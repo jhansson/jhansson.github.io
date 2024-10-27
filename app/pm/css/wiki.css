@@ -1,0 +1,147 @@
+#wikiTab {
+    flex-direction: row;
+}
+#wikiPageList {
+    width: 250px;
+    padding: 20px;
+    overflow-y: auto;
+}
+#wikiPageList ul {
+    background-color: #18181b;
+    list-style-type: none;
+    padding: 20px 0 20px 5px;
+    border-radius: 14px;  
+}
+#wikiPageList li {
+    cursor: pointer;
+    padding: 9px 0;
+    color: #fafafa;
+    font-size: .9rem;
+}
+#wikiPageList li ul {
+    border: none;
+}
+#wikiPageList li:hover {
+    /*background-color: #282a36;            */
+}
+
+#wikiMainContent {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: auto;
+    margin-top: 20px;
+}
+#wikiContent {
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    color: #fafafa;
+    max-width: 860px;
+}
+#wikiEditor {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 860px;
+}
+.editor-toolbar {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.editor-toolbar button {
+    color: #e0e0e0 !important;
+}
+.editor-toolbar button:hover,
+.editor-toolbar button.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.CodeMirror {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.EasyMDEContainer {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.EasyMDEContainer .CodeMirror {
+    flex-grow: 1;
+}
+.editor-toolbar {
+    flex-shrink: 0;
+}
+#wikiEditorButtons {
+    padding: 10px 0;
+}
+
+
+/* Ensure the wiki content has a fixed height and scrolls */
+#wikiContent {
+    max-height: calc(100vh - 200px); /* Adjust this value as needed */
+    overflow-y: auto;
+    padding-right: 20px; /* Prevent content from being hidden under the scrollbar */
+    line-height: 1.65;
+}
+
+#wikiContent p {
+    margin-bottom: 20px;
+}
+
+#wikiPageListItems ul {
+    list-style-type: none;
+    padding-left: 20px;
+    border: 1px solid #555;
+    border-radius: 14px;
+    display: block;
+}
+
+#wikiPageListItems li {
+    cursor: pointer;
+    padding: 5px 0;
+    color: #fafafa;
+}
+
+#wikiPageListItems li:hover {
+    /*background-color: #282a36;*/
+}
+
+.wiki-page-item {
+    display: flex;
+    align-items: center;
+}
+
+.wiki-page-arrow {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+    cursor: pointer;
+    color:#3e3e46;
+}
+
+.wiki-page-arrow::before {
+    content: '❯';
+    font-size: 14px;
+    transition: transform 0.3s;
+}
+
+.wiki-page-arrow.expanded::before {
+    transform: rotate(90deg);
+}
+
+.wiki-page-title {
+    flex-grow: 1;
+}
+
+.wiki-page-title:hover {
+    text-decoration: underline;
+}
+
+.wiki-subpages {
+    margin-left: 0px;
+    padding: 4px 0 0 9px !important;
+}

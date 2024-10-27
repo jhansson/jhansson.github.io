@@ -1,0 +1,202 @@
+#ganttTab {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    color: #e0e0e0;
+}
+
+#ganttTab.active {
+    display: flex;
+}
+
+.gantt-container {
+    position: relative;
+    overflow: auto;
+    font-size: 12px;
+}
+
+#ganttChart {
+    flex-grow: 1;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #1c1c20;
+}
+
+#ganttControls {
+    padding: 20px 10px 10px 10px;
+}
+
+#ganttControls button {
+    background-color: #1c1c20;
+    border: 1px solid #3e3e41;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#ganttControls button:hover {
+    background-color: #4a4a4a;
+}
+
+/* Override Frappe Gantt styles for dark theme */
+.gantt .grid-background {
+    
+}
+
+.gantt .grid-header {
+    fill: #18181c;
+    stroke: #18181c;
+}
+
+.gantt .grid-row {
+    fill: #101014;
+}
+
+.gantt .grid-row:nth-child(even) {
+    fill: #101014;
+}
+
+.gantt .bar {
+    fill: #232329;
+    stroke: #8d99a6;
+    stroke-width: 0;
+    transition: stroke-width .3s ease;
+    user-select: none;
+}
+
+.gantt .bar-wrapper.active .bar {
+    fill: #303439;
+}
+
+.gantt .bar-wrapper:hover .bar {
+    fill: #303439;
+}
+
+.gantt .bar-progress {
+    fill: #325739;
+}
+
+.gantt .row-line {
+    stroke: #3a3a3a;
+}
+
+.gantt .tick {
+    stroke: #4a4a4a;
+}
+
+.gantt .today-highlight {
+    fill: #1f2433;
+    opacity: 0.5;
+}
+
+.gantt .bar-wrapper:hover .bar-progress {
+    fill: #5a5a5a;
+}
+
+.gantt .bar-label {
+    fill: #e0e0e0;
+}
+
+.gantt .lower-text, .gantt .upper-text {
+    fill: #e0e0e0;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #3a3a3a;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #e0e0e0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#taskForm {
+    display: flex;
+    flex-direction: column;
+}
+
+#taskForm label {
+    margin-top: 10px;
+}
+
+#taskForm input {
+    margin-bottom: 10px;
+    background-color: #3a3a3a;
+    border: 1px solid #4a4a4a;
+    color: #e0e0e0;
+    padding: 5px;
+}
+
+#taskForm button {
+    margin-top: 20px;
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#taskForm button:hover {
+    background-color: #5a5a5a;
+}
+
+#ganttViewControls {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: #1c1c20;
+    border-top: 1px solid #3e3e41;
+}
+
+#ganttViewControls button {
+    background-color: #232329;
+    border: 1px solid #3e3e41;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#ganttViewControls button:hover {
+    background-color: #4a4a4a;
+}
+
+#ganttViewControls button.active {
+    background-color: #325739;
+    border-color: #4a6d52;
+}
