@@ -71,10 +71,17 @@ switchTab('kanban');
 // Add event listeners for tab buttons
 document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', () => {
-        console.log("Tab clicked:", button.dataset.tab);
-        switchTab(button.dataset.tab);
-        if (button.dataset.tab === 'gantt') {
+        const tabId = button.dataset.tab;
+        console.log("Tab clicked:", tabId);
+        switchTab(tabId);
+        
+        if (tabId === 'gantt') {
             initGanttIfReady();
+        } else if (tabId === 'whiteboard') {
+            if (!whiteboard) {
+                whiteboard = new Whiteboard();
+            }
+            whiteboard.loadBoard();
         }
     });
 });
@@ -87,10 +94,3 @@ window.deleteGanttTask = deleteGanttTask;
 console.log("main.js fully loaded");
 
 let whiteboard;
-
-if (tabId === 'whiteboard') {
-    if (!whiteboard) {
-        whiteboard = new Whiteboard();
-    }
-    whiteboard.loadBoard();
-}
