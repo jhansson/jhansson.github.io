@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/wiki.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.css">
     <link rel="stylesheet" href="css/gantt.css">
+    <link rel="stylesheet" href="css/whiteboard.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>    
     <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.6.1/dist/frappe-gantt.min.js"></script>
@@ -28,7 +29,8 @@
           <div class="center-section">
             <button class="tab-button active" data-tab="kanban">Kanban Board</button>
             <button class="tab-button" data-tab="gantt">Timeline</button>
-            <button class="tab-button" data-tab="wiki">Wiki</button>            
+            <button class="tab-button" data-tab="wiki">Wiki</button>
+            <button class="tab-button" data-tab="whiteboard">Whiteboard</button>            
           </div>
           <div class="right-section">
             <div class="dropdown">
@@ -78,6 +80,28 @@
                 <button data-view-mode="Day">Day</button>
                 <button data-view-mode="Week">Week</button>
                 <button data-view-mode="Month">Month</button>
+            </div>
+        </div>
+
+        <div id="whiteboardTab" class="tab-content">
+            <div class="whiteboard-controls">
+                <div class="tool-section">
+                    <button id="selectTool" class="tool-btn active" data-tool="select">Select</button>
+                    <button id="penTool" class="tool-btn" data-tool="pen">Pen</button>
+                    <button id="noteTool" class="tool-btn" data-tool="note">Sticky Note</button>
+                    <button id="shapeTool" class="tool-btn" data-tool="shape">Shape</button>
+                </div>
+                <div class="color-section">
+                    <input type="color" id="colorPicker" value="#000000">
+                    <input type="range" id="strokeWidth" min="1" max="20" value="2">
+                </div>
+                <div class="action-section">
+                    <button id="clearBoard">Clear</button>
+                    <button id="saveBoard">Save</button>
+                </div>
+            </div>
+            <div id="whiteboardContainer">
+                <canvas id="whiteboardCanvas"></canvas>
             </div>
         </div>
     </div>

@@ -7,6 +7,7 @@ import { setupKanban, loadBoards } from './kanban/kanban.js';
 import { setupWiki } from './wiki/wiki.js';
 import { switchTab } from './utils.js';
 import { initGantt, addGanttTask, editGanttTask, deleteGanttTask, setupGantt } from './gantt.js';
+import { Whiteboard } from './whiteboard/whiteboard.js';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -84,3 +85,12 @@ window.editGanttTask = editGanttTask;
 window.deleteGanttTask = deleteGanttTask;
 
 console.log("main.js fully loaded");
+
+let whiteboard;
+
+if (tabId === 'whiteboard') {
+    if (!whiteboard) {
+        whiteboard = new Whiteboard();
+    }
+    whiteboard.loadBoard();
+}
