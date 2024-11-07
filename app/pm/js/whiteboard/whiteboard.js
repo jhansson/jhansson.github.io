@@ -60,6 +60,9 @@ export class Whiteboard {
             { type: 'image', bar: this.imageOptionsBar }
         ];
 
+        // Hide all options bars initially
+        this.hideAllOptionsBars();
+
         // Initialize canvas and set up event listeners
         this.initializeCanvas();
         this.setupEventListeners();
@@ -84,6 +87,36 @@ export class Whiteboard {
     }
 
     setupEventListeners() {
+        // Move the container event listener to the end of setupEventListeners
+        // and modify it to check for notes first
+        this.container.addEventListener('click', (e) => {
+            console.log('Container click event');
+            console.log('Target:', e.target);
+            
+            // Check if we clicked a note or its textarea
+            const note = e.target.closest('.sticky-note');
+            if (note) {
+                console.log('Found sticky note:', note);
+                e.stopPropagation();
+                
+                // Don't handle selection if clicking delete button
+                if (e.target.classList.contains('note-delete-btn')) {
+                    return;
+                }
+                
+                this.selectNote(note);
+                return;
+            }
+            
+            // If we didn't click a note, and we're not clicking an options bar,
+            // deselect any selected note
+            if (!e.target.closest('.options-bar') && this.selectedNote) {
+                this.deselectNote(this.selectedNote);
+            }
+        }, true); // Add capture phase
+
+        
+
         this.canvas.addEventListener('mousedown', (e) => {
             if (e.button === 2) return;
             
@@ -332,6 +365,68 @@ export class Whiteboard {
         this.saveButton.addEventListener('click', () => this.saveBoard());
     }
 
+    // Modify createStickyNote to ensure notes are above canvas
+    createStickyNote(pos) {
+        console.log('Creating sticky note at position:', pos);
+        const note = document.createElement('div');
+        note.className = 'sticky-note';
+        note.style.zIndex = '1000'; // Ensure notes are above canvas
+        
+        // Store original unscaled position
+        note.setAttribute('data-x', pos.x);
+        note.setAttribute('data-y', pos.y);
+        
+        // Apply scaled position
+        const scaledX = pos.x * this.scale + this.offsetX;
+        const scaledY = pos.y * this.scale + this.offsetY;
+        
+        note.style.left = `${scaledX}px`;
+        note.style.top = `${scaledY}px`;
+        note.style.width = '200px';
+        note.style.height = '200px';
+        note.style.transform = `scale(${this.scale})`;
+        note.style.transformOrigin = 'top left';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'note-delete-btn';
+        deleteBtn.innerHTML = '×';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            note.remove();
+        };
+        note.appendChild(deleteBtn);
+        
+        const textarea = document.createElement('textarea');
+        textarea.placeholder = 'Type your note here...';
+        textarea.spellcheck = false;
+        
+        // Add mousedown handler for textarea
+        textarea.addEventListener('mousedown', (e) => {
+            console.log('Textarea mousedown event');
+            e.stopPropagation();
+            this.selectNote(note);
+        });
+        
+        note.appendChild(textarea);
+        this.container.appendChild(note);
+        
+        // Add mousedown handler for the entire note
+        note.addEventListener('mousedown', (e) => {
+            console.log('Note mousedown event');
+            console.log('Target:', e.target);
+            e.stopPropagation();
+            if (e.target !== textarea) {
+                this.selectNote(note);
+            }
+        });
+        
+        this.makeDraggable(note);
+        textarea.focus();
+        this.selectNote(note);
+        
+        return note;
+    }
+
     setTool(tool) {
         this.currentTool = tool;
         document.querySelectorAll('.tool-btn').forEach(btn => {
@@ -430,145 +525,6 @@ export class Whiteboard {
         };
     }
 
-    createStickyNote(pos) {
-        const note = document.createElement('div');
-        note.className = 'sticky-note';
-        
-        // Store original unscaled position
-        note.setAttribute('data-x', pos.x);
-        note.setAttribute('data-y', pos.y);
-        
-        // Apply scaled position
-        const scaledX = pos.x * this.scale + this.offsetX;
-        const scaledY = pos.y * this.scale + this.offsetY;
-        
-        note.style.left = `${scaledX}px`;
-        note.style.top = `${scaledY}px`;
-        note.style.width = '200px';
-        note.style.height = '200px';
-        note.style.transform = `scale(${this.scale})`;
-        note.style.transformOrigin = 'top left';
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'note-delete-btn';
-        deleteBtn.innerHTML = '×';
-        deleteBtn.onclick = (e) => {
-            e.stopPropagation();
-            note.remove();
-        };
-        note.appendChild(deleteBtn);
-        
-        const textarea = document.createElement('textarea');
-        textarea.placeholder = 'Type your note here...';
-        textarea.spellcheck = false;
-        
-        textarea.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-        });
-        
-        note.appendChild(textarea);
-        this.container.appendChild(note);
-        this.makeDraggable(note);
-        
-        textarea.focus();
-
-        note.addEventListener('click', (e) => {
-            if (e.target === note || e.target === textarea) {
-                this.selectNote(note);
-                e.stopPropagation();
-            }
-        });
-
-        textarea.addEventListener('click', (e) => {
-            if (note.classList.contains('selected')) {
-                e.stopPropagation();
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!note.contains(e.target) && !this.optionsBar.contains(e.target)) {
-                this.deselectNote(note);
-            }
-        });
-
-        note.addEventListener('mousedown', (e) => {
-            this.deselectAll();
-            this.selectNote(note);
-            e.stopPropagation();
-        });
-    }
-
-    makeDraggable(element, textElement) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        
-        const dragMouseDown = (e) => {
-            if (e.button === 2) return;
-            
-            // Only prevent dragging when clicking the editable content
-            if (e.target.className === 'text-content') {
-                return;
-            }
-            
-            e.preventDefault();
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-
-            // Select the element when starting to drag
-            if (element.classList.contains('sticky-note')) {
-                this.selectNote(element);
-            } else if (element.classList.contains('text-element')) {
-                this.selectText(textElement);
-            }
-        };
-
-        const elementDrag = (e) => {
-            e.preventDefault();
-            
-            // Calculate the movement in screen pixels
-            const dx = (e.clientX - pos3) / this.scale;
-            const dy = (e.clientY - pos4) / this.scale;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            
-            // Update the data attributes with unscaled position
-            const originalX = parseFloat(element.getAttribute('data-x'));
-            const originalY = parseFloat(element.getAttribute('data-y'));
-            const newX = originalX + dx;
-            const newY = originalY + dy;
-            
-            element.setAttribute('data-x', newX);
-            element.setAttribute('data-y', newY);
-            
-            // Apply scaled position
-            const scaledX = newX * this.scale + this.offsetX;
-            const scaledY = newY * this.scale + this.offsetY;
-            
-            element.style.left = `${scaledX}px`;
-            element.style.top = `${scaledY}px`;
-
-            // Update textElement position if it exists
-            if (textElement) {
-                textElement.x = newX;
-                textElement.y = newY;
-                this.showOptionsBar(textElement, this.textOptionsBar);
-            }
-
-            // Update options bar position during drag
-            if (element.classList.contains('sticky-note') && this.selectedNote === element) {
-                this.selectNote(element);
-            }
-        };
-
-        const closeDragElement = () => {
-            document.onmouseup = null;
-            document.onmousemove = null;
-        };
-
-        element.onmousedown = dragMouseDown;
-    }
-
     async saveBoard() {
         if (!this.auth.currentUser) return;
         
@@ -576,13 +532,25 @@ export class Whiteboard {
         this.saveButton.innerHTML = 'Saving...';
         this.saveButton.style.opacity = '0.7';
         
-        // Clean up elements for saving by removing cached images and creating a clean copy
+        // Clean up elements for saving by removing DOM elements and creating a clean copy
         const elementsToSave = this.elements.map(element => {
             const cleanElement = { ...element };
-            // Remove the cached image DOM element before saving
+            
+            // Remove the cached image DOM element
             if (cleanElement.cachedImage) {
                 delete cleanElement.cachedImage;
             }
+            
+            // For text elements, save the content and styling
+            if (cleanElement.type === 'text' && cleanElement.domElement) {
+                const textContent = cleanElement.domElement.querySelector('.text-content');
+                cleanElement.content = textContent ? textContent.innerHTML : '';
+                cleanElement.fontSize = textContent ? textContent.style.fontSize || '14px' : '14px';
+                cleanElement.fontFamily = textContent ? textContent.style.fontFamily || 'Inter' : 'Inter';
+                cleanElement.color = textContent ? textContent.style.color || '#FFFFFF' : '#FFFFFF';
+                delete cleanElement.domElement;  // Remove DOM element reference
+            }
+            
             return cleanElement;
         });
         
@@ -637,9 +605,56 @@ export class Whiteboard {
             
             if (snapshot.exists()) {
                 const data = snapshot.data();
-                this.elements = data.elements || [];
-                this.shapes = data.shapes || [];
                 
+                // Clear existing elements
+                this.elements = [];
+                document.querySelectorAll('.text-element').forEach(el => el.remove());
+                
+                // Load elements
+                data.elements?.forEach(element => {
+                    if (element.type === 'text') {
+                        // Recreate text element
+                        const text = document.createElement('div');
+                        text.className = 'text-element';
+                        
+                        const textContent = document.createElement('div');
+                        textContent.className = 'text-content';
+                        textContent.contentEditable = true;
+                        textContent.innerHTML = element.content || '';
+                        textContent.style.fontSize = element.fontSize || '14px';
+                        textContent.style.fontFamily = element.fontFamily || 'Inter';
+                        textContent.style.color = element.color || '#FFFFFF';
+                        
+                        text.appendChild(textContent);
+                        
+                        // Set position
+                        text.style.left = `${element.x * this.scale + this.offsetX}px`;
+                        text.style.top = `${element.y * this.scale + this.offsetY}px`;
+                        text.style.transform = `scale(${this.scale})`;
+                        text.style.transformOrigin = 'top left';
+                        
+                        text.setAttribute('data-x', element.x);
+                        text.setAttribute('data-y', element.y);
+                        
+                        // Add to container and make draggable
+                        this.container.appendChild(text);
+                        
+                        // Create element object
+                        const textElement = {
+                            ...element,
+                            domElement: text
+                        };
+                        
+                        this.elements.push(textElement);
+                        this.makeDraggable(text, textElement);
+                        
+                        // Add event listeners
+                        this.setupTextElementEventListeners(text, textElement);
+                    } else {
+                        this.elements.push(element);
+                    }
+                });
+
                 // Reset zoom and pan before loading images
                 this.scale = 1;
                 this.offsetX = 0;
@@ -879,28 +894,17 @@ export class Whiteboard {
     }
 
     findPathAtPoint(pos) {
-        // Check paths in reverse order (top to bottom)
         for (let i = this.elements.length - 1; i >= 0; i--) {
             const element = this.elements[i];
             if (element.type === 'path') {
-                // Increase threshold for easier selection
-                const threshold = Math.max(20, element.width + 10);
-                
-                // Check each segment of the path
+                const threshold = Math.max(10, element.width + 5);
                 for (let j = 0; j < element.points.length - 1; j++) {
-                    const p1 = element.points[j];
-                    const p2 = element.points[j + 1];
-                    
-                    // Calculate distance from point to line segment
-                    const distance = this.pointToLineDistance(pos, p1, p2);
-                    if (distance < threshold) {
-                        console.log('Path found!'); // Debug log
+                    if (this.pointToLineDistance(pos, element.points[j], element.points[j + 1]) < threshold) {
                         return element;
                     }
                 }
             }
         }
-        console.log('No path found'); // Debug log
         return null;
     }
 
@@ -1066,7 +1070,7 @@ export class Whiteboard {
 
     createOptionsBar() {
         const bar = document.createElement('div');
-        bar.className = 'options-bar';
+        bar.className = 'options-bar note-options-bar';
         
         // Font size control
         const fontSize = document.createElement('select');
@@ -1085,27 +1089,61 @@ export class Whiteboard {
             }
         });
 
-        // Color options
-        const colors = ['#333333', '#325739', '#b93973', '#3942b9', '#b98439'];
-        const colorOptions = document.createElement('div');
-        colorOptions.className = 'color-options';
-        
-        colors.forEach(color => {
-            const colorBtn = document.createElement('div');
-            colorBtn.className = 'color-option';
-            colorBtn.style.backgroundColor = color;
-            colorBtn.addEventListener('click', () => {
-                if (this.selectedNote) {
-                    this.selectedNote.style.backgroundColor = color;
-                }
-            });
-            colorOptions.appendChild(colorBtn);
+        // Replace color options with color picker
+        const colorPicker = document.createElement('input');
+        colorPicker.type = 'color';
+        colorPicker.value = '#2d2d2d';  // Default note color
+        colorPicker.addEventListener('input', () => {
+            if (this.selectedNote) {
+                this.selectedNote.style.backgroundColor = colorPicker.value;
+            }
         });
 
-        // Add elements to bar
-        bar.appendChild(fontSize);
-        bar.appendChild(document.createElement('div')).className = 'divider';
-        bar.appendChild(colorOptions);
+        // Z-index controls
+        const toFrontBtn = document.createElement('button');
+        toFrontBtn.innerHTML = '⬆️';
+        toFrontBtn.onclick = () => {
+            if (this.selectedNote) {
+                const currentZ = parseInt(this.selectedNote.style.zIndex) || 1000;
+                this.selectedNote.style.zIndex = currentZ + 1;
+            }
+        };
+
+        const toBackBtn = document.createElement('button');
+        toBackBtn.innerHTML = '⬇️';
+        toBackBtn.onclick = () => {
+            if (this.selectedNote) {
+                const currentZ = parseInt(this.selectedNote.style.zIndex) || 1000;
+                this.selectedNote.style.zIndex = Math.max(1, currentZ - 1);
+            }
+        };
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.onclick = () => {
+            if (this.selectedNote) {
+                this.selectedNote.remove();
+                this.selectedNote = null;
+                this.hideAllOptionsBars();
+            }
+        };
+
+        // Add elements to bar with dividers
+        [
+            fontSize,
+            document.createElement('div'), // divider
+            colorPicker,
+            document.createElement('div'), // divider
+            toFrontBtn,
+            toBackBtn,
+            deleteBtn
+        ].forEach(el => {
+            if (el.tagName === 'DIV') {
+                el.className = 'divider';
+            }
+            bar.appendChild(el);
+        });
 
         return bar;
     }
@@ -1181,20 +1219,18 @@ export class Whiteboard {
         this.selectedNote = note;
         note.classList.add('selected');
         
-        // Update position and scale
-        const originalX = parseFloat(note.getAttribute('data-x'));
-        const originalY = parseFloat(note.getAttribute('data-y'));
-        const scaledX = originalX * this.scale + this.offsetX;
-        const scaledY = originalY * this.scale + this.offsetY;
+        // Create a note object that matches the format expected by showOptionsBar
+        const noteObj = {
+            type: 'note',
+            x: parseFloat(note.getAttribute('data-x')),
+            y: parseFloat(note.getAttribute('data-y')),
+            width: note.offsetWidth / this.scale,
+            height: note.offsetHeight / this.scale,
+            domElement: note
+        };
         
-        note.style.transform = `scale(${this.scale})`;
-        note.style.transformOrigin = 'top left';
-        note.style.left = `${scaledX}px`;
-        note.style.top = `${scaledY}px`;
-        
-        void note.offsetHeight; // Force reflow
-        
-        this.showOptionsBar(note, 'note');
+        // Use the unified showOptionsBar method
+        this.showOptionsBar(noteObj, this.optionsBar);
     }
 
     selectText(textElement) {
@@ -1260,46 +1296,52 @@ export class Whiteboard {
 
         // Modify z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.innerHTML = '⬆️';
         toFrontBtn.onclick = () => {
             if (this.selectedText) {
                 const index = this.elements.indexOf(this.selectedText);
                 if (index > -1) {
                     this.elements.splice(index, 1);
                     this.elements.push(this.selectedText);
-                    this.updateElementsZIndex();
+                    this.updateAllElementZIndices();
                 }
             }
         };
 
         const toBackBtn = document.createElement('button');
-        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.innerHTML = '⬇️';
         toBackBtn.onclick = () => {
             if (this.selectedText) {
                 const index = this.elements.indexOf(this.selectedText);
                 if (index > -1) {
                     this.elements.splice(index, 1);
                     this.elements.unshift(this.selectedText);
-                    this.updateElementsZIndex();
+                    this.updateAllElementZIndices();
                 }
             }
         };
 
         // Add delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.innerHTML = '🗑️';
         deleteBtn.onclick = () => {
             if (this.selectedText) {
-                this.selectedText.remove();
+                if (this.selectedText.domElement) {
+                    this.selectedText.domElement.remove();
+                }
+                const index = this.elements.indexOf(this.selectedText);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                }
                 this.selectedText = null;
-                this.showTextOptionsBar(null);
+                this.hideAllOptionsBars();
             }
         };
 
         // Add event listeners for formatting
         const applyFormatting = (command, value = null) => {
-            if (this.selectedText) {
-                const textContent = this.selectedText.querySelector('.text-content');
+            if (this.selectedText && this.selectedText.domElement) {
+                const textContent = this.selectedText.domElement.querySelector('.text-content');
                 if (command === 'fontSize') {
                     const sizes = {
                         '1': '12px',
@@ -1387,6 +1429,9 @@ export class Whiteboard {
             y: pos.y,
             id: Date.now().toString()
         };
+
+        // Set initial z-index based on position in elements array
+        text.style.zIndex = this.elements.length + 100;
         this.elements.push(textElement);
         
         // Event listeners
@@ -1428,7 +1473,7 @@ export class Whiteboard {
         if (note === this.selectedNote) {
             note.classList.remove('selected');
             this.selectedNote = null;
-            this.showOptionsBar(null);
+            this.hideAllOptionsBars();
         }
     }
 
@@ -1452,7 +1497,7 @@ export class Whiteboard {
         
         // Z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.innerHTML = '⬆️';
         toFrontBtn.onclick = () => {
             if (this.selectedPath) {
                 const index = this.elements.indexOf(this.selectedPath);
@@ -1465,7 +1510,7 @@ export class Whiteboard {
         };
 
         const toBackBtn = document.createElement('button');
-        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.innerHTML = '⬇️';
         toBackBtn.onclick = () => {
             if (this.selectedPath) {
                 const index = this.elements.indexOf(this.selectedPath);
@@ -1479,7 +1524,7 @@ export class Whiteboard {
 
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.innerHTML = '🗑️';
         deleteBtn.onclick = () => {
             if (this.selectedPath) {
                 const index = this.elements.indexOf(this.selectedPath);
@@ -1513,13 +1558,52 @@ export class Whiteboard {
     }
 
     deselectAll() {
-        console.log('Deselecting all');
+        // Clear shape selection
+        if (this.selectedShape) {
+            this.selectedShape = null;
+            this.isDraggingShape = false;
+            this.shapeDragStart = null;
+            this.showShapeOptionsBar(null);
+        }
+        
+        // Clear path selection
+        if (this.selectedPath) {
+            this.selectedPath = null;
+            this.isDraggingPath = false;
+            this.pathDragStart = null;
+            this.showPathOptionsBar(null);
+        }
+        
+        // Clear text selection
+        if (this.selectedText) {
+            if (this.selectedText.domElement) {
+                this.selectedText.domElement.classList.remove('selected');
+            }
+            this.selectedText = null;
+            this.showTextOptionsBar(null);
+        }
+        
+        // Clear note selection
+        if (this.selectedNote) {
+            this.selectedNote.classList.remove('selected');
+            this.selectedNote = null;
+            this.showOptionsBar(null, this.optionsBar);  // Modified this line
+        }
+
+        // Clear image selection
+        if (this.selectedImage) {
+            this.selectedImage = null;
+            this.isDraggingImage = false;
+            this.isResizingImage = false;
+            this.showImageOptionsBar(null);  // Added this line
+        }
+        
+        // Clear any other selected elements
+        document.querySelectorAll('.sticky-note.selected').forEach(note => {
+            note.classList.remove('selected');
+        });
+        
         this.selectedElement = null;
-        this.selectedPath = null;
-        this.selectedShape = null;
-        this.selectedImage = null;
-        this.selectedText = null;
-        this.selectedNote = null;
         
         // Reset all dragging and resizing states
         this.isDraggingShape = false;
@@ -1662,26 +1746,14 @@ export class Whiteboard {
     }
 
     findShapeAtPoint(pos) {
-        // Check shapes in reverse order (top to bottom)
         for (let i = this.elements.length - 1; i >= 0; i--) {
             const shape = this.elements[i];
-            console.log('Checking shape:', shape);
-            console.log('Mouse position:', pos);
             if (shape.type === 'rectangle') {
-                // Add a small buffer for easier selection (5 pixels)
                 const buffer = 5 / this.scale;
                 const isInShape = pos.x >= shape.x - buffer && 
                     pos.x <= shape.x + shape.width + buffer &&
                     pos.y >= shape.y - buffer && 
                     pos.y <= shape.y + shape.height + buffer;
-                
-                console.log('Shape bounds:', {
-                    left: shape.x - buffer,
-                    right: shape.x + shape.width + buffer,
-                    top: shape.y - buffer,
-                    bottom: shape.y + shape.height + buffer
-                });
-                console.log('Is in shape:', isInShape);
                 
                 if (isInShape) {
                     return shape;
@@ -1709,7 +1781,7 @@ export class Whiteboard {
         
         // Z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.innerHTML = '⬆️';
         toFrontBtn.onclick = () => {
             if (this.selectedShape) {
                 const index = this.elements.indexOf(this.selectedShape);
@@ -1722,7 +1794,7 @@ export class Whiteboard {
         };
 
         const toBackBtn = document.createElement('button');
-        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.innerHTML = '⬇️';
         toBackBtn.onclick = () => {
             if (this.selectedShape) {
                 const index = this.elements.indexOf(this.selectedShape);
@@ -1736,7 +1808,7 @@ export class Whiteboard {
 
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.innerHTML = '🗑️';
         deleteBtn.onclick = () => {
             if (this.selectedShape) {
                 const index = this.elements.indexOf(this.selectedShape);
@@ -1851,24 +1923,15 @@ export class Whiteboard {
     findImageAtPoint(pos) {
         for (let i = this.elements.length - 1; i >= 0; i--) {
             const element = this.elements[i];
-            console.log('Checking image:', element);
-            console.log('Mouse position:', pos);
-            
-            const isInElement = pos.x >= element.x && 
+            if (element.type === 'image') {
+                const isInElement = pos.x >= element.x && 
                              pos.x <= element.x + element.width &&
                              pos.y >= element.y && 
                              pos.y <= element.y + element.height;
-            
-            console.log('Element bounds:', {
-                left: element.x,
-                right: element.x + element.width,
-                top: element.y,
-                bottom: element.y + element.height
-            });
-            console.log('Is in element:', isInElement);
-            
-            if (isInElement) {
-                return element;
+                
+                if (isInElement) {
+                    return element;
+                }
             }
         }
         return null;
@@ -1922,7 +1985,7 @@ export class Whiteboard {
         
         // Add z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.innerHTML = '⬆️';
         toFrontBtn.onclick = () => {
             if (this.selectedImage) {
                 const index = this.elements.indexOf(this.selectedImage);
@@ -1935,7 +1998,7 @@ export class Whiteboard {
         };
 
         const toBackBtn = document.createElement('button');
-        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.innerHTML = '⬇️';
         toBackBtn.onclick = () => {
             if (this.selectedImage) {
                 const index = this.elements.indexOf(this.selectedImage);
@@ -1949,7 +2012,7 @@ export class Whiteboard {
 
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.innerHTML = '🗑️';
         deleteBtn.onclick = () => {
             if (this.selectedImage) {
                 const index = this.elements.indexOf(this.selectedImage);
@@ -2124,11 +2187,142 @@ export class Whiteboard {
 
     // Add method to update z-index of all elements
     updateElementsZIndex() {
+        // Base z-index for all elements
+        const baseZ = 100;
         this.elements.forEach((element, index) => {
             if (element.type === 'text' && element.domElement) {
-                element.domElement.style.zIndex = 100 + index;
+                element.domElement.style.zIndex = baseZ + index;
             }
         });
         this.redraw();
+    }
+
+    // Add method to update all element z-indices
+    updateAllElementZIndices() {
+        // Base z-index for canvas
+        const canvasBase = 10;
+        this.canvas.style.zIndex = canvasBase;
+
+        // Calculate z-indices for all elements
+        this.elements.forEach((element, index) => {
+            const zIndex = canvasBase + index;
+            
+            if (element.type === 'text' && element.domElement) {
+                // Update DOM element z-index
+                element.domElement.style.zIndex = zIndex;
+            }
+        });
+
+        // Redraw canvas elements in correct order
+        this.redraw();
+    }
+
+    // Add helper method for text element event listeners
+    setupTextElementEventListeners(text, textElement) {
+        text.addEventListener('mousedown', (e) => {
+            if (e.target === text) {
+                e.preventDefault();
+                if (this.currentTool === 'select') {
+                    this.selectText(textElement);
+                }
+            }
+        });
+
+        const textContent = text.querySelector('.text-content');
+        textContent.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            if (this.currentTool === 'select') {
+                this.selectText(textElement);
+            }
+        });
+
+        textContent.addEventListener('focus', () => {
+            this.selectText(textElement);
+        });
+    }
+
+    // Add makeDraggable method
+    makeDraggable(element, textElement) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        
+        const dragMouseDown = (e) => {
+            if (e.button === 2) return;
+            
+            // Only prevent dragging when clicking the editable content
+            if (element.classList.contains('sticky-note')) {
+                if (e.target === element.querySelector('textarea') || 
+                    (e.offsetX >= element.offsetWidth - 15 && e.offsetY >= element.offsetHeight - 15)) {
+                    return;
+                }
+            } else if (element.classList.contains('text-element')) {
+                if (e.target.className === 'text-content') {
+                    return;
+                }
+            }
+            
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+
+            // Select the element when starting to drag
+            if (element.classList.contains('sticky-note')) {
+                this.selectNote(element);
+            } else if (element.classList.contains('text-element')) {
+                this.selectText(textElement);
+            }
+        };
+
+        const elementDrag = (e) => {
+            e.preventDefault();
+            
+            // Calculate the movement in screen pixels
+            const dx = (e.clientX - pos3) / this.scale;
+            const dy = (e.clientY - pos4) / this.scale;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            
+            // Update the data attributes with unscaled position
+            const originalX = parseFloat(element.getAttribute('data-x'));
+            const originalY = parseFloat(element.getAttribute('data-y'));
+            const newX = originalX + dx;
+            const newY = originalY + dy;
+            
+            element.setAttribute('data-x', newX);
+            element.setAttribute('data-y', newY);
+            
+            // Apply scaled position
+            const scaledX = newX * this.scale + this.offsetX;
+            const scaledY = newY * this.scale + this.offsetY;
+            
+            element.style.left = `${scaledX}px`;
+            element.style.top = `${scaledY}px`;
+
+            // Update options bar position during drag
+            if (element.classList.contains('sticky-note') && this.selectedNote === element) {
+                const noteObj = {
+                    type: 'note',
+                    x: newX,
+                    y: newY,
+                    width: element.offsetWidth / this.scale,
+                    height: element.offsetHeight / this.scale,
+                    domElement: element
+                };
+                this.showOptionsBar(noteObj, this.optionsBar);
+            } else if (element.classList.contains('text-element') && textElement) {
+                // Update text element position and options bar
+                textElement.x = newX;
+                textElement.y = newY;
+                this.showOptionsBar(textElement, this.textOptionsBar);
+            }
+        };
+
+        const closeDragElement = () => {
+            document.onmouseup = null;
+            document.onmousemove = null;
+        };
+
+        element.onmousedown = dragMouseDown;
     }
 } 

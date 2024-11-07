@@ -44,7 +44,6 @@
 #whiteboardContainer {
     position: relative;
     width: 100%;
-    /*height: calc(100vh - 60px);*/
     overflow: hidden;
     background: #1a1a1a;
     cursor: default;
@@ -56,6 +55,7 @@
     left: 0;
     cursor: crosshair;
     z-index: 10;
+    pointer-events: auto;
 }
 
 .sticky-note {
@@ -71,6 +71,8 @@
     border-radius: 4px;
     box-sizing: border-box;
     transition: transform 0.05s ease-out;
+    z-index: 1000;
+    pointer-events: auto;
 }
 
 .sticky-note * {
@@ -206,7 +208,7 @@
     display: none;
     gap: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    z-index: 1000;
+    z-index: 10000;
     align-items: center;
 }
 
@@ -323,6 +325,7 @@
     padding: 8px;
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 10000;
 }
 
 .path-options-bar select {
@@ -381,6 +384,7 @@ input[type="range"].shape-control {
     padding: 8px;
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 10000;
 }
 
 .shape-options-bar input[type="range"] {
@@ -433,6 +437,7 @@ input[type="range"].shape-control {
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     display: flex;
     gap: 8px;
+    z-index: 10000;
 }
 
 .image-options-bar button {
