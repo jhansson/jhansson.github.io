@@ -13,8 +13,6 @@ export class Whiteboard {
         this.currentTool = 'select';
         this.isDrawing = false;
         this.elements = [];
-        this.shapes = [];
-        this.images = [];  // Initialize images array early
         this.selectedElement = null;
         this.selectedNote = null;
         this.pathPoints = [];
@@ -50,13 +48,16 @@ export class Whiteboard {
         this.container.appendChild(this.pathOptionsBar);
         this.shapeOptionsBar = this.createShapeOptionsBar();
         this.container.appendChild(this.shapeOptionsBar);
+        this.imageOptionsBar = this.createImageOptionsBar();
+        this.container.appendChild(this.imageOptionsBar);
 
         // Store all options bars in an array
         this.optionsBars = [
             { type: 'note', bar: this.optionsBar },
             { type: 'text', bar: this.textOptionsBar },
             { type: 'path', bar: this.pathOptionsBar },
-            { type: 'shape', bar: this.shapeOptionsBar }
+            { type: 'shape', bar: this.shapeOptionsBar },
+            { type: 'image', bar: this.imageOptionsBar }
         ];
 
         // Initialize canvas and set up event listeners
@@ -87,61 +88,47 @@ export class Whiteboard {
             if (e.button === 2) return;
             
             const pos = this.getMousePos(e);
-            console.log('Mouse down at:', pos);
             
             if (this.currentTool === 'select') {
-                // Check for images first
-                const clickedImage = this.findImageAtPoint(pos);
-                if (clickedImage) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.selectImage(clickedImage);
-                    this.isDraggingImage = true;
-                    this.dragStart = pos;
-                    this.dragOffset = {
-                        x: pos.x - clickedImage.x,
-                        y: pos.y - clickedImage.y
-                    };
-                    return;
-                }
+                // Check for any clickable element
+                const clickedElement = 
+                    this.findImageAtPoint(pos) || 
+                    this.findShapeAtPoint(pos) || 
+                    this.findPathAtPoint(pos) ||
+                    this.findTextAtPoint(pos);
 
-                // Then check for shapes
-                const clickedShape = this.findShapeAtPoint(pos);
-                if (clickedShape) {
+                if (clickedElement) {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Check if clicking on a resize handle
-                    if (this.selectedShape === clickedShape) {
-                        const handle = this.findResizeHandle(pos, clickedShape);
+                    // Check for resize handles if already selected
+                    if (clickedElement === this.selectedElement) {
+                        const handle = this.findResizeHandle(pos, clickedElement);
                         if (handle) {
-                            this.isResizingShape = true;
+                            this.isResizingShape = clickedElement.type === 'rectangle';
+                            this.isResizingImage = clickedElement.type === 'image';
                             this.resizeHandle = handle;
                             return;
                         }
                     }
                     
-                    this.selectShape(clickedShape);
-                    this.isDraggingShape = true;
-                    this.shapeDragStart = pos;
-                    this.dragOffset = {
-                        x: pos.x - clickedShape.x,
-                        y: pos.y - clickedShape.y
-                    };
+                    this.selectElement(clickedElement);
+                    
+                    // Set up dragging
+                    if (clickedElement.type === 'path') {
+                        this.isDraggingPath = true;
+                        this.pathDragStart = pos;
+                    } else {
+                        this.isDraggingShape = clickedElement.type === 'rectangle';
+                        this.isDraggingImage = clickedElement.type === 'image';
+                        this.dragOffset = {
+                            x: pos.x - clickedElement.x,
+                            y: pos.y - clickedElement.y
+                        };
+                    }
                     return;
                 }
-
-                // Finally check for paths
-                const clickedPath = this.findPathAtPoint(pos);
-                if (clickedPath) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.selectPath(clickedPath);
-                    this.isDraggingPath = true;
-                    this.pathDragStart = pos;
-                    return;
-                }
-
+                
                 // If nothing was clicked, deselect everything
                 this.deselectAll();
             } else if (this.currentTool === 'shape') {
@@ -163,51 +150,48 @@ export class Whiteboard {
             const pos = this.getMousePos(e);
             
             if (this.isDraggingImage && this.selectedImage) {
-                console.log('Dragging image, current pos:', pos);
-                console.log('Before update - image position:', {
-                    x: this.selectedImage.x,
-                    y: this.selectedImage.y
-                });
-                
                 // Update image position
                 this.selectedImage.x = pos.x - this.dragOffset.x;
                 this.selectedImage.y = pos.y - this.dragOffset.y;
                 
-                console.log('After update - image position:', {
-                    x: this.selectedImage.x,
-                    y: this.selectedImage.y
-                });
-                
+                // Update options bar position
+                this.showImageOptionsBar(this.selectedImage);
                 this.redraw();
                 return;
-            } else if (this.isResizingShape && this.selectedShape) {
-                const shape = this.selectedShape;
+            } else if (this.isResizingImage && this.selectedImage) {
+                const image = this.selectedImage;
+                const aspectRatio = image.width / image.height;
                 
                 switch (this.resizeHandle) {
                     case 'left':
-                        const newWidth = shape.width + (shape.x - pos.x);
-                        if (newWidth > 10) { // Minimum width
-                            shape.width = newWidth;
-                            shape.x = pos.x;
+                        const newWidth = image.width + (image.x - pos.x);
+                        if (newWidth > 10) {
+                            image.width = newWidth;
+                            image.x = pos.x;
+                            image.height = image.width / aspectRatio;
                         }
                         break;
                     case 'right':
-                        shape.width = Math.max(10, pos.x - shape.x);
+                        image.width = Math.max(10, pos.x - image.x);
+                        image.height = image.width / aspectRatio;
                         break;
                     case 'top':
-                        const newHeight = shape.height + (shape.y - pos.y);
-                        if (newHeight > 10) { // Minimum height
-                            shape.height = newHeight;
-                            shape.y = pos.y;
+                        const newHeight = image.height + (image.y - pos.y);
+                        if (newHeight > 10) {
+                            image.height = newHeight;
+                            image.y = pos.y;
+                            image.width = image.height * aspectRatio;
                         }
                         break;
                     case 'bottom':
-                        shape.height = Math.max(10, pos.y - shape.y);
+                        image.height = Math.max(10, pos.y - image.y);
+                        image.width = image.height * aspectRatio;
                         break;
                 }
                 
+                // Update options bar position after resizing too
+                this.showImageOptionsBar(this.selectedImage);
                 this.redraw();
-                this.showShapeOptionsBar(shape);
                 return;
             }
             
@@ -259,6 +243,30 @@ export class Whiteboard {
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
+            if (this.isDrawingShape) {
+                const pos = this.getMousePos(e);
+                const width = pos.x - this.startX;
+                const height = pos.y - this.startY;
+                
+                if (Math.abs(width) > 2 && Math.abs(height) > 2) {
+                    const shape = {
+                        type: 'rectangle',
+                        x: this.startX,
+                        y: this.startY,
+                        width: width,
+                        height: height,
+                        color: '#FFFFFF',
+                        opacity: 1,
+                        id: Date.now().toString()
+                    };
+                    
+                    this.elements.push(shape);
+                    this.selectElement(shape);
+                }
+                
+                this.isDrawingShape = false;
+                this.redraw();
+            }
             if (this.isDraggingImage) {
                 console.log('Ending image drag');
                 this.isDraggingImage = false;
@@ -267,6 +275,12 @@ export class Whiteboard {
             }
             if (this.isResizingShape) {
                 this.isResizingShape = false;
+                this.resizeHandle = null;
+                this.canvas.style.cursor = 'default';
+                return;
+            }
+            if (this.isResizingImage) {
+                this.isResizingImage = false;
                 this.resizeHandle = null;
                 this.canvas.style.cursor = 'default';
                 return;
@@ -295,8 +309,8 @@ export class Whiteboard {
                         id: Date.now().toString()
                     };
                     
-                    this.shapes.push(shape);
-                    this.selectShape(shape);
+                    this.elements.push(shape);
+                    this.selectElement(shape);
                 }
                 
                 this.isDrawingShape = false;
@@ -484,16 +498,14 @@ export class Whiteboard {
         });
     }
 
-    makeDraggable(element) {
+    makeDraggable(element, textElement) {
         let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         
         const dragMouseDown = (e) => {
-            if (e.button === 2) return; // Ignore right clicks
+            if (e.button === 2) return;
             
-            if (element.classList.contains('text-element')) {
-                if (e.target !== element) return;
-            } else if (e.target === element.querySelector('textarea') || 
-                      (e.offsetX >= element.offsetWidth - 15 && e.offsetY >= element.offsetHeight - 15)) {
+            // Only prevent dragging when clicking the editable content
+            if (e.target.className === 'text-content') {
                 return;
             }
             
@@ -507,7 +519,7 @@ export class Whiteboard {
             if (element.classList.contains('sticky-note')) {
                 this.selectNote(element);
             } else if (element.classList.contains('text-element')) {
-                this.selectText(element);
+                this.selectText(textElement);
             }
         };
 
@@ -536,24 +548,22 @@ export class Whiteboard {
             element.style.left = `${scaledX}px`;
             element.style.top = `${scaledY}px`;
 
+            // Update textElement position if it exists
+            if (textElement) {
+                textElement.x = newX;
+                textElement.y = newY;
+                this.showOptionsBar(textElement, this.textOptionsBar);
+            }
+
             // Update options bar position during drag
             if (element.classList.contains('sticky-note') && this.selectedNote === element) {
                 this.selectNote(element);
-            } else if (element.classList.contains('text-element') && this.selectedText === element) {
-                this.selectText(element);
             }
         };
 
         const closeDragElement = () => {
             document.onmouseup = null;
             document.onmousemove = null;
-
-            // Update options bar position after drag ends
-            if (element.classList.contains('sticky-note') && this.selectedNote === element) {
-                this.selectNote(element);
-            } else if (element.classList.contains('text-element') && this.selectedText === element) {
-                this.selectText(element);
-            }
         };
 
         element.onmousedown = dragMouseDown;
@@ -566,18 +576,25 @@ export class Whiteboard {
         this.saveButton.innerHTML = 'Saving...';
         this.saveButton.style.opacity = '0.7';
         
+        // Clean up elements for saving by removing cached images and creating a clean copy
+        const elementsToSave = this.elements.map(element => {
+            const cleanElement = { ...element };
+            // Remove the cached image DOM element before saving
+            if (cleanElement.cachedImage) {
+                delete cleanElement.cachedImage;
+            }
+            return cleanElement;
+        });
+        
         const boardData = {
-            elements: this.elements,
-            shapes: this.shapes,
-            images: this.images,  // Add images to saved data
+            elements: elementsToSave,
             notes: Array.from(document.querySelectorAll('.sticky-note')).map(note => {
-                // Save the original unscaled positions and dimensions
                 return {
                     text: note.querySelector('textarea').value,
                     x: parseFloat(note.getAttribute('data-x')),
                     y: parseFloat(note.getAttribute('data-y')),
-                    width: 200, // Use fixed width
-                    height: 200, // Use fixed height
+                    width: 200,
+                    height: 200,
                     fontSize: note.querySelector('textarea').style.fontSize || '14px',
                     backgroundColor: note.style.backgroundColor
                 };
@@ -588,11 +605,9 @@ export class Whiteboard {
             const whiteboardRef = doc(this.db, `users/${this.auth.currentUser.uid}/whiteboards/default`);
             await setDoc(whiteboardRef, boardData);
             
-            // Show brief success state
             this.saveButton.innerHTML = 'Saved!';
-            this.saveButton.style.background = '#4CAF50'; // Green color for success
+            this.saveButton.style.background = '#4CAF50';
             
-            // Reset button after 1 second
             setTimeout(() => {
                 this.saveButton.disabled = false;
                 this.saveButton.innerHTML = 'Save';
@@ -601,12 +616,9 @@ export class Whiteboard {
             }, 1000);
         } catch (error) {
             console.error('Error saving whiteboard:', error);
-            
-            // Show error state
             this.saveButton.innerHTML = 'Error!';
-            this.saveButton.style.background = '#f44336'; // Red color for error
+            this.saveButton.style.background = '#f44336';
             
-            // Reset button after 1 second
             setTimeout(() => {
                 this.saveButton.disabled = false;
                 this.saveButton.innerHTML = 'Save';
@@ -627,9 +639,23 @@ export class Whiteboard {
                 const data = snapshot.data();
                 this.elements = data.elements || [];
                 this.shapes = data.shapes || [];
-                this.images = data.images || [];  // Load saved images
-                this.redraw();
                 
+                // Reset zoom and pan before loading images
+                this.scale = 1;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                
+                // Load images with proper positioning
+                this.images = (data.images || []).map(image => ({
+                    type: 'image',
+                    src: image.src,
+                    x: image.x,
+                    y: image.y,
+                    width: image.width,
+                    height: image.height,
+                    id: image.id
+                }));
+
                 // Clear existing notes
                 document.querySelectorAll('.sticky-note').forEach(note => note.remove());
                 
@@ -696,6 +722,8 @@ export class Whiteboard {
                         }
                     });
                 });
+                
+                this.redraw();
             }
         } catch (error) {
             console.error('Error loading whiteboard:', error);
@@ -719,85 +747,38 @@ export class Whiteboard {
         this.ctx.translate(this.offsetX, this.offsetY);
         this.ctx.scale(this.scale, this.scale);
         
-        // Draw images first (behind everything else)
-        this.images.forEach(image => {
-            console.log('Drawing image:', image);
-            const img = new Image();
-            img.src = image.src;
-            this.ctx.drawImage(img, image.x, image.y, image.width, image.height);
-            
-            // Draw selection if this is the selected image
-            if (image === this.selectedImage) {
-                console.log('Drawing selection for image');
-                this.ctx.strokeStyle = '#2962ff';
-                this.ctx.lineWidth = 2;
-                this.ctx.setLineDash([5, 5]);
-                this.ctx.strokeRect(image.x - 2, image.y - 2, 
-                                 image.width + 4, image.height + 4);
-            }
-        });
-        
-        // Draw all paths
+        // Draw all elements in order
         this.elements.forEach(element => {
-            if (element.type === 'path') {
+            if (element.type === 'image') {
+                if (element.cachedImage && element.cachedImage.complete) {
+                    this.ctx.drawImage(element.cachedImage, element.x, element.y, element.width, element.height);
+                } else if (!element.cachedImage) {
+                    const img = new Image();
+                    img.src = element.src;
+                    element.cachedImage = img;
+                    
+                    img.onload = () => {
+                        this.redraw();
+                    };
+                }
+            } else if (element.type === 'path') {
                 this.ctx.beginPath();
                 this.ctx.strokeStyle = element.color;
                 this.ctx.lineWidth = element.width;
                 this.ctx.lineCap = 'round';
                 this.ctx.lineJoin = 'round';
-                
                 this.drawCurve(element.points);
                 this.ctx.stroke();
-                
-                if (element === this.selectedPath) {
-                    this.drawPathSelection(element);
-                }
-            }
-        });
-
-        // Draw all shapes
-        this.shapes.forEach(shape => {
-            if (shape.type === 'rectangle') {
+            } else if (element.type === 'rectangle') {
                 this.ctx.save();
-                this.ctx.globalAlpha = shape.opacity;
-                this.ctx.fillStyle = shape.color;
-                this.ctx.fillRect(shape.x, shape.y, shape.width, shape.height);
-                
-                // Draw selection outline and handles if selected
-                if (shape === this.selectedShape) {
-                    // Draw selection outline
-                    this.ctx.strokeStyle = '#2962ff';
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([5, 5]);
-                    this.ctx.strokeRect(shape.x - 2, shape.y - 2, 
-                                     shape.width + 4, shape.height + 4);
-                    
-                    // Draw resize handles
-                    this.ctx.setLineDash([]); // Reset dash pattern
-                    this.ctx.fillStyle = '#2962ff';
-                    
-                    // Left handle
-                    this.ctx.beginPath();
-                    this.ctx.arc(shape.x, shape.y + shape.height/2, 5, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // Right handle
-                    this.ctx.beginPath();
-                    this.ctx.arc(shape.x + shape.width, shape.y + shape.height/2, 5, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // Top handle
-                    this.ctx.beginPath();
-                    this.ctx.arc(shape.x + shape.width/2, shape.y, 5, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    // Bottom handle
-                    this.ctx.beginPath();
-                    this.ctx.arc(shape.x + shape.width/2, shape.y + shape.height, 5, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-                
+                this.ctx.globalAlpha = element.opacity;
+                this.ctx.fillStyle = element.color;
+                this.ctx.fillRect(element.x, element.y, element.width, element.height);
                 this.ctx.restore();
+            }
+            // Draw selection for the selected element (except for text)
+            if (element === this.selectedElement && element.type !== 'text') {
+                this.drawElementSelection(element);
             }
         });
         
@@ -1129,48 +1110,68 @@ export class Whiteboard {
         return bar;
     }
 
-    showOptionsBar(element, type) {
-        if (!element) {
-            this.hideAllOptionsBars();
+    showOptionsBar(element, optionsBar, options = {}) {
+        if (!element || !optionsBar) {
+            optionsBar.style.display = 'none';
             return;
         }
 
-        // Hide all other options bars first
-        this.hideAllOptionsBars();
+        // Temporarily make the bar visible but hidden to get its dimensions
+        optionsBar.style.visibility = 'hidden';
+        optionsBar.style.display = 'flex';
         
-        const { bar } = this.optionsBars.find(b => b.type === type);
-        if (!bar) return;
+        // Force a reflow to get correct dimensions
+        void optionsBar.offsetHeight;
 
         const containerRect = this.container.getBoundingClientRect();
-        const elementRect = element.getBoundingClientRect();
-        const barWidth = bar.offsetWidth || 200;
-        const barHeight = bar.offsetHeight || 40;
+        let elementX, elementY, elementWidth, elementHeight;
+
+        if (element.type === 'text') {
+            // Use the same positioning logic as in dragging
+            const scaledX = element.x * this.scale + this.offsetX;
+            const scaledY = element.y * this.scale + this.offsetY;
+            elementX = scaledX;
+            elementY = scaledY;
+            
+            // Get text dimensions from the DOM element
+            const textRect = element.domElement.getBoundingClientRect();
+            elementWidth = textRect.width;
+            elementHeight = textRect.height;
+        } else {
+            // For canvas elements (shapes, paths, images)
+            elementX = element.x * this.scale + this.offsetX;
+            elementY = element.y * this.scale + this.offsetY;
+            elementWidth = (element.width || 0) * this.scale;
+            elementHeight = (element.height || 0) * this.scale;
+        }
+
+        // Position the options bar
+        const barWidth = optionsBar.offsetWidth;
+        const barHeight = optionsBar.offsetHeight;
         
-        // Calculate position relative to the container
-        const relativeLeft = elementRect.left - containerRect.left;
-        const relativeTop = elementRect.top - containerRect.top;
-        
-        // Center horizontally over the element
-        let left = relativeLeft + (elementRect.width / 2) - (barWidth / 2);
-        // Position above the element by default
-        let top = relativeTop - barHeight - 10;
-        
+        // Always position above the element
+        let left = elementX + (elementWidth / 2) - (barWidth / 2);
+        let top = elementY - barHeight - 10;
+
         // If not enough space above, position below
         if (top < 10) {
-            top = relativeTop + elementRect.height + 10;
+            top = elementY + elementHeight + 10;
         }
-        
+
         // Keep within container bounds
         if (left < 10) {
             left = 10;
         } else if (left + barWidth > containerRect.width - 10) {
             left = containerRect.width - barWidth - 10;
         }
-        
-        bar.style.left = `${left}px`;
-        bar.style.top = `${top}px`;
-        bar.style.display = 'flex';
-        bar.classList.add('visible');
+
+        // Make fully visible and position
+        optionsBar.style.position = 'absolute';
+        optionsBar.style.left = `${left}px`;
+        optionsBar.style.top = `${top}px`;
+        optionsBar.style.visibility = 'visible';
+        optionsBar.style.display = 'flex';
+        optionsBar.classList.add('visible');
     }
 
     selectNote(note) {
@@ -1196,13 +1197,12 @@ export class Whiteboard {
         this.showOptionsBar(note, 'note');
     }
 
-    selectText(text) {
-        if (this.selectedText) {
-            this.selectedText.classList.remove('selected');
-        }
-        this.selectedText = text;
-        text.classList.add('selected');
-        this.showOptionsBar(text, 'text');
+    selectText(textElement) {
+        this.deselectAll();
+        this.selectedText = textElement;
+        this.selectedElement = textElement;  // Important for unified selection
+        this.showOptionsBar(textElement, this.textOptionsBar);  // Use unified showOptionsBar
+        this.redraw();
     }
 
     createTextOptionsBar() {
@@ -1258,7 +1258,45 @@ export class Whiteboard {
         colorPicker.type = 'color';
         colorPicker.value = '#FFFFFF';
 
-        // Add event listeners
+        // Modify z-index controls
+        const toFrontBtn = document.createElement('button');
+        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.onclick = () => {
+            if (this.selectedText) {
+                const index = this.elements.indexOf(this.selectedText);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.push(this.selectedText);
+                    this.updateElementsZIndex();
+                }
+            }
+        };
+
+        const toBackBtn = document.createElement('button');
+        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.onclick = () => {
+            if (this.selectedText) {
+                const index = this.elements.indexOf(this.selectedText);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.unshift(this.selectedText);
+                    this.updateElementsZIndex();
+                }
+            }
+        };
+
+        // Add delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.onclick = () => {
+            if (this.selectedText) {
+                this.selectedText.remove();
+                this.selectedText = null;
+                this.showTextOptionsBar(null);
+            }
+        };
+
+        // Add event listeners for formatting
         const applyFormatting = (command, value = null) => {
             if (this.selectedText) {
                 const textContent = this.selectedText.querySelector('.text-content');
@@ -1290,14 +1328,24 @@ export class Whiteboard {
         alignRightBtn.addEventListener('click', () => applyFormatting('justifyRight'));
         colorPicker.addEventListener('change', () => applyFormatting('foreColor', colorPicker.value));
 
-        // Add elements to bar
-        [fontFamily, fontSize, 
-         document.createElement('div'), // divider
-         boldBtn, italicBtn, strikeBtn,
-         document.createElement('div'), // divider
-         alignLeftBtn, alignCenterBtn, alignRightBtn,
-         document.createElement('div'), // divider
-         colorPicker
+        // Add all elements to bar with dividers
+        [
+            fontFamily, 
+            fontSize,
+            document.createElement('div'), // divider
+            boldBtn, 
+            italicBtn, 
+            strikeBtn,
+            document.createElement('div'), // divider
+            alignLeftBtn, 
+            alignCenterBtn, 
+            alignRightBtn,
+            document.createElement('div'), // divider
+            colorPicker,
+            document.createElement('div'), // divider
+            toFrontBtn,
+            toBackBtn,
+            deleteBtn
         ].forEach(el => {
             if (el.tagName === 'DIV') {
                 el.className = 'divider';
@@ -1312,17 +1360,6 @@ export class Whiteboard {
         const text = document.createElement('div');
         text.className = 'text-element';
         
-        // Store original unscaled position
-        text.setAttribute('data-x', pos.x);
-        text.setAttribute('data-y', pos.y);
-        
-        // Apply scaled position
-        const scaledX = pos.x * this.scale + this.offsetX;
-        const scaledY = pos.y * this.scale + this.offsetY;
-        
-        text.style.left = `${scaledX}px`;
-        text.style.top = `${scaledY}px`;
-        
         // Create inner content div for text
         const textContent = document.createElement('div');
         textContent.className = 'text-content';
@@ -1330,50 +1367,61 @@ export class Whiteboard {
         textContent.innerHTML = '<br>';
         text.appendChild(textContent);
         
-        // Prevent text selection when dragging the container
+        // Set initial position
+        const scaledX = pos.x * this.scale + this.offsetX;
+        const scaledY = pos.y * this.scale + this.offsetY;
+        text.style.left = `${scaledX}px`;
+        text.style.top = `${scaledY}px`;
+        text.style.transform = `scale(${this.scale})`;
+        text.style.transformOrigin = 'top left';
+        
+        // Store original position
+        text.setAttribute('data-x', pos.x);
+        text.setAttribute('data-y', pos.y);
+        
+        // Add to elements array for z-index management
+        const textElement = {
+            type: 'text',
+            domElement: text,
+            x: pos.x,
+            y: pos.y,
+            id: Date.now().toString()
+        };
+        this.elements.push(textElement);
+        
+        // Event listeners
         text.addEventListener('mousedown', (e) => {
-            if (e.target === text) { // Only when clicking the padding area
-                e.preventDefault(); // Prevent text selection
+            if (e.target === text) {
+                e.preventDefault();
                 if (this.currentTool === 'select') {
-                    this.selectText(text);
+                    this.selectText(textElement);
                 }
             }
         });
 
-        // Handle text content events
         textContent.addEventListener('mousedown', (e) => {
-            e.stopPropagation(); // Prevent dragging when clicking text
+            e.stopPropagation();
             if (this.currentTool === 'select') {
-                this.selectText(text);
+                this.selectText(textElement);
             }
         });
 
-        document.addEventListener('mousedown', (e) => {
-            if (!text.contains(e.target) && !this.textOptionsBar.contains(e.target)) {
-                this.deselectText(text);
-            }
+        // Add focus handler for text content
+        textContent.addEventListener('focus', () => {
+            this.selectText(textElement);
         });
 
-        textContent.addEventListener('input', () => {
-            if (textContent.innerHTML.trim() === '') {
-                textContent.innerHTML = '<br>';
-            }
-        });
-
-        textContent.addEventListener('blur', () => {
-            if (textContent.innerHTML.trim() === '<br>' && !text.classList.contains('selected')) {
-                text.remove();
-            }
-        });
-
+        // Add the DOM element to the container
         this.container.appendChild(text);
-        this.makeDraggable(text);
+        this.makeDraggable(text, textElement);
         
+        // Focus the text content and position options bar
         setTimeout(() => {
             textContent.focus();
+            this.selectText(textElement);
         }, 0);
         
-        return text;
+        return textElement;
     }
 
     deselectNote(note) {
@@ -1402,17 +1450,45 @@ export class Whiteboard {
             <option value="8">Very Thick</option>
         `;
         
+        // Z-index controls
+        const toFrontBtn = document.createElement('button');
+        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.onclick = () => {
+            if (this.selectedPath) {
+                const index = this.elements.indexOf(this.selectedPath);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.push(this.selectedPath);
+                    this.redraw();
+                }
+            }
+        };
+
+        const toBackBtn = document.createElement('button');
+        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.onclick = () => {
+            if (this.selectedPath) {
+                const index = this.elements.indexOf(this.selectedPath);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.unshift(this.selectedPath);
+                    this.redraw();
+                }
+            }
+        };
+
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = 'Delete';
+        deleteBtn.innerHTML = '🗑️ Delete';
         deleteBtn.onclick = () => {
             if (this.selectedPath) {
                 const index = this.elements.indexOf(this.selectedPath);
                 if (index > -1) {
                     this.elements.splice(index, 1);
                     this.selectedPath = null;
-                    this.showPathOptionsBar(null);
+                    this.selectedElement = null;  // Also clear the main selection
                     this.redraw();
+                    this.hideAllOptionsBars();
                 }
             }
         };
@@ -1432,42 +1508,36 @@ export class Whiteboard {
             }
         });
 
-        [colorPicker, strokeWidth, deleteBtn].forEach(el => bar.appendChild(el));
+        [colorPicker, strokeWidth, toFrontBtn, toBackBtn, deleteBtn].forEach(el => bar.appendChild(el));
         return bar;
     }
 
     deselectAll() {
-        if (this.selectedImage) {
-            this.selectedImage = null;
-            this.isDraggingImage = false;
-        }
+        console.log('Deselecting all');
+        this.selectedElement = null;
+        this.selectedPath = null;
+        this.selectedShape = null;
+        this.selectedImage = null;
+        this.selectedText = null;
+        this.selectedNote = null;
         
-        if (this.selectedShape) {
-            this.selectedShape = null;
-            this.isDraggingShape = false;
-            this.isResizingShape = false;
-            this.shapeDragStart = null;
-            this.resizeHandle = null;
-            this.canvas.style.cursor = 'default';
-        }
+        // Reset all dragging and resizing states
+        this.isDraggingShape = false;
+        this.isDraggingPath = false;
+        this.isDraggingImage = false;
+        this.isResizingShape = false;
+        this.isResizingImage = false;
+        this.shapeDragStart = null;
+        this.pathDragStart = null;
+        this.dragStart = null;
+        this.resizeHandle = null;
         
-        if (this.selectedPath) {
-            this.selectedPath = null;
-            this.isDraggingPath = false;
-            this.pathDragStart = null;
-        }
+        // Reset cursor
+        this.canvas.style.cursor = 'default';
         
-        if (this.selectedText) {
-            this.selectedText.classList.remove('selected');
-            this.selectedText = null;
-        }
-        
-        if (this.selectedNote) {
-            this.selectedNote.classList.remove('selected');
-            this.selectedNote = null;
-        }
-        
+        // Hide all options bars
         this.hideAllOptionsBars();
+        
         this.redraw();
     }
 
@@ -1593,8 +1663,8 @@ export class Whiteboard {
 
     findShapeAtPoint(pos) {
         // Check shapes in reverse order (top to bottom)
-        for (let i = this.shapes.length - 1; i >= 0; i--) {
-            const shape = this.shapes[i];
+        for (let i = this.elements.length - 1; i >= 0; i--) {
+            const shape = this.elements[i];
             console.log('Checking shape:', shape);
             console.log('Mouse position:', pos);
             if (shape.type === 'rectangle') {
@@ -1621,31 +1691,6 @@ export class Whiteboard {
         return null;
     }
 
-    selectShape(shape) {
-        console.log('Selecting shape:', shape);
-        
-        // Only deselect other types of elements, not shapes
-        if (this.selectedPath) {
-            this.selectedPath = null;
-            this.showPathOptionsBar(null);
-        }
-        if (this.selectedText) {
-            this.selectedText.classList.remove('selected');
-            this.selectedText = null;
-            this.showTextOptionsBar(null);
-        }
-        if (this.selectedNote) {
-            this.selectedNote.classList.remove('selected');
-            this.selectedNote = null;
-            this.showOptionsBar(null);
-        }
-        
-        this.selectedShape = shape;
-        console.log('Selected shape set:', this.selectedShape);
-        this.showShapeOptionsBar(shape);
-        this.redraw();
-    }
-
     createShapeOptionsBar() {
         const bar = document.createElement('div');
         bar.className = 'options-bar shape-options-bar';
@@ -1662,17 +1707,44 @@ export class Whiteboard {
         opacitySlider.max = '100';
         opacitySlider.value = '100';
         
+        // Z-index controls
+        const toFrontBtn = document.createElement('button');
+        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.onclick = () => {
+            if (this.selectedShape) {
+                const index = this.elements.indexOf(this.selectedShape);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.push(this.selectedShape);
+                    this.redraw();
+                }
+            }
+        };
+
+        const toBackBtn = document.createElement('button');
+        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.onclick = () => {
+            if (this.selectedShape) {
+                const index = this.elements.indexOf(this.selectedShape);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.unshift(this.selectedShape);
+                    this.redraw();
+                }
+            }
+        };
+
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = 'Delete';
+        deleteBtn.innerHTML = '🗑️ Delete';
         deleteBtn.onclick = () => {
             if (this.selectedShape) {
-                const index = this.shapes.indexOf(this.selectedShape);
+                const index = this.elements.indexOf(this.selectedShape);
                 if (index > -1) {
-                    this.shapes.splice(index, 1);
+                    this.elements.splice(index, 1);
                     this.selectedShape = null;
-                    this.showShapeOptionsBar(null);
                     this.redraw();
+                    this.hideAllOptionsBars();
                 }
             }
         };
@@ -1692,50 +1764,23 @@ export class Whiteboard {
             }
         });
 
-        [colorPicker, opacitySlider, deleteBtn].forEach(el => bar.appendChild(el));
+        [colorPicker, opacitySlider, toFrontBtn, toBackBtn, deleteBtn].forEach(el => bar.appendChild(el));
         return bar;
     }
 
     showShapeOptionsBar(shape) {
         if (!shape) {
-            if (this.shapeOptionsBar) {
-                this.shapeOptionsBar.style.display = 'none';
-            }
+            this.shapeOptionsBar.style.display = 'none';
             return;
         }
-
-        // Ensure the options bar is visible
-        this.shapeOptionsBar.style.display = 'flex';
-        this.shapeOptionsBar.classList.add('visible');
-
+        
+        // Update controls state
         const colorPicker = this.shapeOptionsBar.querySelector('input[type="color"]');
         const opacitySlider = this.shapeOptionsBar.querySelector('input[type="range"]');
+        if (colorPicker) colorPicker.value = shape.color;
+        if (opacitySlider) opacitySlider.value = shape.opacity * 100;
         
-        colorPicker.value = shape.color;
-        opacitySlider.value = shape.opacity * 100;
-
-        // Calculate position in screen coordinates
-        const containerRect = this.container.getBoundingClientRect();
-        const shapeScreenX = shape.x * this.scale + this.offsetX + containerRect.left;
-        const shapeScreenY = shape.y * this.scale + this.offsetY + containerRect.top;
-        const shapeScreenWidth = shape.width * this.scale;
-
-        const barWidth = this.shapeOptionsBar.offsetWidth;
-        let left = shapeScreenX + (shapeScreenWidth / 2) - (barWidth / 2);
-        let top = shapeScreenY - this.shapeOptionsBar.offsetHeight - 10;
-
-        // Keep within container bounds
-        if (left < containerRect.left + 10) left = containerRect.left + 10;
-        if (left + barWidth > containerRect.right - 10) {
-            left = containerRect.right - barWidth - 10;
-        }
-        if (top < containerRect.top + 10) {
-            top = shapeScreenY + (shape.height * this.scale) + 10;
-        }
-
-        this.shapeOptionsBar.style.position = 'fixed';
-        this.shapeOptionsBar.style.left = `${left}px`;
-        this.shapeOptionsBar.style.top = `${top}px`;
+        this.showOptionsBar(shape, this.shapeOptionsBar);
     }
 
     findResizeHandle(pos, shape) {
@@ -1762,35 +1807,37 @@ export class Whiteboard {
     handlePaste(e) {
         if (!e.clipboardData || !e.clipboardData.items) return;
 
-        // Look for an image in the clipboard
         const items = e.clipboardData.items;
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image') !== -1) {
                 e.preventDefault();
                 
-                // Get the image file
                 const blob = items[i].getAsFile();
                 const reader = new FileReader();
                 
                 reader.onload = (event) => {
-                    // Create a new image element
                     const img = new Image();
                     img.src = event.target.result;
                     
                     img.onload = () => {
-                        // Create image object with default size and centered position
+                        // Calculate center position in canvas coordinates
+                        const centerX = (-this.offsetX + this.canvas.width/2) / this.scale;
+                        const centerY = (-this.offsetY + this.canvas.height/2) / this.scale;
+                        
                         const imageObj = {
                             type: 'image',
                             src: event.target.result,
-                            x: (this.canvas.width / 2 / this.scale) - (img.width / 2 / this.scale),
-                            y: (this.canvas.height / 2 / this.scale) - (img.height / 2 / this.scale),
+                            x: centerX - (img.width / 2 / this.scale),
+                            y: centerY - (img.height / 2 / this.scale),
                             width: img.width / this.scale,
                             height: img.height / this.scale,
                             id: Date.now().toString()
                         };
                         
-                        this.images.push(imageObj);
-                        this.selectImage(imageObj); // Select the image after creating it
+                        // Only add the image and cached version after it's loaded
+                        imageObj.cachedImage = img;
+                        this.elements.push(imageObj);
+                        this.selectElement(imageObj);
                         this.redraw();
                     };
                 };
@@ -1802,26 +1849,26 @@ export class Whiteboard {
     }
 
     findImageAtPoint(pos) {
-        for (let i = this.images.length - 1; i >= 0; i--) {
-            const image = this.images[i];
-            console.log('Checking image:', image);
+        for (let i = this.elements.length - 1; i >= 0; i--) {
+            const element = this.elements[i];
+            console.log('Checking image:', element);
             console.log('Mouse position:', pos);
             
-            const isInImage = pos.x >= image.x && 
-                             pos.x <= image.x + image.width &&
-                             pos.y >= image.y && 
-                             pos.y <= image.y + image.height;
+            const isInElement = pos.x >= element.x && 
+                             pos.x <= element.x + element.width &&
+                             pos.y >= element.y && 
+                             pos.y <= element.y + element.height;
             
-            console.log('Image bounds:', {
-                left: image.x,
-                right: image.x + image.width,
-                top: image.y,
-                bottom: image.y + image.height
+            console.log('Element bounds:', {
+                left: element.x,
+                right: element.x + element.width,
+                top: element.y,
+                bottom: element.y + element.height
             });
-            console.log('Is in image:', isInImage);
+            console.log('Is in element:', isInElement);
             
-            if (isInImage) {
-                return image;
+            if (isInElement) {
+                return element;
             }
         }
         return null;
@@ -1832,6 +1879,256 @@ export class Whiteboard {
         this.deselectAll();
         this.selectedImage = image;
         console.log('Selected image set:', this.selectedImage);
+        this.showImageOptionsBar(image);
+        this.redraw();
+    }
+
+    findImageResizeHandle(pos, image) {
+        const handleRadius = 5 / this.scale;
+        
+        const handles = {
+            left: { x: image.x, y: image.y + image.height/2 },
+            right: { x: image.x + image.width, y: image.y + image.height/2 },
+            top: { x: image.x + image.width/2, y: image.y },
+            bottom: { x: image.x + image.width/2, y: image.y + image.height }
+        };
+
+        for (const [handle, point] of Object.entries(handles)) {
+            const dx = pos.x - point.x;
+            const dy = pos.y - point.y;
+            if (Math.sqrt(dx * dx + dy * dy) <= handleRadius) {
+                return handle;
+            }
+        }
+        return null;
+    }
+
+    handleImageZIndex(image, toFront) {
+        const index = this.elements.indexOf(image);
+        if (index > -1) {
+            this.elements.splice(index, 1);
+            if (toFront) {
+                this.elements.push(image);
+            } else {
+                this.elements.unshift(image);
+            }
+            this.redraw();
+        }
+    }
+
+    createImageOptionsBar() {
+        const bar = document.createElement('div');
+        bar.className = 'options-bar image-options-bar';
+        
+        // Add z-index controls
+        const toFrontBtn = document.createElement('button');
+        toFrontBtn.innerHTML = '⬆️ Front';
+        toFrontBtn.onclick = () => {
+            if (this.selectedImage) {
+                const index = this.elements.indexOf(this.selectedImage);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.push(this.selectedImage);
+                    this.redraw();
+                }
+            }
+        };
+
+        const toBackBtn = document.createElement('button');
+        toBackBtn.innerHTML = '⬇️ Back';
+        toBackBtn.onclick = () => {
+            if (this.selectedImage) {
+                const index = this.elements.indexOf(this.selectedImage);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.elements.unshift(this.selectedImage);
+                    this.redraw();
+                }
+            }
+        };
+
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '🗑️ Delete';
+        deleteBtn.onclick = () => {
+            if (this.selectedImage) {
+                const index = this.elements.indexOf(this.selectedImage);
+                if (index > -1) {
+                    this.elements.splice(index, 1);
+                    this.selectedImage = null;
+                    this.redraw();
+                    this.hideAllOptionsBars();
+                }
+            }
+        };
+
+        [toFrontBtn, toBackBtn, deleteBtn].forEach(el => bar.appendChild(el));
+        return bar;
+    }
+
+    showImageOptionsBar(image) {
+        if (!image) {
+            this.imageOptionsBar.style.display = 'none';
+            return;
+        }
+        this.showOptionsBar(image, this.imageOptionsBar);
+    }
+
+    hideAllOptionsBars() {
+        if (!this.selectedImage && !this.selectedShape && !this.selectedPath && !this.selectedText) {
+            this.optionsBars.forEach(({ bar }) => {
+                bar.classList.remove('visible');
+                bar.style.display = 'none';
+            });
+        }
+    }
+
+    // Add method to draw selection for any element type
+    drawElementSelection(element) {
+        this.ctx.save();
+        this.ctx.strokeStyle = '#2962ff';
+        this.ctx.lineWidth = 2;
+        this.ctx.setLineDash([5, 5]);
+
+        if (element.type === 'text') {
+            // Get text dimensions
+            this.ctx.font = `${element.fontSize} ${element.fontFamily}`;
+            const metrics = this.ctx.measureText(element.content);
+            const height = parseInt(element.fontSize);
+            
+            // Draw selection rectangle around text
+            this.ctx.strokeRect(
+                element.x - 2,
+                element.y - 2,
+                metrics.width + 4,
+                height + 4
+            );
+        } else if (element.type === 'path') {
+            this.drawPathSelection(element);
+        } else if (element.type === 'rectangle' || element.type === 'image') {
+            // ... existing rectangle/image selection code ...
+        }
+        
+        this.ctx.restore();
+    }
+
+    // Modify element creation to use unified array
+    handlePaste(e) {
+        if (!e.clipboardData || !e.clipboardData.items) return;
+
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                e.preventDefault();
+                
+                const blob = items[i].getAsFile();
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    
+                    img.onload = () => {
+                        // Calculate center position in canvas coordinates
+                        const centerX = (-this.offsetX + this.canvas.width/2) / this.scale;
+                        const centerY = (-this.offsetY + this.canvas.height/2) / this.scale;
+                        
+                        const imageObj = {
+                            type: 'image',
+                            src: event.target.result,
+                            x: centerX - (img.width / 2 / this.scale),
+                            y: centerY - (img.height / 2 / this.scale),
+                            width: img.width / this.scale,
+                            height: img.height / this.scale,
+                            id: Date.now().toString()
+                        };
+                        
+                        // Only add the image and cached version after it's loaded
+                        imageObj.cachedImage = img;
+                        this.elements.push(imageObj);
+                        this.selectElement(imageObj);
+                        this.redraw();
+                    };
+                };
+                
+                reader.readAsDataURL(blob);
+                break;
+            }
+        }
+    }
+
+    // Use a single select method
+    selectElement(element) {
+        console.log('Selecting element:', element);
+        this.deselectAll();
+        this.selectedElement = element;
+        
+        // Show appropriate options bar based on element type
+        if (element.type === 'path') {
+            this.selectedPath = element;
+            this.showPathOptionsBar(element);
+        } else if (element.type === 'rectangle') {
+            this.selectedShape = element;
+            this.showShapeOptionsBar(element);
+        } else if (element.type === 'image') {
+            this.selectedImage = element;
+            this.showImageOptionsBar(element);
+        }
+        
+        this.redraw();
+    }
+
+    // Add deselectText method
+    deselectText(text) {
+        if (text === this.selectedText) {
+            text.classList.remove('selected');
+            this.selectedText = null;
+            this.showTextOptionsBar(null);
+        }
+    }
+
+    // Add showTextOptionsBar method if it doesn't exist
+    showTextOptionsBar(text) {
+        if (!text) {
+            this.textOptionsBar.style.display = 'none';
+            return;
+        }
+        this.showOptionsBar(text, this.textOptionsBar);
+    }
+
+    // Add findTextAtPoint method
+    findTextAtPoint(pos) {
+        // Check elements in reverse order (top to bottom)
+        for (let i = this.elements.length - 1; i >= 0; i--) {
+            const element = this.elements[i];
+            if (element.type === 'text') {
+                // Get text width using canvas context
+                this.ctx.save();
+                this.ctx.font = `${element.fontSize} ${element.fontFamily}`;
+                const metrics = this.ctx.measureText(element.content);
+                const height = parseInt(element.fontSize);
+                this.ctx.restore();
+
+                // Add a small buffer for easier selection
+                const buffer = 5 / this.scale;
+                if (pos.x >= element.x - buffer &&
+                    pos.x <= element.x + metrics.width + buffer &&
+                    pos.y >= element.y - buffer &&
+                    pos.y <= element.y + height + buffer) {
+                    return element;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Add method to update z-index of all elements
+    updateElementsZIndex() {
+        this.elements.forEach((element, index) => {
+            if (element.type === 'text' && element.domElement) {
+                element.domElement.style.zIndex = 100 + index;
+            }
+        });
         this.redraw();
     }
 } 

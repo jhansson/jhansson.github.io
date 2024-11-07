@@ -55,6 +55,7 @@
     top: 0;
     left: 0;
     cursor: crosshair;
+    z-index: 10;
 }
 
 .sticky-note {
@@ -265,6 +266,7 @@
     line-height: 1.4;
     background: rgba(255, 255, 255, 0.0);
     transition: transform 0.05s ease-out;
+    z-index: 100;
 }
 
 .text-element .text-content {
@@ -397,4 +399,91 @@ input[type="range"].shape-control {
 
 .shape-options-bar button:hover {
     background: #ff2222;
+}
+
+.options-bar button {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.options-bar button:hover {
+    background: #444;
+}
+
+.options-bar button[onclick*="Delete"] {
+    background: #ff4444;
+}
+
+.options-bar button[onclick*="Delete"]:hover {
+    background: #ff2222;
+}
+
+.image-options-bar {
+    background: #2a2a2a;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    display: flex;
+    gap: 8px;
+}
+
+.image-options-bar button {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.image-options-bar button:hover {
+    background: #444;
+}
+
+.image-options-bar button[onclick*="Delete"] {
+    background: #ff4444;
+}
+
+.image-options-bar button[onclick*="Delete"]:hover {
+    background: #ff2222;
+}
+
+/* Ensure text elements stay above canvas but can be reordered relative to each other */
+.text-element.front {
+    z-index: 200;
+}
+
+.text-element.back {
+    z-index: 50;
+}
+
+.text-element-editor {
+    position: absolute;
+    background: transparent;
+    border: 1px solid #2962ff;
+    color: #fff;
+    font-family: Inter, sans-serif;
+    outline: none;
+    z-index: 1000;
+    min-width: 100px;
+    min-height: 24px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.text-element-editor:focus {
+    outline: none;
+}
+
+.text-element-editor:empty:before {
+    content: 'Type your text here...';
+    color: #666;
 }
