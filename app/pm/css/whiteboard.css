@@ -10,7 +10,7 @@
     gap: 20px;
     align-items: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    z-index: 1000;
+    z-index: 9000;
 }
 
 .tool-section,

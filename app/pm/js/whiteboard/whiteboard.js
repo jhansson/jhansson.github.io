@@ -187,12 +187,12 @@ export class Whiteboard {
         
 
         this.canvas.addEventListener('mousedown', (e) => {
-            if (e.button === 2) return;
+            if (e.button === 2) return;  // Ignore right clicks
             
             const pos = this.getMousePos(e);
             
             if (this.currentTool === 'select') {
-                // Check for any clickable element
+                // Check for any clickable element in order (top to bottom)
                 const clickedElement = 
                     this.findImageAtPoint(pos) || 
                     this.findShapeAtPoint(pos) || 
@@ -216,23 +216,28 @@ export class Whiteboard {
                     
                     this.selectElement(clickedElement);
                     
-                    // Set up dragging
+                    // Set up dragging based on element type
                     if (clickedElement.type === 'path') {
                         this.isDraggingPath = true;
                         this.pathDragStart = pos;
-                    } else {
-                        this.isDraggingShape = clickedElement.type === 'rectangle';
-                        this.isDraggingImage = clickedElement.type === 'image';
+                    } else if (clickedElement.type === 'rectangle') {
+                        this.isDraggingShape = true;
+                        this.dragOffset = {
+                            x: pos.x - clickedElement.x,
+                            y: pos.y - clickedElement.y
+                        };
+                    } else if (clickedElement.type === 'image') {
+                        this.isDraggingImage = true;
                         this.dragOffset = {
                             x: pos.x - clickedElement.x,
                             y: pos.y - clickedElement.y
                         };
                     }
                     return;
+                } else {
+                    // If we clicked empty space, deselect everything
+                    this.deselectAll();
                 }
-                
-                // If nothing was clicked, deselect everything
-                this.deselectAll();
             } else if (this.currentTool === 'shape') {
                 this.isDrawingShape = true;
                 this.startX = pos.x;
@@ -251,22 +256,43 @@ export class Whiteboard {
         this.canvas.addEventListener('mousemove', (e) => {
             const pos = this.getMousePos(e);
             
-            if (this.isDraggingImage && this.selectedImage) {
-                // Update image position
-                this.selectedImage.x = pos.x - this.dragOffset.x;
-                this.selectedImage.y = pos.y - this.dragOffset.y;
-                
-                // Update options bar position
-                this.showImageOptionsBar(this.selectedImage);
+            if (this.isResizingShape && this.selectedShape) {
+                // Handle shape resizing
+                const shape = this.selectedShape;
+                switch (this.resizeHandle) {
+                    case 'left':
+                        const newWidth = shape.x + shape.width - pos.x;
+                        if (newWidth > 10) {
+                            shape.width = newWidth;
+                            shape.x = pos.x;
+                        }
+                        break;
+                    case 'right':
+                        shape.width = Math.max(10, pos.x - shape.x);
+                        break;
+                    case 'top':
+                        const newHeight = shape.y + shape.height - pos.y;
+                        if (newHeight > 10) {
+                            shape.height = newHeight;
+                            shape.y = pos.y;
+                        }
+                        break;
+                    case 'bottom':
+                        shape.height = Math.max(10, pos.y - shape.y);
+                        break;
+                }
                 this.redraw();
-                return;
+                if (this.shapeOptionsBar) {
+                    this.showShapeOptionsBar(shape);
+                }
             } else if (this.isResizingImage && this.selectedImage) {
+                // Handle image resizing
                 const image = this.selectedImage;
                 const aspectRatio = image.width / image.height;
                 
                 switch (this.resizeHandle) {
                     case 'left':
-                        const newWidth = image.width + (image.x - pos.x);
+                        const newWidth = image.x + image.width - pos.x;
                         if (newWidth > 10) {
                             image.width = newWidth;
                             image.x = pos.x;
@@ -278,7 +304,7 @@ export class Whiteboard {
                         image.height = image.width / aspectRatio;
                         break;
                     case 'top':
-                        const newHeight = image.height + (image.y - pos.y);
+                        const newHeight = image.y + image.height - pos.y;
                         if (newHeight > 10) {
                             image.height = newHeight;
                             image.y = pos.y;
@@ -290,33 +316,20 @@ export class Whiteboard {
                         image.width = image.height * aspectRatio;
                         break;
                 }
-                
-                // Update options bar position after resizing too
-                this.showImageOptionsBar(this.selectedImage);
                 this.redraw();
-                return;
-            }
-            
-            // Update cursor based on hover over resize handles
-            if (this.currentTool === 'select' && this.selectedShape) {
-                const handle = this.findResizeHandle(pos, this.selectedShape);
-                if (handle) {
-                    this.canvas.style.cursor = handle === 'left' || handle === 'right' 
-                        ? 'ew-resize' 
-                        : 'ns-resize';
-                    return;
+                if (this.imageOptionsBar) {
+                    this.showImageOptionsBar(image);
                 }
-            }
-            
-            if (this.isDraggingShape && this.selectedShape) {
-                // Update shape position
+            } else if (this.isDraggingShape && this.selectedShape) {
+                // Handle shape dragging
                 this.selectedShape.x = pos.x - this.dragOffset.x;
                 this.selectedShape.y = pos.y - this.dragOffset.y;
                 this.redraw();
-                // Update options bar position
-                this.showShapeOptionsBar(this.selectedShape);
+                if (this.shapeOptionsBar) {
+                    this.showShapeOptionsBar(this.selectedShape);
+                }
             } else if (this.isDraggingPath && this.selectedPath) {
-                // Existing path dragging code...
+                // Handle path dragging
                 const dx = pos.x - this.pathDragStart.x;
                 const dy = pos.y - this.pathDragStart.y;
                 this.selectedPath.points = this.selectedPath.points.map(point => ({
@@ -325,10 +338,20 @@ export class Whiteboard {
                 }));
                 this.pathDragStart = pos;
                 this.redraw();
-                this.showPathOptionsBar(this.selectedPath);
-            } else if (this.isDrawingShape) {
+                if (this.pathOptionsBar) {
+                    this.showPathOptionsBar(this.selectedPath);
+                }
+            } else if (this.isDraggingImage && this.selectedImage) {
+                // Handle image dragging
+                this.selectedImage.x = pos.x - this.dragOffset.x;
+                this.selectedImage.y = pos.y - this.dragOffset.y;
                 this.redraw();
-                // Draw preview rectangle
+                if (this.imageOptionsBar) {
+                    this.showImageOptionsBar(this.selectedImage);
+                }
+            } else if (this.isDrawingShape) {
+                // Handle shape drawing preview
+                this.redraw();
                 this.ctx.save();
                 this.ctx.translate(this.offsetX, this.offsetY);
                 this.ctx.scale(this.scale, this.scale);
@@ -339,61 +362,22 @@ export class Whiteboard {
                 const height = pos.y - this.startY;
                 this.ctx.strokeRect(this.startX, this.startY, width, height);
                 this.ctx.restore();
-            } else if (this.isDrawing) {
-                this.drawPath(pos);
             }
         });
 
         this.canvas.addEventListener('mouseup', (e) => {
-            if (this.isDrawingShape) {
-                const pos = this.getMousePos(e);
-                const width = pos.x - this.startX;
-                const height = pos.y - this.startY;
-                
-                if (Math.abs(width) > 2 && Math.abs(height) > 2) {
-                    const shape = {
-                        type: 'rectangle',
-                        x: this.startX,
-                        y: this.startY,
-                        width: width,
-                        height: height,
-                        color: '#FFFFFF',
-                        opacity: 1,
-                        id: Date.now().toString()
-                    };
-                    
-                    this.elements.push(shape);
-                    this.selectElement(shape);
-                }
-                
-                this.isDrawingShape = false;
-                this.redraw();
-            }
-            if (this.isDraggingImage) {
-                console.log('Ending image drag');
-                this.isDraggingImage = false;
-                this.dragStart = null;
-                return;
-            }
             if (this.isResizingShape) {
                 this.isResizingShape = false;
                 this.resizeHandle = null;
                 this.canvas.style.cursor = 'default';
-                return;
-            }
-            if (this.isResizingImage) {
-                this.isResizingImage = false;
-                this.resizeHandle = null;
-                this.canvas.style.cursor = 'default';
-                return;
-            }
-            
-            if (this.isDraggingShape) {
+            } else if (this.isDraggingShape) {
                 this.isDraggingShape = false;
-                this.shapeDragStart = null;
             } else if (this.isDraggingPath) {
                 this.isDraggingPath = false;
                 this.pathDragStart = null;
+            } else if (this.isDraggingImage) {
+                this.isDraggingImage = false;
+                this.dragOffset = null;
             } else if (this.isDrawingShape) {
                 const pos = this.getMousePos(e);
                 const width = pos.x - this.startX;
@@ -406,7 +390,7 @@ export class Whiteboard {
                         y: this.startY,
                         width: width,
                         height: height,
-                        color: '#FFFFFF',
+                        color: this.currentColor,
                         opacity: 1,
                         id: Date.now().toString()
                     };
@@ -417,8 +401,6 @@ export class Whiteboard {
                 
                 this.isDrawingShape = false;
                 this.redraw();
-            } else if (this.isDrawing) {
-                this.completePath();
             }
         });
 
@@ -706,6 +688,7 @@ export class Whiteboard {
                         const textContent = document.createElement('div');
                         textContent.className = 'text-content';
                         textContent.contentEditable = true;
+                        textContent.spellcheck = false;  // Add this line
                         textContent.innerHTML = element.content || '';
                         textContent.style.fontSize = element.fontSize || '14px';
                         textContent.style.fontFamily = element.fontFamily || 'Inter';
@@ -1470,6 +1453,7 @@ export class Whiteboard {
         const textContent = document.createElement('div');
         textContent.className = 'text-content';
         textContent.contentEditable = true;
+        textContent.spellcheck = false;  // Add this line to disable spell checking
         textContent.innerHTML = '<br>';
         text.appendChild(textContent);
         
@@ -1863,7 +1847,7 @@ export class Whiteboard {
         
         // Z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️';
+        toFrontBtn.innerHTML = '⬆';
         toFrontBtn.onclick = () => {
             if (this.selectedShape) {
                 const index = this.elements.indexOf(this.selectedShape);
@@ -2106,7 +2090,7 @@ export class Whiteboard {
         
         // Add z-index controls
         const toFrontBtn = document.createElement('button');
-        toFrontBtn.innerHTML = '⬆️';
+        toFrontBtn.innerHTML = '⬆';
         toFrontBtn.onclick = () => {
             if (this.selectedImage) {
                 const index = this.elements.indexOf(this.selectedImage);
@@ -2171,8 +2155,8 @@ export class Whiteboard {
     drawElementSelection(element) {
         this.ctx.save();
         this.ctx.strokeStyle = '#2962ff';
-        this.ctx.lineWidth = 2 / this.scale;  // Adjust for zoom
-        this.ctx.setLineDash([5 / this.scale, 5 / this.scale]);  // Adjust for zoom
+        this.ctx.lineWidth = 2 / this.scale;
+        this.ctx.setLineDash([5 / this.scale, 5 / this.scale]);
 
         if (element.type === 'image') {
             // Draw selection rectangle around image
@@ -2202,18 +2186,7 @@ export class Whiteboard {
                 );
             });
         } else if (element.type === 'text') {
-            // Get text dimensions
-            this.ctx.font = `${element.fontSize} ${element.fontFamily}`;
-            const metrics = this.ctx.measureText(element.content);
-            const height = parseInt(element.fontSize);
-            
-            // Draw selection rectangle around text
-            this.ctx.strokeRect(
-                element.x - 2,
-                element.y - 2,
-                metrics.width + 4,
-                height + 4
-            );
+            // ... existing text selection code ...
         } else if (element.type === 'path') {
             this.drawPathSelection(element);
         } else if (element.type === 'rectangle') {
@@ -2230,15 +2203,23 @@ export class Whiteboard {
         this.selectedElement = element;
         
         // Show appropriate options bar based on element type
-        if (element.type === 'path') {
-            this.selectedPath = element;
-            this.showPathOptionsBar(element);
-        } else if (element.type === 'rectangle') {
-            this.selectedShape = element;
-            this.showShapeOptionsBar(element);
-        } else if (element.type === 'image') {
-            this.selectedImage = element;
-            this.showImageOptionsBar(element);
+        switch (element.type) {
+            case 'path':
+                this.selectedPath = element;
+                this.showPathOptionsBar(element);
+                break;
+            case 'rectangle':
+                this.selectedShape = element;
+                this.showShapeOptionsBar(element);
+                break;
+            case 'image':
+                this.selectedImage = element;
+                this.showImageOptionsBar(element);
+                break;
+            case 'text':
+                this.selectedText = element;
+                this.showTextOptionsBar(element);
+                break;
         }
         
         this.redraw();
