@@ -1,5 +1,10 @@
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { getGoogleAccessToken } from '../auth.js';  // Remove reauthorizeForDrive from import
+
+// Add at the top of the file
+const DRIVE_API_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
+const DRIVE_FOLDER_NAME = 'Whiteboard Images';
 
 export class Whiteboard {
     constructor() {
@@ -73,6 +78,67 @@ export class Whiteboard {
         document.addEventListener('paste', (e) => this.handlePaste(e));
         
         // ... rest of constructor
+        
+        // Add folder ID storage
+        this.driveFolderId = null;
+
+        // Only try to initialize folder if we have a token
+        if (this.auth.currentUser && getGoogleAccessToken()) {
+            this.initDriveFolder().catch(error => {
+                console.error('Failed to initialize Drive folder:', error);
+            });
+        }
+
+        // Add initialization promise
+        this.driveInitPromise = null;
+    }
+
+    async initDriveFolder() {
+        try {
+            const token = getGoogleAccessToken();
+            if (!token) {
+                console.log('No access token yet, waiting for login...');
+                return null;  // Return null instead of throwing
+            }
+            
+            // Check if folder exists
+            const folderResponse = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder'`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            const folderData = await folderResponse.json();
+            
+            if (folderData.files && folderData.files.length > 0) {
+                this.driveFolderId = folderData.files[0].id;
+            } else {
+                // Create folder if it doesn't exist
+                const createResponse = await fetch(
+                    'https://www.googleapis.com/drive/v3/files',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: DRIVE_FOLDER_NAME,
+                            mimeType: 'application/vnd.google-apps.folder'
+                        })
+                    }
+                );
+                const newFolder = await createResponse.json();
+                this.driveFolderId = newFolder.id;
+            }
+            return this.driveFolderId;
+        } catch (error) {
+            console.error('Error initializing Drive folder:', error);
+            return null;
+        }
     }
 
     initializeCanvas() {
@@ -611,8 +677,25 @@ export class Whiteboard {
                 document.querySelectorAll('.text-element').forEach(el => el.remove());
                 
                 // Load elements
-                data.elements?.forEach(element => {
-                    if (element.type === 'text') {
+                for (const element of data.elements || []) {
+                    if (element.type === 'image') {
+                        // Create and load the image
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = () => resolve();
+                            img.onerror = () => {
+                                console.error('Failed to load image:', element.src);
+                                reject(new Error('Failed to load image'));
+                            };
+                            img.src = element.src;
+                        }).catch(error => {
+                            console.error('Error loading image:', error);
+                        });
+                        
+                        // Store the loaded image
+                        element.cachedImage = img;
+                        this.elements.push(element);
+                    } else if (element.type === 'text') {
                         // Recreate text element
                         const text = document.createElement('div');
                         text.className = 'text-element';
@@ -636,41 +719,22 @@ export class Whiteboard {
                         text.setAttribute('data-x', element.x);
                         text.setAttribute('data-y', element.y);
                         
-                        // Add to container and make draggable
                         this.container.appendChild(text);
                         
-                        // Create element object
-                        const textElement = {
-                            ...element,
-                            domElement: text
-                        };
-                        
-                        this.elements.push(textElement);
-                        this.makeDraggable(text, textElement);
-                        
-                        // Add event listeners
-                        this.setupTextElementEventListeners(text, textElement);
+                        element.domElement = text;
+                        this.elements.push(element);
+                        this.makeDraggable(text, element);
+                        this.setupTextElementEventListeners(text, element);
                     } else {
                         this.elements.push(element);
                     }
-                });
+                }
 
-                // Reset zoom and pan before loading images
+                // Reset zoom and pan
                 this.scale = 1;
                 this.offsetX = 0;
                 this.offsetY = 0;
                 
-                // Load images with proper positioning
-                this.images = (data.images || []).map(image => ({
-                    type: 'image',
-                    src: image.src,
-                    x: image.x,
-                    y: image.y,
-                    width: image.width,
-                    height: image.height,
-                    id: image.id
-                }));
-
                 // Clear existing notes
                 document.querySelectorAll('.sticky-note').forEach(note => note.remove());
                 
@@ -689,8 +753,8 @@ export class Whiteboard {
                     
                     noteElement.style.left = `${scaledX}px`;
                     noteElement.style.top = `${scaledY}px`;
-                    noteElement.style.width = '200px';  // Fixed width
-                    noteElement.style.height = '200px'; // Fixed height
+                    noteElement.style.width = '200px';
+                    noteElement.style.height = '200px';
                     noteElement.style.transform = `scale(${this.scale})`;
                     noteElement.style.transformOrigin = 'top left';
                     
@@ -730,12 +794,6 @@ export class Whiteboard {
                             this.selectNote(noteElement);
                         }
                     });
-
-                    document.addEventListener('click', (e) => {
-                        if (!noteElement.contains(e.target) && !this.optionsBar.contains(e.target)) {
-                            this.deselectNote(noteElement);
-                        }
-                    });
                 });
                 
                 this.redraw();
@@ -766,15 +824,17 @@ export class Whiteboard {
         this.elements.forEach(element => {
             if (element.type === 'image') {
                 if (element.cachedImage && element.cachedImage.complete) {
-                    this.ctx.drawImage(element.cachedImage, element.x, element.y, element.width, element.height);
-                } else if (!element.cachedImage) {
-                    const img = new Image();
-                    img.src = element.src;
-                    element.cachedImage = img;
-                    
-                    img.onload = () => {
-                        this.redraw();
-                    };
+                    try {
+                        this.ctx.drawImage(
+                            element.cachedImage, 
+                            element.x, 
+                            element.y, 
+                            element.width, 
+                            element.height
+                        );
+                    } catch (error) {
+                        console.error('Error drawing image:', error);
+                    }
                 }
             } else if (element.type === 'path') {
                 this.ctx.beginPath();
@@ -791,8 +851,9 @@ export class Whiteboard {
                 this.ctx.fillRect(element.x, element.y, element.width, element.height);
                 this.ctx.restore();
             }
-            // Draw selection for the selected element (except for text)
-            if (element === this.selectedElement && element.type !== 'text') {
+            
+            // Draw selection for the selected element
+            if (element === this.selectedElement) {
                 this.drawElementSelection(element);
             }
         });
@@ -1876,7 +1937,7 @@ export class Whiteboard {
         return null;
     }
 
-    handlePaste(e) {
+    async handlePaste(e) {
         if (!e.clipboardData || !e.clipboardData.items) return;
 
         const items = e.clipboardData.items;
@@ -1885,36 +1946,75 @@ export class Whiteboard {
                 e.preventDefault();
                 
                 const blob = items[i].getAsFile();
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
+                try {
+                    // Get mouse position for pasting
+                    const rect = this.canvas.getBoundingClientRect();
+                    // Use center of canvas if no specific paste position
+                    const mouseX = e.clientX ? 
+                        (e.clientX - rect.left - this.offsetX) / this.scale : 
+                        (this.canvas.width / 2 - this.offsetX) / this.scale;
+                    const mouseY = e.clientY ? 
+                        (e.clientY - rect.top - this.offsetY) / this.scale : 
+                        (this.canvas.height / 2 - this.offsetY) / this.scale;
+
+                    // Upload to Drive and get file ID
+                    const fileId = await this.uploadImageToDrive(blob);
+                    console.log('File ID from Drive:', fileId);
                     
-                    img.onload = () => {
-                        // Calculate center position in canvas coordinates
-                        const centerX = (-this.offsetX + this.canvas.width/2) / this.scale;
-                        const centerY = (-this.offsetY + this.canvas.height/2) / this.scale;
-                        
-                        const imageObj = {
-                            type: 'image',
-                            src: event.target.result,
-                            x: centerX - (img.width / 2 / this.scale),
-                            y: centerY - (img.height / 2 / this.scale),
-                            width: img.width / this.scale,
-                            height: img.height / this.scale,
-                            id: Date.now().toString()
+                    // Create the correct export URL using thumbnail API
+                    const imageUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
+                    console.log('Image URL:', imageUrl);
+                    
+                    // Create image element
+                    const img = new Image();
+                    
+                    // Use promise to handle image loading
+                    await new Promise((resolve, reject) => {
+                        img.onload = () => {
+                            console.log('Image loaded with dimensions:', img.width, img.height);
+                            resolve();
                         };
-                        
-                        // Only add the image and cached version after it's loaded
-                        imageObj.cachedImage = img;
-                        this.elements.push(imageObj);
-                        this.selectElement(imageObj);
-                        this.redraw();
+                        img.onerror = () => {
+                            console.error('Failed to load image with URL:', imageUrl);
+                            reject(new Error('Failed to load image'));
+                        };
+                        img.src = imageUrl;
+                    });
+
+                    // Calculate position (ensure we have valid numbers)
+                    const x = mouseX - (img.width / 2 / this.scale);
+                    const y = mouseY - (img.height / 2 / this.scale);
+
+                    console.log('Calculated position:', { x, y, scale: this.scale });
+
+                    const imageObj = {
+                        type: 'image',
+                        src: imageUrl,
+                        x: x,
+                        y: y,
+                        width: img.width / this.scale,
+                        height: img.height / this.scale,
+                        id: Date.now().toString(),
+                        fileId: fileId
                     };
-                };
-                
-                reader.readAsDataURL(blob);
+                    
+                    // Store the loaded image
+                    imageObj.cachedImage = img;
+                    
+                    // Add to elements array
+                    this.elements.push(imageObj);
+                    
+                    // Select the new image
+                    this.selectElement(imageObj);
+                    
+                    // Redraw canvas
+                    this.redraw();
+                    
+                    console.log('Image added:', imageObj);
+                } catch (error) {
+                    console.error('Error handling pasted image:', error);
+                    alert('Failed to handle pasted image. Please try again.');
+                }
                 break;
             }
         }
@@ -2050,10 +2150,37 @@ export class Whiteboard {
     drawElementSelection(element) {
         this.ctx.save();
         this.ctx.strokeStyle = '#2962ff';
-        this.ctx.lineWidth = 2;
-        this.ctx.setLineDash([5, 5]);
+        this.ctx.lineWidth = 2 / this.scale;  // Adjust for zoom
+        this.ctx.setLineDash([5 / this.scale, 5 / this.scale]);  // Adjust for zoom
 
-        if (element.type === 'text') {
+        if (element.type === 'image') {
+            // Draw selection rectangle around image
+            this.ctx.strokeRect(
+                element.x - 2 / this.scale,
+                element.y - 2 / this.scale,
+                element.width + 4 / this.scale,
+                element.height + 4 / this.scale
+            );
+
+            // Draw resize handles
+            const handleSize = 8 / this.scale;
+            const handles = [
+                { x: element.x, y: element.y + element.height/2 },  // left
+                { x: element.x + element.width, y: element.y + element.height/2 },  // right
+                { x: element.x + element.width/2, y: element.y },  // top
+                { x: element.x + element.width/2, y: element.y + element.height }  // bottom
+            ];
+
+            handles.forEach(handle => {
+                this.ctx.fillStyle = '#2962ff';
+                this.ctx.fillRect(
+                    handle.x - handleSize/2,
+                    handle.y - handleSize/2,
+                    handleSize,
+                    handleSize
+                );
+            });
+        } else if (element.type === 'text') {
             // Get text dimensions
             this.ctx.font = `${element.fontSize} ${element.fontFamily}`;
             const metrics = this.ctx.measureText(element.content);
@@ -2068,56 +2195,11 @@ export class Whiteboard {
             );
         } else if (element.type === 'path') {
             this.drawPathSelection(element);
-        } else if (element.type === 'rectangle' || element.type === 'image') {
-            // ... existing rectangle/image selection code ...
+        } else if (element.type === 'rectangle') {
+            // ... existing rectangle selection code ...
         }
         
         this.ctx.restore();
-    }
-
-    // Modify element creation to use unified array
-    handlePaste(e) {
-        if (!e.clipboardData || !e.clipboardData.items) return;
-
-        const items = e.clipboardData.items;
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf('image') !== -1) {
-                e.preventDefault();
-                
-                const blob = items[i].getAsFile();
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    
-                    img.onload = () => {
-                        // Calculate center position in canvas coordinates
-                        const centerX = (-this.offsetX + this.canvas.width/2) / this.scale;
-                        const centerY = (-this.offsetY + this.canvas.height/2) / this.scale;
-                        
-                        const imageObj = {
-                            type: 'image',
-                            src: event.target.result,
-                            x: centerX - (img.width / 2 / this.scale),
-                            y: centerY - (img.height / 2 / this.scale),
-                            width: img.width / this.scale,
-                            height: img.height / this.scale,
-                            id: Date.now().toString()
-                        };
-                        
-                        // Only add the image and cached version after it's loaded
-                        imageObj.cachedImage = img;
-                        this.elements.push(imageObj);
-                        this.selectElement(imageObj);
-                        this.redraw();
-                    };
-                };
-                
-                reader.readAsDataURL(blob);
-                break;
-            }
-        }
     }
 
     // Use a single select method
@@ -2324,5 +2406,99 @@ export class Whiteboard {
         };
 
         element.onmousedown = dragMouseDown;
+    }
+
+    // Add new method for uploading to Drive
+    async uploadImageToDrive(blob) {
+        const token = getGoogleAccessToken();
+        if (!token) {
+            throw new Error('Not authenticated with Google Drive. Please log out and log in again.');
+        }
+
+        if (!this.driveFolderId) {
+            // Create or get the folder
+            const folderResponse = await fetch(
+                `https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder'`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            
+            const folderData = await folderResponse.json();
+            
+            if (folderData.files && folderData.files.length > 0) {
+                this.driveFolderId = folderData.files[0].id;
+            } else {
+                const createResponse = await fetch(
+                    'https://www.googleapis.com/drive/v3/files',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: DRIVE_FOLDER_NAME,
+                            mimeType: 'application/vnd.google-apps.folder'
+                        })
+                    }
+                );
+                const newFolder = await createResponse.json();
+                this.driveFolderId = newFolder.id;
+            }
+        }
+
+        // Upload the image
+        const metadata = {
+            name: `whiteboard_image_${Date.now()}.png`,
+            parents: [this.driveFolderId]
+        };
+
+        const createResponse = await fetch(
+            'https://www.googleapis.com/drive/v3/files',
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(metadata)
+            }
+        );
+        
+        const fileData = await createResponse.json();
+        
+        await fetch(
+            `https://www.googleapis.com/upload/drive/v3/files/${fileData.id}?uploadType=media`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': blob.type
+                },
+                body: blob
+            }
+        );
+
+        // Make file public
+        await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileData.id}/permissions`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role: 'reader',
+                    type: 'anyone'
+                })
+            }
+        );
+
+        // Return the file ID instead of the webContentLink
+        return fileData.id;
     }
 } 
