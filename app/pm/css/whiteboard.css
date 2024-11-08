@@ -352,14 +352,16 @@
 /* Add zoom indicator */
 .zoom-indicator {
     position: fixed;
-    bottom: 80px;
+    bottom: 20px;
     right: 20px;
     background: rgba(0, 0, 0, 0.5);
-    color: white;
+    color: #fff;
     padding: 5px 10px;
     border-radius: 4px;
     font-size: 12px;
     pointer-events: none;
+    opacity: 0.8;
+    z-index: 1000;
 }
 
 #shapeControls {

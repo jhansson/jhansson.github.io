@@ -91,6 +91,9 @@ export class Whiteboard {
 
         // Add initialization promise
         this.driveInitPromise = null;
+
+        // Add zoom indicator reference
+        this.zoomIndicator = document.getElementById('zoomIndicator');
     }
 
     async initDriveFolder() {
@@ -1691,18 +1694,36 @@ export class Whiteboard {
         this.container.addEventListener('wheel', (e) => {
             if (e.ctrlKey || e.metaKey) {
                 e.preventDefault();
-                const delta = e.deltaY;
                 const mouseX = e.clientX - this.canvas.offsetLeft;
                 const mouseY = e.clientY - this.canvas.offsetTop;
                 
-                const zoom = delta > 0 ? 0.9 : 1.1;
-                const newScale = Math.min(Math.max(this.scale * zoom, this.minZoom), this.maxZoom);
+                // Calculate number of 5% steps from base scale (1.0)
+                const currentSteps = Math.round(Math.log(this.scale) / Math.log(1.05));
+                let newSteps = currentSteps;
                 
-                if (newScale !== this.scale) {
-                    const scaleChange = newScale - this.scale;
+                if (e.deltaY > 0) {
+                    // Zoom out: decrease steps
+                    newSteps = currentSteps - 1;
+                } else {
+                    // Zoom in: increase steps
+                    newSteps = currentSteps + 1;
+                }
+                
+                // Calculate new scale based on steps (this ensures we hit exact percentages)
+                const newScale = Math.pow(1.05, newSteps);
+                
+                // Clamp to min/max zoom
+                const clampedScale = Math.min(Math.max(newScale, this.minZoom), this.maxZoom);
+                
+                if (clampedScale !== this.scale) {
+                    const scaleChange = clampedScale - this.scale;
                     this.offsetX -= ((mouseX - this.offsetX) * scaleChange) / this.scale;
                     this.offsetY -= ((mouseY - this.offsetY) * scaleChange) / this.scale;
-                    this.scale = newScale;
+                    this.scale = clampedScale;
+                    
+                    // Update zoom indicator
+                    this.updateZoomIndicator();
+                    
                     this.redraw();
                     this.updateAllElementPositions();
                 }
@@ -2500,5 +2521,13 @@ export class Whiteboard {
 
         // Return the file ID instead of the webContentLink
         return fileData.id;
+    }
+
+    // Add new method to update zoom indicator
+    updateZoomIndicator() {
+        if (this.zoomIndicator) {
+            const percentage = Math.round(this.scale * 100);
+            this.zoomIndicator.textContent = `${percentage}%`;
+        }
     }
 } 
