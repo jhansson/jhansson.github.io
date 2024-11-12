@@ -24,35 +24,178 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            max-width: 90%;
-            gap: 10px;
+            width: 90vw;
+            height: 90vh;
+            gap: calc(1vmin);
+            padding: 2vmin;
         }
         .word {
-            font-size: 8rem;
+            font-size: min(8vw, 8rem);
             font-weight: 900;
             padding: 5px;
             opacity: 0;
             transform: scale(0);
             transition: opacity 0.5s, transform 0.5s;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            margin: -30px 0;
+            margin: calc(-1vmin) 0;
+            line-height: 1;
+            flex: 0 1 auto;
         }
         @media (max-width: 600px) {
             .word {
-                font-size: 24px;
+                font-size: min(7vw, 24px);
+                margin: calc(-0.5vmin) 0;
             }
             #container {
-                gap: 5px;
+                gap: calc(0.5vmin);
+                width: 95vw;
+                height: 95vh;
             }
+        }
+
+        /* Add new styles for the modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .color-option {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-option.active {
+            border-color: black;
+            transform: scale(1.1);
+        }
+
+        .modal-title {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2em;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div id="container"></div>
+    
+    <!-- Add modal HTML -->
+    <div id="colorModal" class="modal">
+        <div class="modal-title">Select Colors (ESC to close)</div>
+        <div id="colorOptions"></div>
+    </div>
 
     <script>
-        const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'brown', 'black'];
+        const allColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'brown', 'black'];
+        let activeColors = [...allColors];
         const container = document.getElementById('container');
+        const modal = document.getElementById('colorModal');
+        const colorOptions = document.getElementById('colorOptions');
+
+        // Load saved colors from localStorage
+        function loadSavedColors() {
+            const saved = localStorage.getItem('activeColors');
+            if (saved) {
+                activeColors = JSON.parse(saved);
+            }
+        }
+
+        // Save colors to localStorage
+        function saveColors() {
+            localStorage.setItem('activeColors', JSON.stringify(activeColors));
+        }
+
+        // Create color selection boxes
+        function createColorOptions() {
+            colorOptions.innerHTML = '';
+            allColors.forEach(color => {
+                const option = document.createElement('div');
+                option.className = `color-option${activeColors.includes(color) ? ' active' : ''}`;
+                option.style.backgroundColor = color;
+                option.dataset.color = color;
+                option.onclick = () => toggleColor(color, option);
+                colorOptions.appendChild(option);
+            });
+        }
+
+        // Toggle color selection
+        function toggleColor(color, element) {
+            if (activeColors.includes(color)) {
+                // Ensure at least one color remains active
+                if (activeColors.length > 1) {
+                    activeColors = activeColors.filter(c => c !== color);
+                    element.classList.remove('active');
+                }
+            } else {
+                activeColors.push(color);
+                element.classList.add('active');
+            }
+            saveColors();
+            generateWords();
+        }
+
+        // Modal toggle with ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+                if (modal.style.display === 'block') {
+                    createColorOptions();
+                }
+            }
+        });
+
+        // Update existing functions to use activeColors instead of colors
+        function getRandomColor(excludeColor) {
+            let availableColors = activeColors.filter(color => color !== excludeColor && color !== previousColor);
+            if (availableColors.length === 0) {
+                availableColors = activeColors.filter(color => color !== excludeColor);
+            }
+            const selectedColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+            previousColor = selectedColor;
+            return selectedColor;
+        }
+
+        function generateWords() {
+            container.innerHTML = '';
+            const shuffledColors = [...activeColors];
+            shuffleArray(shuffledColors);
+            previousColor = '';
+
+            // Calculate number of words based on viewport size
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const baseSize = Math.min(viewportWidth, viewportHeight);
+            const wordsPerRow = Math.floor(viewportWidth / (baseSize * 0.25));
+            const numberOfRows = Math.floor(viewportHeight / (baseSize * 0.15));
+            const totalWords = Math.min(32, wordsPerRow * numberOfRows);
+
+            for (let i = 0; i < totalWords; i++) {
+                const textColor = shuffledColors[i % shuffledColors.length];
+                const wordColor = getRandomColor(textColor);
+                const word = createWord(textColor.toUpperCase(), wordColor);
+                container.appendChild(word);
+
+                setTimeout(() => {
+                    word.style.opacity = '1';
+                    word.style.transform = 'scale(1)';
+                }, i * 50);
+            }
+        }
 
         function createWord(text, color) {
             const word = document.createElement('div');
@@ -71,35 +214,8 @@
 
         let previousColor = '';
 
-        function getRandomColor(excludeColor) {
-            let availableColors = colors.filter(color => color !== excludeColor && color !== previousColor);
-            if (availableColors.length === 0) {
-                availableColors = colors.filter(color => color !== excludeColor);
-            }
-            const selectedColor = availableColors[Math.floor(Math.random() * availableColors.length)];
-            previousColor = selectedColor;
-            return selectedColor;
-        }
-
-        function generateWords() {
-            container.innerHTML = '';
-            const shuffledColors = [...colors];
-            shuffleArray(shuffledColors);
-            previousColor = ''; // Reset previousColor at the start of generation
-
-            for (let i = 0; i < 32; i++) {
-                const textColor = shuffledColors[i % shuffledColors.length];
-                const wordColor = getRandomColor(textColor);
-                const word = createWord(textColor.toUpperCase(), wordColor);
-                container.appendChild(word);
-
-                setTimeout(() => {
-                    word.style.opacity = '1';
-                    word.style.transform = 'scale(1)';
-                }, i * 50);
-            }
-        }
-
+        // Initialize
+        loadSavedColors();
         generateWords();
         window.addEventListener('resize', generateWords);
     </script>

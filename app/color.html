@@ -33,6 +33,12 @@
         <div id="startMessage">Click to start</div>
     </div>
     <script>
+        let speechSynthesis = window.speechSynthesis;
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = function() {
+            speechSynthesis.getVoices();
+        };
+
         const colors = ['red', 'green', 'blue', 'yellow'];
         const contentElement = document.getElementById('content');
         const startMessageElement = document.getElementById('startMessage');
@@ -71,19 +77,47 @@
         }
 
         function speakColor() {
+            speechSynthesis.cancel();
+            
             const utterance = new SpeechSynthesisUtterance(currentColor);
             utterance.lang = 'en-US';
-            speechSynthesis.speak(utterance);
-            isRevealed = true;
+            
+            utterance.onerror = function(event) {
+                console.error('Speech synthesis error:', event);
+            };
+            
+            utterance.onend = function() {
+                isRevealed = true;
+            };
+            
+            try {
+                speechSynthesis.speak(utterance);
+                isRevealed = true;
+            } catch (error) {
+                console.error('Speech synthesis failed:', error);
+            }
         }
 
         function startApp() {
             isStarted = true;
             startMessageElement.style.display = 'none';
+            try {
+                speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+            } catch (error) {
+                console.error('Failed to initialize speech synthesis:', error);
+            }
             displayColor();
         }
 
-        document.body.addEventListener('click', () => {
+        document.body.addEventListener('click', handleInteraction);
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                event.preventDefault(); // Prevent page scrolling
+                handleInteraction();
+            }
+        });
+
+        function handleInteraction() {
             if (!isStarted) {
                 startApp();
             } else if (!isRevealed) {
@@ -91,7 +125,7 @@
             } else {
                 displayColor();
             }
-        });
+        }
     </script>
 </body>
 </html>
