@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANSI Shadow Text Generator</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        pre {
+            white-space: pre;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            margin-bottom: 20px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #555;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="text" id="textInput" placeholder="Enter text here..." value="HELLO">
+        <button id="copyButton">Copy as Comment</button>
+    </div>
+    <pre id="output"></pre>
+
+    <script>
+        const shadowCharacters = {
+            A: [
+                " █████╗ ",
+                "██╔══██╗",
+                "███████║",
+                "██╔══██║",
+                "██║  ██║",
+                "╚═╝  ╚═╝",
+                "        "
+            ],
+            B: [
+                "██████╗ ",
+                "██╔══██╗",
+                "██████╔╝",
+                "██╔══██╗",
+                "██████╔╝",
+                "╚═════╝ ",
+                "        "
+            ],
+            C: [
+                " ██████╗",
+                "██╔════╝",
+                "██║     ",
+                "██║     ",
+                "╚██████╗",
+                " ╚═════╝",
+                "        "
+            ],
+            D: [
+                "██████╗ ",
+                "██╔══██╗",
+                "██║  ██║",
+                "██║  ██║",
+                "██████╔╝",
+                "╚═════╝ ",
+                "        "
+            ],
+            E: [
+                "███████╗",
+                "██╔════╝",
+                "█████╗  ",
+                "██╔══╝  ",
+                "███████╗",
+                "╚══════╝",
+                "        "
+            ],
+            F: [
+                "███████╗",
+                "██╔════╝",
+                "█████╗  ",
+                "██╔══╝  ",
+                "██║     ",
+                "╚═╝     ",
+                "        "
+            ],
+            G: [
+                " ██████╗ ",
+                "██╔════╝ ",
+                "██║  ███╗",
+                "██║   ██║",
+                "╚██████╔╝",
+                " ╚═════╝ ",
+                "         "
+            ],
+            H: [
+                "██╗  ██╗",
+                "██║  ██║",
+                "███████║",
+                "██╔══██║",
+                "██║  ██║",
+                "╚═╝  ╚═╝",
+                "        "
+            ],
+            I: [
+                "██╗",
+                "██║",
+                "██║",
+                "██║",
+                "██║",
+                "╚═╝",
+                "   "
+            ],
+            J: [
+                "     ██╗",
+                "     ██║",
+                "     ██║",
+                "██   ██║",
+                "╚█████╔╝",
+                " ╚════╝ ",
+                "        "
+            ],
+            K: [
+                "██╗  ██╗",
+                "██║ ██╔╝",
+                "█████╔╝ ",
+                "██╔═██╗ ",
+                "██║  ██╗",
+                "╚═╝  ╚═╝",
+                "        "
+            ],
+            L: [
+                "██╗     ",
+                "██║     ",
+                "██║     ",
+                "██║     ",
+                "███████╗",
+                "╚══════╝",
+                "        "
+            ],
+            M: [
+                "███╗   ███╗",
+                "████╗ ████║",
+                "██╔████╔██║",
+                "██║╚██╔╝██║",
+                "██║ ╚═╝ ██║",
+                "╚═╝     ╚═╝",
+                "           "
+            ],
+            N: [
+                "███╗   ██╗",
+                "████╗  ██║",
+                "██╔██╗ ██║",
+                "██║╚██╗██║",
+                "██║ ╚████║",
+                "╚═╝  ╚═══╝",
+                "          "
+            ],
+            O: [
+                " ██████╗ ",
+                "██╔═══██╗",
+                "██║   ██║",
+                "██║   ██║",
+                "╚██████╔╝",
+                " ╚═════╝ ",
+                "         "
+            ],
+            P: [
+                "██████╗ ",
+                "██╔══██╗",
+                "██████╔╝",
+                "██╔═══╝ ",
+                "██║     ",
+                "╚═╝     ",
+                "        "
+            ],
+            Q: [
+                " ██████╗ ",
+                "██╔═══██╗",
+                "██║   ██║",
+                "██��▄▄ ██║",
+                "╚██████╔╝",
+                " ╚══▀▀═╝ ",
+                "         "
+            ],
+            R: [
+                "██████╗ ",
+                "██╔══██╗",
+                "██████╔╝",
+                "██╔══██╗",
+                "██║  ██║",
+                "╚═╝  ╚═╝",
+                "        "
+            ],
+            S: [
+                "███████╗",
+                "██╔════╝",
+                "███████╗",
+                "╚════██║",
+                "███████║",
+                "╚══════╝",
+                "        "
+            ],
+            T: [
+                "████████╗",
+                "╚══██╔══╝",
+                "   ██║   ",
+                "   ██║   ",
+                "   ██║   ",
+                "   ╚═╝   ",
+                "         "
+            ],
+            U: [
+                "██╗   ██╗",
+                "██║   ██║",
+                "██║   ██║",
+                "██║   ██║",
+                "╚██████╔╝",
+                " ╚═════╝ ",
+                "         "
+            ],
+            V: [
+                "██╗   ██╗",
+                "██║   ██║",
+                "██║   ██║",
+                "╚██╗ ██╔╝",
+                " ╚████╔╝ ",
+                "  ╚═══╝  ",
+                "         "
+            ],
+            W: [
+                "██╗    ██╗",
+                "██║    ██║",
+                "██║ █╗ ██║",
+                "██║███╗██║",
+                "╚███╔███╔╝",
+                " ╚══╝╚══╝ ",
+                "          "
+            ],
+            X: [
+                "██╗  ██╗",
+                "╚██╗██╔╝",
+                " ╚███╔╝ ",
+                " ██╔██╗ ",
+                "██╔╝ ██╗",
+                "╚═╝  ╚═╝",
+                "        "
+            ],
+            Y: [
+                "██╗   ██╗",
+                "╚██╗ ██╔╝",
+                " ╚████╔╝ ",
+                "  ╚██╔╝  ",
+                "   ██║   ",
+                "   ╚═╝   ",
+                "         "
+            ],
+            Z: [
+                "███████╗",
+                "╚══███╔╝",
+                "  ███╔╝ ",
+                " ███╔╝  ",
+                "███████╗",
+                "╚══════╝",
+                "        "
+            ],
+            "0": [
+                " ██████╗ ",
+                "██╔═████╗",
+                "██║██╔██║",
+                "████╔╝██║",
+                "╚██████╔╝",
+                " ╚═════╝ ",
+                "         "
+            ],
+            "1": [
+                " ██╗",
+                "███║",
+                "╚██║",
+                " ██║",
+                " ██║",
+                " ╚═╝",
+                "    "
+            ],
+            "2": [
+                "██████╗ ",
+                "╚════██╗",
+                " █████╔╝",
+                "██╔═══╝ ",
+                "███████╗",
+                "╚══════╝",
+                "        "
+            ],
+            "3": [
+                "██████╗ ",
+                "╚════██╗",
+                " █████╔╝",
+                " ╚═══██╗",
+                "██████╔╝",
+                "╚═════╝ ",
+                "        "
+            ],
+            "4": [
+                "██╗  ██╗",
+                "██║  ██║",
+                "███████║",
+                "╚════██║",
+                "     ██║",
+                "     ╚═╝",
+                "        "
+            ],
+            "5": [
+                "███████╗",
+                "██╔════╝",
+                "███████╗",
+                "╚════██║",
+                "███████║",
+                "╚══════╝",
+                "        "
+            ],
+            "6": [
+                " ██████╗ ",
+                "██╔════╝ ",
+                "███████╗ ",
+                "██╔═══██╗",
+                "╚██████╔╝",
+                " ╚═════╝ ",
+                "         "
+            ],
+            "7": [
+                "███████╗",
+                "╚════██║",
+                "    ██╔╝",
+                "   ██╔╝ ",
+                "   ██║  ",
+                "   ╚═╝  ",
+                "        "
+            ],
+            "8": [
+                " █████╗ ",
+                "██╔══██╗",
+                "╚█████╔╝",
+                "██╔══██╗",
+                "╚█████╔╝",
+                " ╚════╝ ",
+                "        "
+            ],
+            "9": [
+                " █████╗ ",
+                "██╔══██╗",
+                "╚██████║",
+                " ╚═══██║",
+                " █████╔╝",
+                " ╚════╝ ",
+                "        "
+            ],
+            ".": [
+                "   ",
+                "   ",
+                "   ",
+                "   ",
+                "██╗",
+                "╚═╝",
+                "   "
+            ],
+            ",": [
+                "   ",
+                "   ",
+                "   ",
+                "   ",
+                "▄█╗",
+                "╚═╝",
+                "   "
+            ],
+            "!": [
+                "██╗",
+                "██║",
+                "██║",
+                "╚═╝",
+                "██╗",
+                "╚═╝",
+                "   "
+            ],
+            "?": [
+                "██████╗ ",
+                "╚════██╗",
+                "  ▄███╔╝",
+                "  ▀▀══╝ ",
+                "  ██╗   ",
+                "  ╚═╝   ",
+                "        "
+            ],
+            "-": [
+                "      ",
+                "      ",
+                "█████╗",
+                "╚════╝",
+                "      ",
+                "      ",
+                "      "
+            ],
+            "_": [
+                "        ",
+                "        ",
+                "        ",
+                "        ",
+                "███████╗",
+                "╚══════╝",
+                "        "
+            ],
+            " ": [
+                "  ",
+                "  ",
+                "  ",
+                "  ",
+                "  ",
+                "  ",
+                "  "
+            ]
+        };
+
+        function convertToShadow(text) {
+            const lines = ["", "", "", "", "", "", ""];
+            
+            for (let char of text.toUpperCase()) {
+                const shadowChar = shadowCharacters[char] || shadowCharacters[" "];
+                for (let i = 0; i < 7; i++) {
+                    lines[i] += shadowChar[i];
+                }
+            }
+            
+            return lines.join("\n");
+        }
+
+        function copyAsComment() {
+            const text = output.textContent;
+            // Add "# " to the beginning of each line
+            const commentedText = text.split('\n').map(line => `# ${line}`).join('\n');
+            
+            // Create temporary textarea to copy to clipboard
+            const textarea = document.createElement('textarea');
+            textarea.value = commentedText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            // Optional: Visual feedback
+            const button = document.getElementById('copyButton');
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        const input = document.getElementById("textInput");
+        const output = document.getElementById("output");
+        const copyButton = document.getElementById("copyButton");
+
+        input.addEventListener("input", () => {
+            output.textContent = convertToShadow(input.value);
+        });
+
+        copyButton.addEventListener("click", copyAsComment);
+
+        // Initial render
+        output.textContent = convertToShadow(input.value);
+    </script>
+</body>
+</html>
