@@ -40,15 +40,11 @@ class MusicPlayer {
         this.songs = [];
         this.shuffledPlaylist = [];
 
-        // Available albums
-        this.albums = [
-            {
-                name: 'Indies',
-                artist: 'Brush',
-                cover: 'albums/Brush - Indies/cover.jpg'
-            }
-            // Add more albums here as they become available
-        ];
+        // Initialize empty albums array instead of hardcoding
+        this.albums = [];
+        
+        // Load albums when player initializes
+        this.loadAlbumsFromJson();
 
         // Initialize navigation
         document.getElementById('back-to-albums').addEventListener('click', () => this.showAlbumsView());
@@ -128,29 +124,19 @@ class MusicPlayer {
         const currentSongPath = this.currentSong?.path;
         
         try {
-            // Fetch the directory listing (this assumes your hosting service/GitHub Pages 
-            // has directory listing enabled or you have a pre-generated list)
-            const response = await fetch(`albums/${albumName}/`);
-            const text = await response.text();
+            // Fetch the songs.json file from the album directory
+            const response = await fetch(`albums/${albumName}/songs.json`);
+            if (!response.ok) throw new Error('Failed to load album data');
             
-            // Create a temporary element to parse the HTML directory listing
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, 'text/html');
+            const albumData = await response.json();
             
-            // Find all links that point to audio files
-            const audioFiles = Array.from(doc.querySelectorAll('a'))
-                .filter(a => a.href.match(/\.(mp3|wav|ogg)$/i))
-                .map(a => {
-                    const fileName = a.href.split('/').pop();
-                    return {
-                        title: decodeURIComponent(fileName.replace(/\.(mp3|wav|ogg)$/i, '')),
-                        artist: artist,
-                        album: album,
-                        path: `albums/${albumName}/${fileName}`
-                    };
-                });
-
-            this.songs = audioFiles;
+            // Create song objects from the JSON data
+            this.songs = albumData.songs.map(song => ({
+                title: song.title,
+                artist: albumData.artist,
+                album: albumData.album,
+                path: `albums/${albumName}/${song.file}`
+            }));
 
             // If we had a current song, find its new index in the updated songs array
             if (currentSongPath) {
@@ -162,41 +148,21 @@ class MusicPlayer {
             }
 
             // Try to load album cover
-            this.coverArt.src = `albums/${albumName}/cover.jpg`;
+            this.coverArt.src = `albums/${albumName}/${albumData.cover}`;
             this.coverArt.onerror = () => {
                 this.coverArt.src = 'images/default-album.jpg';
             };
 
             this.showAlbumSongsView();
-            document.getElementById('album-title').textContent = album;
-            document.getElementById('album-artist').textContent = artist;
-            document.getElementById('album-cover').src = `albums/${albumName}/cover.jpg`;
+            document.getElementById('album-title').textContent = albumData.album;
+            document.getElementById('album-artist').textContent = albumData.artist;
+            document.getElementById('album-cover').src = `albums/${albumName}/${albumData.cover}`;
             
             await this.renderAlbum();
 
         } catch (error) {
             console.error('Error loading album:', error);
-            // Fallback to checking for known audio files if directory listing fails
-            const commonExtensions = ['mp3', 'wav', 'ogg'];
-            const audioFiles = [];
-            
-            for (const ext of commonExtensions) {
-                try {
-                    const response = await fetch(`albums/${albumName}/index.${ext}`);
-                    if (response.ok) {
-                        audioFiles.push({
-                            title: `Track ${audioFiles.length + 1}`,
-                            artist: artist,
-                            album: album,
-                            path: `albums/${albumName}/index.${ext}`
-                        });
-                    }
-                } catch (e) {
-                    // Ignore failed attempts
-                }
-            }
-            
-            this.songs = audioFiles;
+            alert('Failed to load album data. Please try again later.');
         }
     }
 
@@ -433,7 +399,7 @@ class MusicPlayer {
             const albumCard = document.createElement('div');
             albumCard.className = 'album-card';
             albumCard.innerHTML = `
-                <img src="${album.cover}" alt="${album.name}" onerror="this.src='images/default-album.jpg'">
+                <img src="albums/${album.cover}" alt="${album.name}" onerror="this.src='images/default-album.jpg'">
                 <h4>${album.name}</h4>
                 <p>${album.artist}</p>
             `;
@@ -549,6 +515,21 @@ class MusicPlayer {
         
         // Update progress bar visually
         this.progressBar.style.width = `${boundedPercentage}%`;
+    }
+
+    // Add this new method
+    async loadAlbumsFromJson() {
+        try {
+            const response = await fetch('albums/albums.json');
+            if (!response.ok) throw new Error('Failed to load albums data');
+            
+            const data = await response.json();
+            this.albums = data.albums;
+            this.renderAlbums();
+        } catch (error) {
+            console.error('Error loading albums:', error);
+            alert('Failed to load albums list. Please try again later.');
+        }
     }
 }
 
