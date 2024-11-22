@@ -1,0 +1,792 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    min-height: 100vh;
+    background: #0f1119;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.music-player {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 600px;
+    background: #0f1119;
+    border-radius: 20px;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 3;
+}
+
+.header i {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.album-art {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.art-circle {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #673ab7;
+    position: relative;
+    z-index: 3;
+    background: #0f1119;
+}
+
+.art-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.track-info {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+    z-index: 3;
+}
+
+.track-info h2 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.track-info p {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.progress-area {
+    position: relative;
+    z-index: 2;
+    margin: 30px 0;
+    background: rgba(15, 17, 25, 0.5);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: #673ab7;
+    border-radius: 2px;
+    position: relative;
+}
+
+.time {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 30px 0;
+    position: relative;
+    z-index: 3;
+}
+
+.controls i {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.controls i:nth-child(3) {
+    font-size: 40px;
+}
+
+.playlist {
+    margin-top: 20px;
+}
+
+.playlist h3 {
+    margin: 20px 0;
+}
+
+#songs-list {
+    list-style: none;
+}
+
+#songs-list li {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #2a2a2a;
+    cursor: pointer;
+}
+
+#songs-list li:hover {
+    background: rgba(103, 58, 183, 0.1);
+}
+
+.song-info {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.song-info h4 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.song-info p {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.song-duration {
+    color: #aaa;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.albums-view, .album-songs-view, .now-playing-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0f1119;
+    height: 100%;
+}
+
+.albums-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.album-card {
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.album-card:hover {
+    transform: scale(1.05);
+}
+
+.album-card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.album-card h4 {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.album-card p {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.album-info {
+    text-align: center;
+    padding: 20px;
+}
+
+.album-info img {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.current-playlist {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.current-playlist h3 {
+    margin-bottom: 15px;
+}
+
+#current-playlist-songs li {
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+#current-playlist-songs li.playing {
+    background: rgba(103, 58, 183, 0.3);
+}
+
+.header i {
+    cursor: pointer;
+}
+
+.album-songs-view {
+    height: 100%;
+    background: #0f1119;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.album-songs-view .header {
+    flex-shrink: 0;
+    margin-bottom: 20px;
+}
+
+.album-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 30px 0;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.album-info img {
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.album-info h3 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.album-info p {
+    font-size: 16px;
+    color: #888;
+}
+
+#album-songs-list {
+    list-style: none;
+    padding: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#album-songs-list::-webkit-scrollbar {
+    display: none;
+}
+
+#album-songs-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#album-songs-list li:hover {
+    background: rgba(103, 58, 183, 0.15);
+}
+
+#album-songs-list .song-info {
+    flex: 1;
+    margin: 0 15px;
+}
+
+#album-songs-list .song-info h4 {
+    font-size: 15px;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+#album-songs-list .song-info p {
+    font-size: 13px;
+    color: #888;
+}
+
+.song-number {
+    color: #888;
+    font-size: 14px;
+    min-width: 25px;
+}
+
+.song-duration {
+    color: #888;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.now-playing-view {
+    padding: 20px;
+}
+
+.albums-view {
+    padding: 20px;
+}
+
+.current-playlist {
+    margin-top: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.current-playlist h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #fff;
+    padding: 0 5px;
+}
+
+#current-playlist-songs {
+    list-style: none;
+}
+
+#current-playlist-songs li {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#current-playlist-songs li:hover {
+    background: rgba(103, 58, 183, 0.15);
+}
+
+#current-playlist-songs li.playing {
+    background: rgba(103, 58, 183, 0.3);
+    color: #fff;
+    position: relative;
+    padding-left: 35px;
+}
+
+#current-playlist-songs li.playing::before {
+    content: '\f144'; /* Font Awesome play icon */
+    font-family: 'Font Awesome 6 Free';
+    position: absolute;
+    left: 12px;
+    color: #673ab7;
+}
+
+/* Add custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(103, 58, 183, 0.5);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(103, 58, 183, 0.7);
+}
+
+/* Add these new styles for the mini player and overlay */
+.mini-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 17, 25, 0.95);
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.mini-player-content {
+    display: flex;
+    align-items: center;
+}
+
+.mini-player img {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    margin-right: 12px;
+}
+
+.mini-info {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mini-text h4 {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.mini-text p {
+    font-size: 12px;
+    color: #888;
+}
+
+.mini-controls i {
+    font-size: 24px;
+    color: #673ab7;
+    cursor: pointer;
+}
+
+.player-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+}
+
+.player-overlay.visible {
+    background: rgba(0, 0, 0, 0.8);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.full-player {
+    width: 100%;
+    max-width: 350px;
+    background: #0f1119;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+.full-player.sliding-up {
+    animation: slideUp 0.3s ease forwards;
+}
+
+.full-player.sliding-down {
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%) translateZ(0);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) translateZ(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0) translateZ(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%) translateZ(0);
+        opacity: 0;
+    }
+}
+
+/* Update album-songs-view to account for mini-player */
+.album-songs-view {
+    padding-bottom: 70px; /* Make room for mini-player */
+}
+
+/* Update the currently playing song in the album view */
+#album-songs-list li.playing {
+    background: rgba(103, 58, 183, 0.3);
+    border-left: 4px solid #673ab7;
+    padding-left: 20px; /* Adjust padding to account for the border */
+}
+
+/* Remove the previous icon-based indicator */
+#album-songs-list li.playing::before {
+    content: none;
+}
+
+/* Desktop Layout */
+@media (min-width: 768px) {
+    .music-player {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        height: 80vh;
+    }
+
+    .albums-view, .album-songs-view {
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .player-overlay {
+        position: fixed;
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .full-player {
+        height: auto;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px;
+        background: #0f1119;
+    }
+
+    .art-circle {
+        width: 300px;
+        height: 300px;
+    }
+
+    .mini-player {
+        position: fixed;
+        z-index: 999;
+    }
+}
+
+/* Large Desktop Layout */
+@media (min-width: 1200px) {
+    .music-player {
+        grid-template-columns: 350px 1fr;
+    }
+
+    .full-player {
+        padding: 60px;
+    }
+
+    .art-circle {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+/* Mobile Layout Adjustments */
+@media (max-width: 767px) {
+    .container {
+        padding: 0;
+    }
+
+    .music-player {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .player-overlay {
+        padding: 20px;
+    }
+
+    .full-player {
+        margin: 20px;
+    }
+}
+
+/* Album Grid Responsive Adjustments */
+@media (min-width: 768px) {
+    .albums-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+}
+
+/* Update overlay styles for desktop */
+.player-overlay.hidden {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .player-overlay.hidden {
+        display: flex; /* Always show on desktop */
+    }
+}
+
+/* Adjust the full player for desktop */
+@media (min-width: 768px) {
+    .full-player {
+        background: transparent;
+    }
+
+    .controls {
+        margin: 40px 0;
+    }
+
+    .controls i {
+        font-size: 28px;
+    }
+
+    .controls i:nth-child(3) {
+        font-size: 48px;
+    }
+
+    .track-info h2 {
+        font-size: 24px;
+    }
+
+    .track-info p {
+        font-size: 16px;
+    }
+}
+
+.visualizer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 0;
+    background: #0f1119;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0);
+}
+
+.full-player {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+.album-art {
+    position: relative;
+    z-index: 3;
+}
+
+.track-info, .controls, .progress-area {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.art-circle img, .mini-player img {
+    image-rendering: -webkit-optimize-contrast;
+    transform: translateZ(0);
+}
+
+/* Add these transition styles */
+.albums-view, .album-songs-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0f1119;
+    transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    will-change: transform, opacity;
+}
+
+/* Initial states for transitions */
+.albums-view {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.album-songs-view {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+/* States for when views are hidden */
+.albums-view.hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+    display: block !important; /* Override the .hidden class for animation */
+}
+
+.album-songs-view.hidden {
+    transform: translateX(100%);
+    opacity: 0;
+    display: block !important; /* Override the .hidden class for animation */
+}
+
+/* Active states */
+.albums-view.active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.album-songs-view.active {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Add scale animation for album cards */
+.album-card {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.album-card.fade-out {
+    transform: scale(0.95);
+    opacity: 0;
+}
+  

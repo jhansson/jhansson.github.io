@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="music-player">
+            <!-- Albums View -->
+            <div class="albums-view">
+                <div class="header">
+                    <span>ALBUMS</span>
+                </div>
+                <div class="albums-grid" id="albums-grid">
+                    <!-- Albums will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Album Songs View -->
+            <div class="album-songs-view hidden">
+                <div class="header">
+                    <i class="fas fa-chevron-left" id="back-to-albums"></i>
+                    <span>ALBUM SONGS</span>
+                </div>
+                <div class="album-info">
+                    <img id="album-cover" src="images/default-album.jpg" alt="Album Cover">
+                    <h3 id="album-title"></h3>
+                    <p id="album-artist"></p>
+                </div>
+                <ul id="album-songs-list">
+                    <!-- Songs will be dynamically added here -->
+                </ul>
+            </div>
+
+            <!-- Mini Player -->
+            <div class="mini-player hidden" id="mini-player">
+                <div class="mini-player-content">
+                    <img id="mini-cover" src="images/default-album.jpg" alt="Album Art">
+                    <div class="mini-info">
+                        <div class="mini-text">
+                            <h4 id="mini-title">Select a song</h4>
+                            <p id="mini-artist">Unknown Artist</p>
+                        </div>
+                        <div class="mini-controls">
+                            <i class="fas fa-play" id="mini-play-pause"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Player Overlay -->
+            <div class="player-overlay hidden" id="player-overlay">
+                <div class="full-player">
+                    <div class="header">
+                        <i class="fas fa-chevron-down" id="minimize-player"></i>
+                        <span>PLAYING NOW</span>
+                    </div>
+                    <canvas id="visualizer" class="visualizer"></canvas>
+                    <div class="album-art">
+                        <div class="art-circle">
+                            <img id="cover-art" src="images/default-album.jpg" alt="Album Art">
+                        </div>
+                    </div>
+                    <div class="track-info">
+                        <h2 id="track-title">Select a song</h2>
+                        <p id="track-artist">Unknown Artist</p>
+                    </div>
+                    <div class="progress-area">
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                        <div class="time">
+                            <span id="current-time">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <i class="fas fa-random" id="shuffle"></i>
+                        <i class="fas fa-step-backward" id="prev"></i>
+                        <i class="fas fa-play" id="play-pause"></i>
+                        <i class="fas fa-step-forward" id="next"></i>
+                        <i class="fas fa-redo" id="repeat"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <audio id="audio" src=""></audio>
+    <script src="js/script.js"></script>
+</body>
+</html>
