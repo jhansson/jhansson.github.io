@@ -225,7 +225,31 @@ class MusicPlayer {
         this.currentSong = song;
         
         this.audio.src = song.path;
-        
+
+        // Update document title and media session metadata
+        document.title = song.title; // Update the document title
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: song.title,
+                artist: song.artist,
+                album: this.currentAlbum,
+                artwork: [
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '96x96', type: 'image/jpeg' },
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '128x128', type: 'image/jpeg' },
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '192x192', type: 'image/jpeg' },
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '256x256', type: 'image/jpeg' },
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '384x384', type: 'image/jpeg' },
+                    { src: `albums/${this.currentAlbum}/cover.jpg`, sizes: '512x512', type: 'image/jpeg' }
+                ]
+            });
+            
+            // Set up media session actions
+            navigator.mediaSession.setActionHandler('play', () => this.togglePlayPause());
+            navigator.mediaSession.setActionHandler('pause', () => this.togglePlayPause());
+            navigator.mediaSession.setActionHandler('previoustrack', () => this.playPrev());
+            navigator.mediaSession.setActionHandler('nexttrack', () => this.playNext());
+        }
+
         this.updateNowPlayingDisplay(song);
         this.updateMiniPlayerDisplay(song);
         this.highlightCurrentSong();
