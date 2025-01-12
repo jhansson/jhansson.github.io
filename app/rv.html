@@ -331,7 +331,61 @@
 
         const imageSources = [
             async () => {
-                const response = await fetch(`https://api.unsplash.com/photos/random?orientation=landscape&client_id=0h4JMGCwkzklON5tsxtCagJ1hH5lJPI2eWh7QcAiA-8`);
+                const searchWords = [
+                    'nature', 'city', 'mountain', 'ocean', 'forest',
+                    'sunset', 'beach', 'river', 'desert', 'garden',
+                    'cloud', 'flower', 'tree', 'lake', 'island',
+                    'valley', 'field', 'path', 'bridge', 'street',
+                    'building', 'horizon', 'road', 'park', 'meadow',
+                    'waterfall', 'coast', 'hill', 'village', 'stream',
+                    'autumn', 'spring', 'winter', 'summer', 'morning',
+                    'evening', 'night', 'dawn', 'dusk', 'rain',
+                    'snow', 'storm', 'mist', 'fog', 'rainbow',
+                    'canyon', 'cave', 'cliff', 'bay', 'harbor',
+                    'plateau', 'glacier', 'volcano', 'oasis', 'peninsula',
+                    'savanna', 'tundra', 'jungle', 'marsh', 'swamp',
+                    'lagoon', 'reef', 'estuary', 'iceberg', 'geyser',
+                    'woodland', 'prairie', 'basin', 'cove', 'fjord',
+                    'grassland', 'grove', 'inlet', 'islet', 'lighthouse',
+                    'marina', 'observatory', 'orchard', 'peak', 'pier',
+                    'plantation', 'pond', 'promontory', 'rapids', 'ravine',
+                    'sanctuary', 'seaside', 'shore', 'skyline', 'springs',
+                    'strait', 'summit', 'terrace', 'terrain', 'wetland',
+                    'wilderness', 'woods', 'archipelago', 'atoll', 'bayou',
+                    'bluff', 'brook', 'butte', 'cascade', 'channel',
+                    'citadel', 'clearing', 'coastline', 'crag', 'creek',
+                    'delta', 'dune', 'embankment', 'escarpment', 'falls',
+                    'gorge', 'gulch', 'harbor', 'haven', 'headland',
+                    'hillside', 'hollow', 'isle', 'knoll', 'lookout',
+                    'marsh', 'mesa', 'moor', 'outcrop', 'overlook',
+                    'pass', 'pavilion', 'plain', 'preserve', 'range',
+                    'reservoir', 'ridge', 'riviera', 'slope', 'sound',
+                    'spire', 'spring', 'strand', 'vale', 'valley',
+                    'vista', 'watershed', 'waterway', 'woodland', 'zone'
+                , 'vineyard', 'basin', 'temple', 'ruins', 'palace',
+                'fortress', 'castle', 'tower', 'pagoda', 'shrine',
+                'monument', 'statue', 'garden', 'plaza', 'square',
+                'market', 'boulevard', 'avenue', 'district', 'courtyard',
+                'mansion', 'villa', 'estate', 'chapel', 'cathedral',
+                'monastery', 'abbey', 'convent', 'citadel', 'wall',
+                'gate', 'arch', 'bridge', 'tunnel', 'passage',
+                'gallery', 'museum', 'library', 'theater', 'arena',
+                'stadium', 'dock', 'port', 'wharf', 'jetty',
+                'fountain', 'pool', 'bath', 'spa', 'spring',
+                'grotto', 'cavern', 'chamber', 'hall', 'dome',
+                'spire', 'tower', 'turret', 'balcony', 'terrace',
+                'garden', 'courtyard', 'patio', 'plaza', 'square',
+                'alley', 'lane', 'street', 'road', 'avenue',
+                'boulevard', 'promenade', 'walk', 'path', 'trail',
+                'track', 'way', 'route', 'passage', 'corridor',
+                'tunnel', 'bridge', 'viaduct', 'aqueduct', 'dam',
+                'mill', 'factory', 'workshop', 'studio', 'gallery',
+                'museum', 'library', 'school', 'college', 'university',
+                'hospital', 'clinic', 'asylum', 'prison', 'fort'
+                ];
+                const randomWord = searchWords[Math.floor(Math.random() * searchWords.length)];
+                const response = await fetch(`https://api.unsplash.com/photos/random?query=${randomWord}&orientation=landscape&client_id=0h4JMGCwkzklON5tsxtCagJ1hH5lJPI2eWh7QcAiA-8`);
+
                 if (!response.ok) {
                     throw new Error('Failed to fetch image from Unsplash');
                 }
