@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lindesbergs Golf GPS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <title>Lindesbergs Golf GPS - Google Maps</title>
     <style>
         body {
             margin: 0;
@@ -70,20 +69,47 @@
             cursor: not-allowed;
         }
         .tracking { background: #d32f2f; }
-        .distance-marker {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        .api-key-input {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 2000;
+            text-align: center;
         }
+        .api-key-input input {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+            margin: 10px 0;
+        }
+        .api-key-input button {
+            margin-top: 10px;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <div id="apiKeyInput" class="api-key-input">
+        <h3>Enter Google Maps API Key</h3>
+        <p>Get one from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank">Google Cloud Console</a></p>
+        <p>Enable: Maps JavaScript API & Geocoding API</p>
+        <input type="text" id="apiKey" placeholder="AIza...">
+        <br>
+        <button onclick="loadMap()">Load Map</button>
+        <br><br>
+        <small>Key is saved locally in your browser</small>
+    </div>
+
     <div id="map"></div>
     
-    <div class="info-panel">
+    <div class="info-panel hidden" id="infoPanel">
         <h3>GPS Info</h3>
         <div class="info-item">
             <span class="info-label">Status:</span>
@@ -103,88 +129,116 @@
         </div>
     </div>
     
-    <div class="controls">
+    <div class="controls hidden" id="controls">
         <button id="centerBtn" onclick="centerOnLocation()">Center on Me</button>
         <button id="trackBtn" onclick="toggleTracking()">Start Tracking</button>
-        <button id="viewBtn" onclick="toggleView()">Satellite</button>
+        <button id="viewBtn" onclick="toggleMapType()">Satellite</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script>
-        // Lindesbergs Golf Club approximate center
-        const golfCourseCenter = [59.5903, 15.2176];
+        // Lindesbergs Golf Club center
+        const golfCourseCenter = { lat: 59.5903, lng: 15.2176 };
         
-        // Initialize map
-        const map = L.map('map').setView(golfCourseCenter, 16);
-        
-        // Map layers
-        const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-        });
-        
-        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '© Esri',
-            maxZoom: 19
-        });
-        
-        // Start with street view
-        let currentLayer = streetLayer;
-        currentLayer.addTo(map);
-        
-        // Toggle between street and satellite view
-        function toggleView() {
-            const btn = document.getElementById('viewBtn');
-            if (currentLayer === streetLayer) {
-                map.removeLayer(streetLayer);
-                satelliteLayer.addTo(map);
-                currentLayer = satelliteLayer;
-                btn.textContent = 'Street';
-            } else {
-                map.removeLayer(satelliteLayer);
-                streetLayer.addTo(map);
-                currentLayer = streetLayer;
-                btn.textContent = 'Satellite';
-            }
-        }
-        
-        // Variables for tracking
+        // Global variables
+        let map;
         let userMarker = null;
         let accuracyCircle = null;
         let watchId = null;
         let isTracking = false;
         let pinMarker = null;
         let distanceLine = null;
+        let mapType = 'roadmap';
         
-        // Create custom icon for user location
-        const userIcon = L.divIcon({
-            html: '<div style="background: #2196F3; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-            iconSize: [22, 22],
-            iconAnchor: [11, 11]
-        });
+        // Check for saved API key
+        const savedKey = localStorage.getItem('googleMapsApiKey');
+        if (savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+        }
         
-        // Create pin icon
-        const pinIcon = L.divIcon({
-            html: '<div style="background: #f44336; width: 20px; height: 20px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-            iconSize: [24, 24],
-            iconAnchor: [12, 24]
-        });
+        function loadMap() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            if (!apiKey) {
+                alert('Please enter an API key');
+                return;
+            }
+            
+            // Save API key
+            localStorage.setItem('googleMapsApiKey', apiKey);
+            
+            // Hide input panel
+            document.getElementById('apiKeyInput').classList.add('hidden');
+            
+            // Load Google Maps
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap&libraries=geometry`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
         
-        // Add a test pin (you can move this by clicking on the map)
-        pinMarker = L.marker(golfCourseCenter, {icon: pinIcon}).addTo(map);
-        pinMarker.bindPopup('Test Pin<br>Click anywhere to move me!');
+        function initMap() {
+            // Show controls
+            document.getElementById('infoPanel').classList.remove('hidden');
+            document.getElementById('controls').classList.remove('hidden');
+            
+            // Initialize Google Map
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: golfCourseCenter,
+                zoom: 17,
+                mapTypeId: 'roadmap',
+                disableDefaultUI: true,
+                zoomControl: true,
+                mapTypeControl: false,
+                scaleControl: false,
+                streetViewControl: false,
+                rotateControl: false,
+                fullscreenControl: false
+            });
+            
+            // Add test pin
+            pinMarker = new google.maps.Marker({
+                position: golfCourseCenter,
+                map: map,
+                title: 'Pin Location',
+                icon: {
+                    path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                    scale: 8,
+                    fillColor: '#f44336',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    rotation: 180
+                }
+            });
+            
+            // Click to move pin
+            map.addListener('click', (event) => {
+                pinMarker.setPosition(event.latLng);
+                updateDistance();
+            });
+            
+            // Start GPS
+            startGPS();
+        }
         
-        // Click on map to move pin
-        map.on('click', function(e) {
-            pinMarker.setLatLng(e.latlng);
-            updateDistance();
-        });
+        function toggleMapType() {
+            const btn = document.getElementById('viewBtn');
+            if (mapType === 'roadmap') {
+                map.setMapTypeId('hybrid');
+                mapType = 'hybrid';
+                btn.textContent = 'Map';
+            } else {
+                map.setMapTypeId('roadmap');
+                mapType = 'roadmap';
+                btn.textContent = 'Satellite';
+            }
+        }
         
-        // Update user location
         function updateLocation(position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const accuracy = position.coords.accuracy;
+            const pos = { lat: lat, lng: lng };
             
             // Update info panel
             document.getElementById('status').textContent = 'GPS Active';
@@ -209,18 +263,35 @@
             
             // Update or create marker
             if (userMarker) {
-                userMarker.setLatLng([lat, lng]);
-                accuracyCircle.setLatLng([lat, lng]);
+                userMarker.setPosition(pos);
+                accuracyCircle.setCenter(pos);
                 accuracyCircle.setRadius(accuracy);
             } else {
-                userMarker = L.marker([lat, lng], {icon: userIcon}).addTo(map);
-                accuracyCircle = L.circle([lat, lng], {
+                // Create user marker
+                userMarker = new google.maps.Marker({
+                    position: pos,
+                    map: map,
+                    title: 'Your Location',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 10,
+                        fillColor: '#2196F3',
+                        fillOpacity: 1,
+                        strokeColor: '#ffffff',
+                        strokeWeight: 3
+                    }
+                });
+                
+                // Create accuracy circle
+                accuracyCircle = new google.maps.Circle({
+                    map: map,
+                    center: pos,
                     radius: accuracy,
-                    color: '#2196F3',
                     fillColor: '#2196F3',
                     fillOpacity: 0.15,
-                    weight: 2
-                }).addTo(map);
+                    strokeColor: '#2196F3',
+                    strokeWeight: 2
+                });
             }
             
             // Update distance to pin
@@ -228,34 +299,35 @@
             
             // Auto-center if tracking
             if (isTracking) {
-                map.setView([lat, lng]);
+                map.setCenter(pos);
             }
         }
         
-        // Calculate and display distance
         function updateDistance() {
             if (userMarker && pinMarker) {
-                const userPos = userMarker.getLatLng();
-                const pinPos = pinMarker.getLatLng();
-                const distance = userPos.distanceTo(pinPos);
+                const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                    userMarker.getPosition(),
+                    pinMarker.getPosition()
+                );
                 
                 document.getElementById('distance').textContent = `${distance.toFixed(0)}m`;
                 
                 // Update or create distance line
                 if (distanceLine) {
-                    distanceLine.setLatLngs([userPos, pinPos]);
+                    distanceLine.setPath([userMarker.getPosition(), pinMarker.getPosition()]);
                 } else {
-                    distanceLine = L.polyline([userPos, pinPos], {
-                        color: '#4CAF50',
-                        weight: 2,
-                        opacity: 0.6,
-                        dashArray: '5, 10'
-                    }).addTo(map);
+                    distanceLine = new google.maps.Polyline({
+                        path: [userMarker.getPosition(), pinMarker.getPosition()],
+                        geodesic: true,
+                        strokeColor: '#4CAF50',
+                        strokeOpacity: 0.6,
+                        strokeWeight: 2,
+                        map: map
+                    });
                 }
             }
         }
         
-        // Handle location errors
         function handleLocationError(error) {
             const status = document.getElementById('status');
             status.style.color = 'red';
@@ -276,39 +348,33 @@
             }
         }
         
-        // Center map on user location
         function centerOnLocation() {
             if (userMarker) {
-                map.setView(userMarker.getLatLng(), 17);
+                map.setCenter(userMarker.getPosition());
+                map.setZoom(18);
             } else {
                 alert('No GPS location available yet');
             }
         }
         
-        // Toggle tracking
         function toggleTracking() {
             const btn = document.getElementById('trackBtn');
             
             if (!isTracking) {
-                // Start tracking
                 isTracking = true;
                 btn.textContent = 'Stop Tracking';
                 btn.className = 'tracking';
                 
-                // Get initial position
-                navigator.geolocation.getCurrentPosition(updateLocation, handleLocationError, {
-                    enableHighAccuracy: true,
-                    maximumAge: 0
-                });
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                }
                 
-                // Watch position
                 watchId = navigator.geolocation.watchPosition(updateLocation, handleLocationError, {
                     enableHighAccuracy: true,
                     timeout: 5000,
                     maximumAge: 0
                 });
             } else {
-                // Stop tracking
                 isTracking = false;
                 btn.textContent = 'Start Tracking';
                 btn.className = '';
@@ -320,22 +386,21 @@
             }
         }
         
-        // Try to get initial location
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(updateLocation, handleLocationError, {
-                enableHighAccuracy: true,
-                maximumAge: 0
-            });
-        } else {
-            document.getElementById('status').textContent = 'GPS Not Supported';
-            document.getElementById('status').style.color = 'red';
+        function startGPS() {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(updateLocation, handleLocationError, {
+                    enableHighAccuracy: true,
+                    maximumAge: 0
+                });
+            } else {
+                document.getElementById('status').textContent = 'GPS Not Supported';
+                document.getElementById('status').style.color = 'red';
+            }
         }
         
-        // Show HTTPS warning if needed
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-            alert('GPS requires HTTPS! For testing:\n\n1. Upload to GitHub Pages (free)\n2. Use a local server\n3. Try serve.py method below');
-            document.getElementById('status').innerHTML = 'Need HTTPS for GPS<br><small>See instructions</small>';
-            document.getElementById('status').style.color = 'orange';
+        // Auto-load if we have an API key
+        if (savedKey) {
+            loadMap();
         }
     </script>
 </body>
