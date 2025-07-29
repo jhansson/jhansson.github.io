@@ -18,7 +18,7 @@
         body {
             font-family: 'Share Tech Mono', monospace;
             background: #000;
-            color: #00ff41;
+            color: #ff00ff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -27,161 +27,193 @@
             position: relative;
         }
 
-        /* CRT Screen Effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    rgba(0, 0, 0, 0.03),
-                    rgba(0, 0, 0, 0.03) 1px,
-                    transparent 1px,
-                    transparent 2px
-                );
-            pointer-events: none;
-            z-index: 1000;
-            animation: scanlines 0.1s linear infinite;
+        /* VHS Screen Container */
+        .screen-container {
+            width: 95vw;
+            height: 95vh;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
         }
 
-        /* Flickering scanlines */
-        @keyframes scanlines {
+        .screen-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a0d2e 0%, #16213e 100%);
+        }
+
+        /* VHS Scanlines */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 0, 0, 0.4) 50%
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255, 0, 255, 0.03),
+                rgba(0, 255, 255, 0.02),
+                rgba(255, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanlines-flicker 0.15s linear infinite;
+        }
+
+        @keyframes scanlines-flicker {
             0% { opacity: 1; }
             50% { opacity: 0.8; }
             100% { opacity: 1; }
         }
 
-        /* CRT curvature and glow */
-        .container {
-            width: 95%;
-            height: 95vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            position: relative;
-            background: radial-gradient(ellipse at center, #001100 0%, #000 70%);
-            border-radius: 20px;
-            border: 4px solid #333;
-            box-shadow: 
-                inset 0 0 100px rgba(0, 255, 65, 0.1),
-                0 0 50px rgba(0, 255, 65, 0.2),
-                0 0 100px rgba(0, 255, 65, 0.1);
-            animation: crt-flicker 4s infinite linear;
-        }
-
-        @keyframes crt-flicker {
-            0%, 100% { 
-                filter: brightness(1) contrast(1.1) saturate(1.2);
-                box-shadow: 
-                    inset 0 0 100px rgba(0, 255, 65, 0.1),
-                    0 0 50px rgba(0, 255, 65, 0.2),
-                    0 0 100px rgba(0, 255, 65, 0.1);
-            }
-            2% { 
-                filter: brightness(0.9) contrast(1.2) saturate(1.1);
-                box-shadow: 
-                    inset 0 0 100px rgba(0, 255, 65, 0.15),
-                    0 0 50px rgba(0, 255, 65, 0.25),
-                    0 0 100px rgba(0, 255, 65, 0.15);
-            }
-            4% { 
-                filter: brightness(1.1) contrast(1.0) saturate(1.3);
-            }
-        }
-
-        /* Matrix-style background */
-        .background {
+        /* VHS Noise Canvas */
+        .vcr-noise {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            opacity: 0.1;
+            opacity: 0.15;
+            z-index: 999;
+            pointer-events: none;
+            filter: blur(1px);
         }
 
+        /* Main container with VHS effects */
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(26, 13, 46, 0.8) 0%, #000 70%);
+            animation: vhs-flicker 4s infinite linear;
+        }
+
+        @keyframes vhs-flicker {
+            0%, 100% { 
+                filter: brightness(1) contrast(1.2) saturate(1.5) hue-rotate(0deg);
+            }
+            2% { 
+                filter: brightness(0.9) contrast(1.3) saturate(1.8) hue-rotate(5deg);
+                transform: translateX(2px);
+            }
+            4% { 
+                filter: brightness(1.1) contrast(1.1) saturate(1.3) hue-rotate(-2deg);
+                transform: translateX(-1px);
+            }
+            6% {
+                transform: translateX(0px);
+            }
+        }
+
+        /* Chromatic aberration effect for price */
         #price {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 12vw;
+            font-size: 8vw;
             font-weight: bold;
             text-align: center;
-            color: #00ff41;
-            opacity: 0.3;
-            z-index: -1;
+            color: #ff00ff;
+            opacity: 0.4;
+            z-index: 500;
             transition: all 0.3s ease;
             pointer-events: none;
             text-shadow: 
-                0 0 10px #00ff41,
-                0 0 20px #00ff41,
-                0 0 30px #00ff41;
-            animation: price-glow 3s ease-in-out infinite alternate;
+                -2px -2px 0px #00ffff,
+                2px 2px 0px #ff0080,
+                0 0 20px #ff00ff,
+                0 0 40px #ff00ff;
+            animation: chromatic-aberration 3s ease-in-out infinite alternate;
         }
 
-        @keyframes price-glow {
+        @keyframes chromatic-aberration {
             0% {
                 text-shadow: 
-                    0 0 10px #00ff41,
-                    0 0 20px #00ff41,
-                    0 0 30px #00ff41;
-                opacity: 0.3;
+                    -2px -2px 0px #00ffff,
+                    2px 2px 0px #ff0080,
+                    0 0 20px #ff00ff,
+                    0 0 40px #ff00ff;
+                transform: translate(-50%, -50%);
+            }
+            25% {
+                text-shadow: 
+                    -3px -2px 0px #00ffff,
+                    3px 2px 0px #ff0080,
+                    0 0 25px #ff00ff,
+                    0 0 45px #ff00ff;
+                transform: translate(-50%, -50%) skew(0.5deg);
+            }
+            75% {
+                text-shadow: 
+                    -1px -3px 0px #00ffff,
+                    1px 3px 0px #ff0080,
+                    0 0 30px #ff00ff,
+                    0 0 50px #ff00ff;
+                transform: translate(-50%, -50%) skew(-0.3deg);
             }
             100% {
                 text-shadow: 
-                    0 0 15px #00ff41,
-                    0 0 25px #00ff41,
-                    0 0 35px #00ff41,
-                    0 0 45px #00ff41;
-                opacity: 0.4;
+                    -4px -1px 0px #00ffff,
+                    4px 1px 0px #ff0080,
+                    0 0 35px #ff00ff,
+                    0 0 55px #ff00ff;
+                transform: translate(-50%, -50%);
             }
         }
 
         #price.up {
-            color: #00ff41;
-            animation: price-up 2s ease-in-out infinite;
+            color: #00ff80;
+            text-shadow: 
+                -2px -2px 0px #ff0080,
+                2px 2px 0px #00ffff,
+                0 0 20px #00ff80,
+                0 0 40px #00ff80;
         }
 
         #price.down {
-            color: #ff4444;
-            animation: price-down 2s ease-in-out infinite;
+            color: #ff4040;
+            text-shadow: 
+                -2px -2px 0px #40ff40,
+                2px 2px 0px #8000ff,
+                0 0 20px #ff4040,
+                0 0 40px #ff4040;
         }
 
-        @keyframes price-up {
-            0%, 100% {
-                text-shadow: 
-                    0 0 10px #00ff41,
-                    0 0 20px #00ff41,
-                    0 0 30px #00ff41;
-            }
+        /* VHS wobble effects */
+        .wobblex {
+            animation: wobblex 150ms infinite;
+        }
+
+        .wobbley {
+            animation: wobbley 120ms infinite;
+        }
+
+        @keyframes wobblex {
             50% {
-                text-shadow: 
-                    0 0 20px #00ff41,
-                    0 0 30px #00ff41,
-                    0 0 40px #00ff41,
-                    0 0 50px #00ff41;
+                transform: translateX(2px);
+            }
+            51% {
+                transform: translateX(0);
             }
         }
 
-        @keyframes price-down {
-            0%, 100% {
-                text-shadow: 
-                    0 0 10px #ff4444,
-                    0 0 20px #ff4444,
-                    0 0 30px #ff4444;
+        @keyframes wobbley {
+            0% {
+                transform: translateY(1px);
             }
-            50% {
-                text-shadow: 
-                    0 0 20px #ff4444,
-                    0 0 30px #ff4444,
-                    0 0 40px #ff4444,
-                    0 0 50px #ff4444;
+            100% {
+                transform: translateY(0);
             }
         }
 
@@ -191,25 +223,44 @@
             margin: 20px auto;
             position: relative;
             z-index: 1;
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-radius: 10px;
+            border: 2px solid rgba(255, 0, 255, 0.4);
+            border-radius: 15px;
             box-shadow: 
-                inset 0 0 20px rgba(0, 255, 65, 0.1),
-                0 0 20px rgba(0, 255, 65, 0.2);
+                inset 0 0 30px rgba(255, 0, 255, 0.2),
+                0 0 30px rgba(255, 0, 255, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.6);
         }
 
         #error {
-            color: #ff4444;
+            color: #ff4080;
             text-align: center;
             margin-top: 10px;
             font-family: 'Share Tech Mono', monospace;
-            text-shadow: 0 0 10px #ff4444;
-            animation: error-blink 1s infinite;
+            text-shadow: 
+                -1px -1px 0px #00ffff,
+                1px 1px 0px #ff0080,
+                0 0 10px #ff4080;
+            animation: error-glitch 1s infinite;
         }
 
-        @keyframes error-blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0.5; }
+        @keyframes error-glitch {
+            0%, 50% { 
+                opacity: 1; 
+                transform: translateX(0);
+            }
+            25% {
+                opacity: 0.8;
+                transform: translateX(-2px);
+            }
+            75% {
+                opacity: 0.9;
+                transform: translateX(2px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .toggle-container {
@@ -223,21 +274,24 @@
         }
 
         .toggle-btn {
-            background: linear-gradient(145deg, #001100, #003300);
-            border: 2px solid #00ff41;
+            background: linear-gradient(145deg, #1a0d2e, #2d1b4e);
+            border: 2px solid #ff00ff;
             padding: 12px 24px;
             border-radius: 8px;
-            color: #00ff41;
+            color: #ff00ff;
             font-size: 14px;
             font-family: 'Share Tech Mono', monospace;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 5px #00ff41;
+            text-shadow: 
+                -1px -1px 0px #00ffff,
+                1px 1px 0px #ff0080,
+                0 0 10px #ff00ff;
             box-shadow: 
-                0 0 10px rgba(0, 255, 65, 0.3),
-                inset 0 0 10px rgba(0, 255, 65, 0.1);
+                0 0 15px rgba(255, 0, 255, 0.4),
+                inset 0 0 15px rgba(255, 0, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -249,8 +303,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.3), transparent);
+            transition: left 0.6s ease;
         }
 
         .toggle-btn:hover::before {
@@ -258,82 +312,86 @@
         }
 
         .toggle-btn:hover {
-            background: linear-gradient(145deg, #002200, #004400);
+            background: linear-gradient(145deg, #2d1b4e, #4a2c7a);
             box-shadow: 
-                0 0 20px rgba(0, 255, 65, 0.5),
-                inset 0 0 15px rgba(0, 255, 65, 0.2);
-            transform: translateY(-2px);
+                0 0 25px rgba(255, 0, 255, 0.6),
+                inset 0 0 20px rgba(255, 0, 255, 0.2);
+            transform: translateY(-2px) scale(1.05);
+            animation: button-glitch 0.3s ease;
+        }
+
+        @keyframes button-glitch {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(90deg); }
         }
 
         .toggle-btn.active {
-            background: linear-gradient(145deg, #004400, #006600);
-            color: #66ff66;
-            text-shadow: 0 0 10px #66ff66;
+            background: linear-gradient(145deg, #4a2c7a, #6b3fa0);
+            color: #00ffff;
+            text-shadow: 
+                -1px -1px 0px #ff0080,
+                1px 1px 0px #80ff00,
+                0 0 15px #00ffff;
             box-shadow: 
-                0 0 25px rgba(102, 255, 102, 0.6),
-                inset 0 0 20px rgba(102, 255, 102, 0.2);
+                0 0 30px rgba(0, 255, 255, 0.8),
+                inset 0 0 25px rgba(0, 255, 255, 0.2);
             animation: active-pulse 2s infinite;
         }
 
         @keyframes active-pulse {
             0%, 100% {
                 box-shadow: 
-                    0 0 25px rgba(102, 255, 102, 0.6),
-                    inset 0 0 20px rgba(102, 255, 102, 0.2);
+                    0 0 30px rgba(0, 255, 255, 0.8),
+                    inset 0 0 25px rgba(0, 255, 255, 0.2);
             }
             50% {
                 box-shadow: 
-                    0 0 35px rgba(102, 255, 102, 0.8),
-                    inset 0 0 25px rgba(102, 255, 102, 0.3);
+                    0 0 40px rgba(0, 255, 255, 1),
+                    inset 0 0 30px rgba(0, 255, 255, 0.3);
             }
         }
 
-        /* Terminal cursor effect */
-        .cursor::after {
-            content: '█';
-            animation: cursor-blink 1s infinite;
+        /* VHS distortion effects */
+        .glitch {
+            animation: glitch 5s ease 2s infinite;
         }
 
-        @keyframes cursor-blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
+        @keyframes glitch {
+            0%, 30%, 65%, 100% {
+                opacity: 1;
+                transform: scale(1, 1) skew(0, 0);
+            }
+            40% {
+                opacity: 0.9;
+                transform: scale(1, 1.1) skew(2deg, 0);
+            }
+            41% {
+                opacity: 0.8;
+                transform: scale(1, 1.2) skew(-1deg, 0);
+            }
+            42% {
+                opacity: 1;
+                transform: scale(1, 1) skew(0, 0);
+            }
         }
 
-        /* VHS static noise overlay */
-        .noise {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.05;
-            z-index: 999;
-            pointer-events: none;
-            background-image: 
-                radial-gradient(circle, #fff 1px, transparent 1px),
-                radial-gradient(circle, #fff 1px, transparent 1px);
-            background-size: 3px 3px, 5px 5px;
-            background-position: 0 0, 2px 2px;
-            animation: static 0.2s infinite linear;
+        /* Rolling effect */
+        .roller {
+            animation: roll 3000ms linear infinite;
         }
 
-        @keyframes static {
-            0% { transform: translate(0, 0); }
-            10% { transform: translate(-1px, -1px); }
-            20% { transform: translate(1px, 1px); }
-            30% { transform: translate(-1px, 1px); }
-            40% { transform: translate(1px, -1px); }
-            50% { transform: translate(0, 1px); }
-            60% { transform: translate(-1px, 0); }
-            70% { transform: translate(1px, 0); }
-            80% { transform: translate(0, -1px); }
-            90% { transform: translate(-1px, -1px); }
-            100% { transform: translate(0, 0); }
+        @keyframes roll {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-25px);
+            }
         }
 
         @media screen and (max-width: 768px) {
             #price {
-                font-size: 20vw;
+                font-size: 15vw;
             }
             .toggle-container {
                 flex-direction: column;
@@ -347,24 +405,29 @@
     </style>
 </head>
 <body>
-    <div class="noise"></div>
-    <div class="toggle-container">
-        <button class="toggle-btn" data-view="price">PRICE</button>        
-        <button class="toggle-btn time-toggle" id="timeToggle">HOUR</button>
-        <button class="toggle-btn" data-view="hashrate">HASHRATE</button>
-    </div>
-    <div class="container">
-        <canvas class="background"></canvas>
-        <div id="price" class="cursor">LOADING...</div>
-        <div id="chart"></div>
-        <div id="error"></div>
+    <div class="screen-container">
+        <div class="screen-wrapper wobblex wobbley glitch">
+            <canvas class="vcr-noise"></canvas>
+            <div class="scanlines"></div>
+            
+            <div class="toggle-container">
+                <button class="toggle-btn" data-view="price">PRICE</button>        
+                <button class="toggle-btn time-toggle" id="timeToggle">HOUR</button>
+                <button class="toggle-btn" data-view="hashrate">HASHRATE</button>
+            </div>
+            
+            <div class="container roller">
+                <div id="price" class="cursor">LOADING...</div>
+                <div id="chart"></div>
+                <div id="error"></div>
+            </div>
+        </div>
     </div>
 
     <script>
         const priceElement = document.getElementById('price');
         const errorElement = document.getElementById('error');
         const chartElement = document.getElementById('chart');
-        const toggleButton = document.getElementById('toggle');
         let chart;
         let candleSeries;
         let lastPrice = 0;
@@ -374,71 +437,71 @@
         const minuteFetch = "histominute?fsym=BTC&tsym=USD&limit=60&aggregate=15";
         const hourFetch = "histohour?fsym=BTC&tsym=USD&limit=60";
 
-        // Matrix rain effect
-        const canvas = document.querySelector('.background');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // VHS Noise Generation
+        function generateVCRNoise() {
+            const canvas = document.querySelector('.vcr-noise');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-        const matrixChars = "₿BITCOIN0123456789ABCDEF";
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-
-        for (let x = 0; x < columns; x++) {
-            drops[x] = 1;
+            function renderNoise() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#fff';
+                
+                for (let i = 0; i < 100; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const width = Math.random() * 4;
+                    const height = Math.random() * 2;
+                    
+                    ctx.fillRect(x, y, width, height);
+                }
+                
+                // Random horizontal lines
+                for (let i = 0; i < 5; i++) {
+                    const y = Math.random() * canvas.height;
+                    const width = Math.random() * canvas.width * 0.8;
+                    ctx.fillRect(0, y, width, 1);
+                }
+                
+                requestAnimationFrame(renderNoise);
+            }
+            
+            renderNoise();
         }
 
-        const drawMatrix = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px Share Tech Mono';
-            
-            for (let i = 0; i < drops.length; i++) {
-                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        };
-
-        setInterval(drawMatrix, 50);
+        generateVCRNoise();
 
         const createChart = () => {
             chart = LightweightCharts.createChart(chartElement, {
                 width: chartElement.clientWidth,
                 height: chartElement.clientHeight,
                 layout: {
-                    background: { color: 'rgba(0, 20, 0, 0.8)' },
-                    textColor: '#00ff41',
+                    background: { color: 'rgba(26, 13, 46, 0.8)' },
+                    textColor: '#ff00ff',
                 },
                 grid: {
-                    vertLines: { color: 'rgba(0, 255, 65, 0.2)' },
-                    horzLines: { color: 'rgba(0, 255, 65, 0.2)' },
+                    vertLines: { color: 'rgba(255, 0, 255, 0.3)' },
+                    horzLines: { color: 'rgba(255, 0, 255, 0.3)' },
                 },
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
                     vertLine: {
-                        color: 'rgba(0, 255, 65, 0.8)',
-                        width: 1,
+                        color: 'rgba(0, 255, 255, 0.8)',
+                        width: 2,
                         style: LightweightCharts.LineStyle.Dashed,
                     },
                     horzLine: {
-                        color: 'rgba(0, 255, 65, 0.8)',
-                        width: 1,
+                        color: 'rgba(0, 255, 255, 0.8)',
+                        width: 2,
                         style: LightweightCharts.LineStyle.Dashed,
                     },
                 },
                 priceScale: {
-                    borderColor: '#00ff41',
+                    borderColor: '#ff00ff',
                 },
                 timeScale: {
-                    borderColor: '#00ff41',
+                    borderColor: '#ff00ff',
                     timeVisible: true,
                     secondsVisible: false,
                     fixLeftEdge: true,
@@ -447,12 +510,12 @@
             });
 
             candleSeries = chart.addSeries(LightweightCharts.CandlestickSeries, {
-                upColor: '#00ff41',
-                downColor: '#ff4444',
-                borderDownColor: '#ff4444',
-                borderUpColor: '#00ff41',
-                wickDownColor: '#ff4444',
-                wickUpColor: '#00ff41',
+                upColor: '#00ff80',
+                downColor: '#ff4080',
+                borderDownColor: '#ff4080',
+                borderUpColor: '#00ff80',
+                wickDownColor: '#ff4080',
+                wickUpColor: '#00ff80',
             });
         };
 
@@ -473,7 +536,6 @@
             lastPrice = price;
         };
 
-        let isHourChart = true;
         let lineSeries;
 
         const createHashrateChart = () => {
@@ -481,31 +543,31 @@
                 width: chartElement.clientWidth,
                 height: chartElement.clientHeight,
                 layout: {
-                    background: { color: 'rgba(0, 20, 0, 0.8)' },
-                    textColor: '#00ff41',
+                    background: { color: 'rgba(26, 13, 46, 0.8)' },
+                    textColor: '#ff00ff',
                 },
                 grid: {
-                    vertLines: { color: 'rgba(0, 255, 65, 0.2)' },
-                    horzLines: { color: 'rgba(0, 255, 65, 0.2)' },
+                    vertLines: { color: 'rgba(255, 0, 255, 0.3)' },
+                    horzLines: { color: 'rgba(255, 0, 255, 0.3)' },
                 },
                 crosshair: {
                     mode: LightweightCharts.CrosshairMode.Normal,
                     vertLine: {
-                        color: 'rgba(0, 255, 65, 0.8)',
-                        width: 1,
+                        color: 'rgba(0, 255, 255, 0.8)',
+                        width: 2,
                         style: LightweightCharts.LineStyle.Dashed,
                     },
                     horzLine: {
-                        color: 'rgba(0, 255, 65, 0.8)',
-                        width: 1,
+                        color: 'rgba(0, 255, 255, 0.8)',
+                        width: 2,
                         style: LightweightCharts.LineStyle.Dashed,
                     },
                 },
                 priceScale: {
-                    borderColor: '#00ff41',
+                    borderColor: '#ff00ff',
                 },
                 timeScale: {
-                    borderColor: '#00ff41',
+                    borderColor: '#ff00ff',
                     timeVisible: true,
                     secondsVisible: false,
                     fixLeftEdge: true,
@@ -514,7 +576,7 @@
             });
 
             lineSeries = chart.addLineSeries({
-                color: '#00ff41',
+                color: '#00ffff',
                 lineWidth: 3,
             });
         };
@@ -615,8 +677,6 @@
         setInterval(fetchData, 60000);
 
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
             if (chart) {
                 chart.resize(chartElement.clientWidth, chartElement.clientHeight);
             }
