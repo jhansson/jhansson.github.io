@@ -377,7 +377,7 @@
 
         /* Rolling effect */
         .roller {
-            animation: roll 3000ms linear infinite;
+            animation: roll 1000ms linear infinite;
         }
 
         @keyframes roll {
@@ -385,7 +385,7 @@
                 transform: translateY(0);
             }
             to {
-                transform: translateY(-25px);
+                transform: translateY(-2px);
             }
         }
 
@@ -416,7 +416,7 @@
                 <button class="toggle-btn" data-view="hashrate">HASHRATE</button>
             </div>
             
-            <div class="container roller">
+            <div class="container">
                 <div id="price" class="cursor">LOADING...</div>
                 <div id="chart"></div>
                 <div id="error"></div>
