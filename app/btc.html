@@ -437,23 +437,18 @@ font-size: 12px;
 </filter>
 </defs>
 </svg>
-    
-        
             <canvas class="vcr-noise"></canvas>
-            
-            
-            
+            <div class="toggle-container">
                 <button class="toggle-btn" data-view="price">PRICE</button>        
                 <button class="toggle-btn time-toggle" id="timeToggle">HOUR</button>
                 <button class="toggle-btn" data-view="hashrate">HASHRATE</button>
+            </div>
             
-            
-                LOADING...
-                
-                
-            
-        
-    
+            <div class="container">
+                <div id="price" class="cursor">LOADING...</div>
+                <div id="chart"></div>
+                <div id="error"></div>
+            </div>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const priceElement = document.getElementById('price');
