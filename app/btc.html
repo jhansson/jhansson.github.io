@@ -455,6 +455,7 @@ font-size: 12px;
         
     
     <script>
+    document.addEventListener('DOMContentLoaded', () => {
         const priceElement = document.getElementById('price');
         const errorElement = document.getElementById('error');
         const chartElement = document.getElementById('chart');
@@ -470,7 +471,7 @@ font-size: 12px;
 
         // Setup CRT curvature distortion
         function setupCRTDistortion() {
-            const curvature = 2.5; // Adjust for more/less curve (lower = more curved)
+            const curvature = 2.5;
             const mapSize = 256;
             const canvas = document.createElement('canvas');
             canvas.width = mapSize;
@@ -517,14 +518,13 @@ font-size: 12px;
                 }
                 ctx.fillStyle = fillColor;
                 
-                for (let i = 0; i < 200; i++) { // More dots for livelier feel
+                for (let i = 0; i < 200; i++) {
                     const x = Math.random() * canvas.width;
                     const y = Math.random() * canvas.height;
-                    const size = Math.random() * 2 + 1; // Small dots
+                    const size = Math.random() * 2 + 1;
                     ctx.fillRect(x, y, size, size);
                 }
                 
-                // Random horizontal lines
                 for (let i = 0; i < 5; i++) {
                     const y = Math.random() * canvas.height;
                     const width = Math.random() * canvas.width * 0.8;
@@ -607,6 +607,7 @@ font-size: 12px;
         };
 
         const updatePrice = (price) => {
+            if (!priceElement) return; // Safeguard
             const formattedPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
             priceElement.textContent = formattedPrice;
             priceElement.classList.remove('cursor');
@@ -668,6 +669,10 @@ font-size: 12px;
 
         const fetchData = async () => {
             try {
+                if (!priceElement || !errorElement) {
+                    errorElement.textContent = 'SYSTEM ERROR: DOM elements not found';
+                    return;
+                }
                 errorElement.textContent = '';
                 let data;
                 let isUp = false;
@@ -694,7 +699,6 @@ font-size: 12px;
                     const latestPrice = candleData[candleData.length - 1].close;
                     updatePrice(latestPrice);
 
-                    // Get 24h change for overall trend
                     const responseChange = await fetch('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BTC&tsyms=USD');
                     const dataChange = await responseChange.json();
                     isUp = dataChange.RAW.BTC.USD.CHANGEPCT24H > 0;
@@ -740,7 +744,6 @@ font-size: 12px;
                     priceElement.classList.remove('cursor');
                     document.title = `BTC Hashrate: ${latestHashrate} TH/s`;
 
-                    // Set class and trend based on recent change
                     const latest = aggregatedData[aggregatedData.length - 1].value;
                     const previous = aggregatedData[aggregatedData.length - 2]?.value || latest;
                     isUp = latest > previous;
@@ -750,7 +753,7 @@ font-size: 12px;
 
                 updateTrendVisuals(isUp);
             } catch (error) {
-                errorElement.textContent = 'SYSTEM ERROR: Failed to fetch data';
+                if (errorElement) errorElement.textContent = 'SYSTEM ERROR: Failed to fetch data';
                 console.error('Error fetching data:', error);
             }
         };
@@ -786,6 +789,7 @@ font-size: 12px;
         });
 
         document.querySelector('[data-view="price"]').classList.add('active');
-    </script>
+    });
+</script>
 </body>
 </html>
