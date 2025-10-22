@@ -636,7 +636,7 @@
                 },                
             });
 
-            candleSeries = chart.addCandlestickSeries({ // Restored original method
+            candleSeries = chart.addSeries(LightweightCharts.CandlestickSeries, { // Reverted to original
                 upColor: '#00ff80',
                 downColor: '#ff4080',
                 borderDownColor: '#ff4080',
