@@ -1,0 +1,63 @@
+{
+    "artist": "CHUQQLE",
+    "album": "I'm CHUQQLE",
+    "cover": "cover.png",
+    "songs": [
+        {
+            "title": "Special",
+            "file": "CHUQQLE - I'm CHUQQLE - 01 - Special.mp3"
+        },
+        {
+            "title": "Faster",
+            "file": "CHUQQLE - I'm CHUQQLE - 02 - Faster.mp3"
+        },
+        {
+            "title": "Get Over Here",
+            "file": "CHUQQLE - I'm CHUQQLE - 03 - Get Over Here.mp3"
+        },
+        {
+            "title": "I Became",
+            "file": "CHUQQLE - I'm CHUQQLE - 04 - I Became.mp3"
+        },
+        {
+            "title": "Dopamine",
+            "file": "CHUQQLE - I'm CHUQQLE - 05 - Dopamine.mp3"
+        },
+        {
+            "title": "Let's Go",
+            "file": "CHUQQLE - I'm CHUQQLE - 06 - Let's Go.mp3"
+        },
+        {
+            "title": "More Body Less Talk",
+            "file": "CHUQQLE - I'm CHUQQLE - 07 - More Body Less Talk.mp3"
+        },
+        {
+            "title": "Don't Leave Me",
+            "file": "CHUQQLE - I'm CHUQQLE - 08 - Don't Leave Me.mp3"
+        },
+        {
+            "title": "In My Arms",
+            "file": "CHUQQLE - I'm CHUQQLE - 09 - In My Arms.mp3"
+        },
+        {
+            "title": "Black Magic",
+            "file": "CHUQQLE - I'm CHUQQLE - 10 - Black Magic.mp3"
+        },
+        {
+            "title": "I Wanna Have You",
+            "file": "CHUQQLE - I'm CHUQQLE - 11 - I Wanna Have You.mp3"
+        },
+        {
+            "title": "Chemical",
+            "file": "CHUQQLE - I'm CHUQQLE - 12 - Chemical.mp3"
+        },
+        {
+            "title": "What I Need",
+            "file": "CHUQQLE - I'm CHUQQLE - 13 - What I Need.mp3"
+        },
+        {
+            "title": "I'm Gone",
+            "file": "CHUQQLE - I'm CHUQQLE - 14 - I'm Gone.mp3"
+        }
+    ]
+}
