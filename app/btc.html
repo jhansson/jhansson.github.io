@@ -17,27 +17,37 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{height:100%;background:var(--void);overflow:hidden;}
   body{font-family:'Space Mono',monospace;display:flex;align-items:center;justify-content:center;padding:2vh 2vw;}
-  .bezel{
-    width:100%;height:100%;max-width:1400px;
-    background:linear-gradient(160deg,var(--bezel2),var(--bezel1) 60%);
-    border-radius:22px;padding:14px;
-    box-shadow:0 30px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);
-  }
-  .screen{
-    position:relative;height:100%;
-    background:radial-gradient(120% 140% at 50% 0%, #120c05 0%, var(--screen) 60%);
-    border-radius:12px;border:1px solid #000;
-    box-shadow:inset 0 0 60px rgba(0,0,0,.85), inset 0 0 2px var(--amber-dim);
-    overflow:hidden;display:flex;flex-direction:column;
-    padding:clamp(14px,2.5vh,28px) clamp(16px,3vw,40px);color:var(--amber);
-  }
-  .scanlines{
-    position:absolute;inset:0;pointer-events:none;z-index:5;
+  .bezel{width:100%;height:100%;max-width:1400px;background:linear-gradient(160deg,var(--bezel2),var(--bezel1) 60%);
+    border-radius:22px;padding:14px;box-shadow:0 30px 60px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.05);}
+  .screen{position:relative;height:100%;background:radial-gradient(120% 140% at 50% 0%, #120c05 0%, var(--screen) 60%);
+    border-radius:12px;border:1px solid #000;box-shadow:inset 0 0 60px rgba(0,0,0,.85), inset 0 0 2px var(--amber-dim);
+    overflow:hidden;display:flex;flex-direction:column;padding:clamp(14px,2.5vh,28px) clamp(16px,3vw,40px);
+    color:var(--amber);animation:flicker 6s infinite;}
+  @keyframes flicker{0%,97%,100%{filter:brightness(1);}98%{filter:brightness(1.06);}99%{filter:brightness(.96);}}
+  .scanlines{position:absolute;inset:0;pointer-events:none;z-index:5;
     background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,.25) 3px);
-    mix-blend-mode:multiply;
-  }
-  .topbar{display:flex;justify-content:space-between;align-items:center;font-size:clamp(11px,1.3vw,14px);letter-spacing:.12em;color:var(--text-dim);border-bottom:1px solid var(--amber-faint);padding-bottom:10px;}
-  .status{display:flex;align-items:center;gap:8px;}
+    mix-blend-mode:multiply;}
+  .crt-flash{position:absolute;inset:0;z-index:9;background:#fff;mix-blend-mode:screen;opacity:0;pointer-events:none;animation:crtFlash .5s ease forwards;}
+  @keyframes crtFlash{0%{opacity:0;}10%{opacity:.9;}30%{opacity:.4;}100%{opacity:0;}}
+
+  .boot-overlay{position:absolute;inset:0;z-index:10;background:var(--screen);display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:18px;transform-origin:center;}
+  .boot-overlay.done{animation:powerOff .45s ease forwards;}
+  @keyframes powerOff{0%{opacity:1;transform:scaleY(1);}60%{opacity:1;transform:scaleY(.02);}100%{opacity:0;transform:scaleY(.02);}}
+  .power-btn{width:84px;height:84px;border-radius:50%;border:2px solid var(--amber-dim);
+    background:radial-gradient(circle at 35% 30%, #2b1c06, #0a0703 70%);color:var(--amber);font-size:28px;
+    cursor:pointer;animation:pulseBtn 2s ease-in-out infinite;}
+  @keyframes pulseBtn{0%,100%{box-shadow:0 0 14px rgba(255,176,0,.2);}50%{box-shadow:0 0 30px rgba(255,176,0,.5);}}
+  .power-hint{font-size:11px;letter-spacing:.25em;color:var(--text-dim);}
+  .boot-lines{font-size:clamp(11px,1.3vw,14px);color:var(--amber-dim);min-height:140px;width:min(80%,480px);}
+  .boot-lines div{white-space:pre;margin-bottom:4px;}
+  .boot-lines .ok{color:var(--green);}
+
+  .term-body{height:100%;display:flex;flex-direction:column;min-height:0;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;font-size:clamp(11px,1.3vw,14px);
+    letter-spacing:.12em;color:var(--text-dim);border-bottom:1px solid var(--amber-faint);padding-bottom:10px;}
+  .status{display:flex;align-items:center;gap:10px;}
+  .mute{background:none;border:none;color:var(--amber);cursor:pointer;font-size:14px;line-height:1;padding:0;}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--amber-dim);animation:blink 1.4s steps(2) infinite;}
   .dot.live{background:var(--green);box-shadow:0 0 8px var(--green);}
   .dot.err{background:var(--red);box-shadow:0 0 8px var(--red);}
@@ -51,75 +61,121 @@
      text-shadow:0 0 18px rgba(255,176,0,.5),0 0 40px rgba(255,176,0,.25);margin-top:4px;}
   h1.up{color:var(--green);text-shadow:0 0 18px rgba(61,255,122,.55),0 0 42px rgba(61,255,122,.25);}
   h1.down{color:var(--red);text-shadow:0 0 18px rgba(255,68,51,.55),0 0 42px rgba(255,68,51,.25);}
+  .digits{display:inline-flex;perspective:400px;}
+  .digit{display:inline-block;min-width:.5em;text-align:center;transform-style:preserve-3d;}
+  .digit.flip{animation:flip .3s ease;}
+  @keyframes flip{0%{transform:rotateX(0);}50%{transform:rotateX(-90deg);}100%{transform:rotateX(0);}}
   .cursor{display:inline-block;animation:blink 1s steps(2) infinite;}
   .change{font-size:clamp(13px,1.6vw,18px);margin-top:6px;letter-spacing:.08em;}
-  .change.up{color:var(--green);}
-  .change.down{color:var(--red);}
+  .change.up{color:var(--green);} .change.down{color:var(--red);}
   .hl{font-size:clamp(11px,1.2vw,14px);color:var(--text-dim);margin-top:4px;letter-spacing:.08em;}
 
   #chart{width:100%;flex:1;min-height:120px;margin-top:clamp(10px,2vh,20px);}
   #error{color:var(--red);font-size:12px;text-align:center;letter-spacing:.05em;min-height:16px;}
+  .glitch-sweep{position:absolute;left:0;right:0;top:0;height:3px;z-index:6;pointer-events:none;
+    background:linear-gradient(90deg,transparent,var(--amber),transparent);animation:sweep .35s linear forwards;}
+  @keyframes sweep{from{top:0;opacity:1;}to{top:100%;opacity:0;}}
 
   .controls{display:flex;gap:10px;justify-content:center;border-top:1px solid var(--amber-faint);padding-top:12px;flex-wrap:wrap;}
-  .key{font-family:'Space Mono',monospace;font-size:clamp(11px,1.3vw,13px);letter-spacing:.08em;
-       background:transparent;color:var(--amber);border:1px solid var(--amber-dim);
-       padding:8px 16px;border-radius:3px;cursor:pointer;}
+  .key{font-size:clamp(11px,1.3vw,13px);letter-spacing:.08em;background:transparent;color:var(--amber);
+    border:1px solid var(--amber-dim);padding:8px 16px;border-radius:3px;cursor:pointer;font-family:inherit;}
   .key:hover{border-color:var(--amber);}
   .key.active{background:var(--amber);color:#100b04;border-color:var(--amber);}
 
-  @media (max-width:600px){
-    .topbar{font-size:10px;}
-    .controls{gap:6px;}
-    .key{padding:6px 10px;}
-  }
+  @media (max-width:600px){.topbar{font-size:10px;} .controls{gap:6px;} .key{padding:6px 10px;}}
 </style>
 </head>
 <body>
   <div class="bezel">
     <div class="screen">
       <div class="scanlines"></div>
-      <header class="topbar">
-        <span class="brand">BTC-USD QUOTE TERMINAL</span>
-        <span class="status"><span class="dot" id="dot"></span><span id="clock">--:--:--</span></span>
-      </header>
+      <div class="boot-overlay" id="bootOverlay">
+        <button class="power-btn" id="powerBtn">⏻</button>
+        <div class="power-hint">PRESS TO INITIALIZE</div>
+        <div class="boot-lines" id="bootLines"></div>
+      </div>
 
-      <main>
-        <div class="quote" id="quoteView">
-          <p class="eyebrow">BTC / USD LAST TRADE</p>
-          <h1 id="price">-- <span class="cursor">▮</span></h1>
-          <p class="change" id="change">24H —</p>
-          <p class="hl" id="hl">H — · L —</p>
-        </div>
-        <div class="quote hidden" id="hashView">
-          <p class="eyebrow">NETWORK HASHRATE</p>
-          <h1 id="hashPrice">-- <span class="cursor">▮</span></h1>
-          <p class="change" id="hashChange">QUARTERLY AVG</p>
-        </div>
+      <div class="term-body">
+        <header class="topbar">
+          <span class="brand">BTC-USD QUOTE TERMINAL</span>
+          <span class="status">
+            <button class="mute" id="muteBtn" title="Toggle sound">🔊</button>
+            <span class="dot" id="dot"></span><span id="clock">--:--:--</span>
+          </span>
+        </header>
 
-        <div id="chart"></div>
-        <p id="error"></p>
-      </main>
+        <main>
+          <div class="quote" id="quoteView">
+            <p class="eyebrow">BTC / USD LAST TRADE</p>
+            <h1 id="priceWrap"><span class="digits" id="priceDigits"></span> <span class="cursor">▮</span></h1>
+            <p class="change" id="change">24H —</p>
+            <p class="hl" id="hl">H — · L —</p>
+          </div>
+          <div class="quote hidden" id="hashView">
+            <p class="eyebrow">NETWORK HASHRATE</p>
+            <h1 id="hashWrap"><span class="digits" id="hashDigits"></span> <span class="cursor">▮</span></h1>
+            <p class="change" id="hashChange">QUARTERLY AVG</p>
+          </div>
+          <div id="chart"></div>
+          <p id="error"></p>
+        </main>
 
-      <footer class="controls">
-        <button class="key active" data-view="price">F1 · PRICE</button>
-        <button class="key" data-view="hashrate">F2 · HASHRATE</button>
-        <button class="key" id="timeToggle">F3 · 1H</button>
-      </footer>
+        <footer class="controls">
+          <button class="key active" data-view="price">F1 · PRICE</button>
+          <button class="key" data-view="hashrate">F2 · HASHRATE</button>
+          <button class="key" id="timeToggle">F3 · 1H</button>
+        </footer>
+      </div>
     </div>
   </div>
 
 <script>
   const $ = id => document.getElementById(id);
-  const priceEl=$('price'), changeEl=$('change'), hlEl=$('hl');
-  const hashPriceEl=$('hashPrice'), hashChangeEl=$('hashChange');
-  const errorEl=$('error'), dotEl=$('dot'), clockEl=$('clock'), chartEl=$('chart');
+  const priceWrap=$('priceWrap'), hashWrap=$('hashWrap'), changeEl=$('change'), hlEl=$('hl'), hashChangeEl=$('hashChange');
+  const errorEl=$('error'), dotEl=$('dot'), clockEl=$('clock'), chartEl=$('chart'), screenEl=document.querySelector('.screen');
   let chart, series, lineSeries;
   let currentView='price', currentInterval='hour';
+  let audioCtx=null, soundOn=true;
+
+  function beep(freq=700,dur=0.04,type='sine',vol=0.04){
+    if(!soundOn || !audioCtx) return;
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq; g.gain.value=vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime+dur);
+    o.stop(audioCtx.currentTime+dur);
+  }
+  function ensureAudio(){ if(!audioCtx){ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); } if(audioCtx.state==='suspended') audioCtx.resume(); }
+  $('muteBtn').addEventListener('click', ()=>{ soundOn=!soundOn; $('muteBtn').textContent=soundOn?'🔊':'🔇'; if(soundOn) ensureAudio(); });
 
   function tickClock(){ clockEl.textContent=new Date().toLocaleTimeString('en-US',{hour12:false}); }
   setInterval(tickClock,1000); tickClock();
 
   const fmt = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n);
+
+  function renderDigits(container, text){
+    const chars=[...text];
+    if(container.children.length!==chars.length){
+      container.innerHTML='';
+      chars.forEach(ch=>{ const s=document.createElement('span'); s.className='digit'; s.textContent=ch; container.appendChild(s); });
+      return;
+    }
+    let changed=false;
+    chars.forEach((ch,i)=>{
+      const s=container.children[i];
+      if(s.textContent!==ch){
+        changed=true;
+        s.classList.remove('flip'); void s.offsetWidth; s.classList.add('flip');
+        setTimeout(()=>{ s.textContent=ch; },150);
+      }
+    });
+    if(changed) beep(520,0.03,'square',0.02);
+  }
+
+  function glitchPulse(){
+    const g=document.createElement('div'); g.className='glitch-sweep';
+    screenEl.appendChild(g); setTimeout(()=>g.remove(),400);
+  }
 
   function buildChart(){
     if(chart) chart.remove();
@@ -157,12 +213,13 @@
       const pct = (last-open)/open*100;
       const up = last>=open;
 
-      priceEl.innerHTML = fmt(last)+' <span class="cursor">▮</span>';
-      priceEl.className = up?'up':'down';
+      renderDigits($('priceDigits'), fmt(last));
+      priceWrap.className = up?'up':'down';
       changeEl.textContent = `24H ${up?'▲':'▼'} ${pct>=0?'+':''}${pct.toFixed(2)}%`;
       changeEl.className = 'change '+(up?'up':'down');
       hlEl.textContent = `H ${fmt(high)} · L ${fmt(low)}`;
       dotEl.className = 'dot live';
+      glitchPulse();
     }catch(e){
       errorEl.textContent = 'LINK ERROR — RETRYING';
       dotEl.className = 'dot err';
@@ -177,14 +234,9 @@
       const data = await res.json();
       if(!res.ok) throw new Error('HTTP '+res.status);
       const byQuarter = data.values.filter(v=>new Date(v.x*1000).getFullYear()>=2016)
-        .reduce((acc,v)=>{
-          const d=new Date(v.x*1000); const key=`${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`;
-          (acc[key]=acc[key]||{t:v.x,vals:[]}).vals.push(v.y);
-          return acc;
-        },{});
-      const points = Object.values(byQuarter)
-        .map(q=>({time:q.t, value:q.vals.reduce((a,b)=>a+b,0)/q.vals.length}))
-        .sort((a,b)=>a.time-b.time);
+        .reduce((acc,v)=>{ const d=new Date(v.x*1000); const key=`${d.getFullYear()}-Q${Math.floor(d.getMonth()/3)+1}`;
+          (acc[key]=acc[key]||{t:v.x,vals:[]}).vals.push(v.y); return acc; },{});
+      const points = Object.values(byQuarter).map(q=>({time:q.t, value:q.vals.reduce((a,b)=>a+b,0)/q.vals.length})).sort((a,b)=>a.time-b.time);
 
       buildChart();
       lineSeries = chart.addLineSeries({color:'#ffb000', lineWidth:2});
@@ -193,11 +245,12 @@
       const latest = points[points.length-1].value;
       const prev = points[points.length-2]?.value ?? latest;
       const up = latest>=prev;
-      hashPriceEl.innerHTML = Math.round(latest).toLocaleString()+' TH/s <span class="cursor">▮</span>';
-      hashPriceEl.className = up?'up':'down';
+      renderDigits($('hashDigits'), Math.round(latest).toLocaleString()+' TH/s');
+      hashWrap.className = up?'up':'down';
       hashChangeEl.textContent = `QUARTERLY AVG ${up?'▲':'▼'}`;
       hashChangeEl.className = 'change '+(up?'up':'down');
       dotEl.className = 'dot live';
+      glitchPulse();
     }catch(e){
       errorEl.textContent = 'LINK ERROR — RETRYING';
       dotEl.className = 'dot err';
@@ -209,6 +262,7 @@
 
   document.querySelectorAll('.key[data-view]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      ensureAudio(); beep(420,0.03,'square',0.02);
       document.querySelectorAll('.key[data-view]').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       currentView = btn.dataset.view;
@@ -218,17 +272,53 @@
       refresh();
     });
   });
-
   $('timeToggle').addEventListener('click', e=>{
+    ensureAudio(); beep(420,0.03,'square',0.02);
     currentInterval = currentInterval==='hour' ? '15min' : 'hour';
     e.target.textContent = currentInterval==='hour' ? 'F3 · 1H' : 'F3 · 15M';
     refresh();
   });
-
   window.addEventListener('resize', ()=>{ if(chart) chart.resize(chartEl.clientWidth, chartEl.clientHeight); });
 
   refresh();
   setInterval(refresh, 60000);
+
+  // Boot sequence
+  const bootLines=["QUOTE TERMINAL v3.1 — COLD BOOT","MEM CHECK ......... OK","RTC SYNC .......... OK","LINK: KRAKEN EXCHANGE","ESTABLISHING SESSION...","SIGNAL LOCKED"];
+  function typeBoot(done){
+    const el=$('bootLines'); let i=0;
+    function nextLine(){
+      if(i>=bootLines.length) return done();
+      const line=document.createElement('div'); el.appendChild(line);
+      const text=bootLines[i]; let c=0;
+      const iv=setInterval(()=>{
+        line.textContent=text.slice(0,++c);
+        if(c>=text.length){
+          clearInterval(iv); beep(700,0.02,'square',0.02);
+          if(/OK|LOCKED/.test(text)) line.innerHTML=text.replace(/OK|LOCKED/, m=>`<span class="ok">${m}</span>`);
+          i++; setTimeout(nextLine,110);
+        }
+      },14);
+    }
+    nextLine();
+  }
+  function finishBoot(){
+    beep(880,0.08,'sine',0.05); setTimeout(()=>beep(1320,0.12,'sine',0.05),90);
+    const overlay=$('bootOverlay'); overlay.classList.add('done');
+    const flash=document.createElement('div'); flash.className='crt-flash'; screenEl.appendChild(flash);
+    setTimeout(()=>{ overlay.remove(); flash.remove(); },480);
+    sessionStorage.setItem('booted','1');
+  }
+  if(sessionStorage.getItem('booted')){
+    $('bootOverlay').remove();
+    document.addEventListener('click', ensureAudio, {once:true});
+  } else {
+    $('powerBtn').addEventListener('click', ()=>{
+      ensureAudio();
+      $('powerBtn').remove(); document.querySelector('.power-hint').remove();
+      typeBoot(finishBoot);
+    });
+  }
 </script>
 </body>
 </html>
