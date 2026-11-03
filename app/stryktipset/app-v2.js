@@ -252,7 +252,7 @@
     busy=false;$('generate').disabled=false;if(token!==runId||!rows)return;
     result={product:productName,rows};
     $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('download').disabled=false;$('copy').disabled=false;
-    $('preview').textContent=makeText(result,false,10)+(rows.length>10?'\n… och '+format(rows.length-10)+' rader till':'');
+    $('preview').textContent=makeText(result,false,200)+(rows.length>10?'\n… och '+format(rows.length-10)+' rader till':'');
     const weighted=product.matches.some(m=>m.weights.length);
     const message=eligible<target?`Endast ${format(eligible)} rader klarar reglerna. Alla valdes.`:`${format(rows.length)} av ${format(eligible)} giltiga rader valda${weighted?' med viktade tecken prioriterade':''}.`;
     status(message,'good');
