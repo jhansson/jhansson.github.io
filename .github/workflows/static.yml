@@ -1,4 +1,4 @@
-# Deploy the existing site and refresh Stryktipset's fixture file.
+# Deploy the existing site and refresh both tips fixture files.
 name: Deploy static content to Pages
 
 on:
@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Refresh Stryktipset fixtures
+      - name: Refresh tips fixtures
         continue-on-error: ${{ github.event_name == 'push' }}
         run: node scripts/update-stryktipset-fixtures.mjs
       - name: Setup Pages
