@@ -57,8 +57,6 @@
   function renderHeader(){
     document.documentElement.dataset.product=app.activeProduct==='Europatipset'?'europatipset':'stryktipset';
     $('svenska-spel-link').href='https://spela.svenskaspel.se/'+(app.activeProduct==='Europatipset'?'europatipset':'stryktipset')+'/externa-systemspel';
-    $('hero-product').textContent=app.activeProduct.toUpperCase();
-    $('retro-product').textContent=app.activeProduct.toUpperCase();
     document.querySelectorAll('[data-product]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.product===app.activeProduct)));
     $('target').value=current().target;
     renderFixtureInfo();
@@ -272,7 +270,7 @@
     try{localStorage.setItem(THEME_KEY,theme)}catch{}
   }
   document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>setTheme(btn.dataset.themeChoice)));
-  setTheme(document.documentElement.dataset.theme==='retro'?'retro':'sport');
+  setTheme(document.documentElement.dataset.theme==='sport'?'sport':'retro');
   $('reset-signs').addEventListener('click',()=>{current().matches.forEach(m=>{m.signs=[];m.weights=[]});renderMatches();invalidate('Alla tecken rensade. Välj minst ett per match.')});
   $('refresh-fixture').addEventListener('click',refreshFixtures);
   $('target').addEventListener('input',()=>{current().target=$('target').value;invalidate()});
@@ -280,9 +278,6 @@
   $('generate').addEventListener('click',generate);
   $('download').addEventListener('click',()=>{if(!result)return;const slug=result.product==='Stryktipset'?'stryktipset':'europatipset';download(slug+'-enkelrader.txt',makeText(result),'text/plain;charset=us-ascii')});
   $('copy').addEventListener('click',async()=>{if(!result)return;try{await navigator.clipboard.writeText(makeText(result,false));status('Raderna kopierades till urklipp.','good')}catch{status('Det gick inte att kopiera. Ladda ned textfilen i stället.','error')}});
-  $('save-config').addEventListener('click',()=>download('reduceraren-upplagg.json',JSON.stringify({version:2,...app},null,2),'application/json'));
-  $('load-config').addEventListener('click',()=>$('config-file').click());
-  $('config-file').addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;try{app=normalizeState(JSON.parse(await file.text()));if(Object.keys(fixtures).length)applyFixtures({products:fixtures});renderAll();invalidate('Upplägget har lästs in. Kontrollera matcherna och skapa rader.')}catch(error){status('Kunde inte öppna upplägget: '+error.message,'error')}event.target.value=''});
 
   renderAll();refreshFixtures();
 })();

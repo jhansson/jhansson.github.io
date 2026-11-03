@@ -8,28 +8,18 @@
   <title>Reduceraren · Stryktipset & Europatipset</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="retro-v3.css">
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='retro'?'retro':'sport'}catch{document.documentElement.dataset.theme='sport'}</script>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='sport'?'sport':'retro'}catch{document.documentElement.dataset.theme='retro'}</script>
   <script src="app-v2.js" defer></script>
 </head>
 <body>
   <div class="site-shell">
     <header class="topbar">
       <a class="brand" href="/app/" aria-label="Till appöversikten"><span class="brand-ball" aria-hidden="true">⚽</span><span>REDUCERAREN</span></a>
-      <div class="theme-switch" role="group" aria-label="Välj utseende"><button type="button" data-theme-choice="sport" aria-pressed="true">Sport</button><button type="button" data-theme-choice="retro" aria-pressed="false">Retrokupong</button></div>
-      <div class="top-actions">
-        <button class="top-action" id="save-config" type="button"><span aria-hidden="true">↓</span> Spara upplägg</button>
-        <button class="top-action" id="load-config" type="button"><span aria-hidden="true">▣</span> Ladda upplägg</button>
-        <input id="config-file" type="file" accept=".json,application/json" hidden>
-      </div>
+      <div class="theme-switch" role="group" aria-label="Välj utseende"><button type="button" data-theme-choice="sport" aria-pressed="false">Sport</button><button type="button" data-theme-choice="retro" aria-pressed="true">Retro</button></div>
     </header>
 
-    <section class="hero" aria-labelledby="hero-title">
+    <section class="hero" aria-label="Välj spelprodukt">
       <div class="hero-art" aria-hidden="true"></div>
-      <div class="hero-copy">
-        <div class="hero-kicker">Bygg ditt system · minska antalet rader · spela smartare</div>
-        <h1 id="hero-title">REDUCERAREN<span>– <em id="hero-product">STRYKTIPSET</em></span></h1>
-        <p>Välj tecken, sätt dina regler och skapa ett genomtänkt urval av rader.</p>
-      </div>
       <div class="product-switch" role="group" aria-label="Välj spelprodukt">
         <button type="button" data-product="Stryktipset" aria-pressed="true">Stryktipset</button>
         <button type="button" data-product="Europatipset" aria-pressed="false">Europatipset</button>
@@ -66,7 +56,6 @@
 
         <section class="panel settings-panel" aria-labelledby="rules-title"><div class="panel-heading"><div><div class="heading-kicker">03 / FINJUSTERA</div><h2 id="rules-title"><span aria-hidden="true">✎</span> EGNA REGLER</h2></div></div><p class="small-copy">Begränsa valda tecken i en viss grupp av matcher, till exempel max två kryss i match 1–6.</p><div id="custom-rules" class="custom-rules"></div><button id="add-rule" type="button" class="add-rule">+ Lägg till regel</button></section>
       </aside>
-      <aside class="retro-note" aria-hidden="true"><div class="retro-note-title">REDUCERAREN<br>FÖR <span id="retro-product">STRYKTIPSET</span></div><div class="retro-ball">⚽</div><p>Bygg ditt system,<br>begränsa antalet rader<br>och skapa spelklara rader.</p><small>INSPIRERAD AV DEN KLASSISKA TIPSKUPONGEN</small></aside>
     </div>
     <footer>Filen innehåller enkelrader för vald produkt. Granska rader och kostnad hos Svenska Spel innan du betalar.</footer>
   </div>
