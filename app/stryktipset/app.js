@@ -55,6 +55,8 @@
   }
 
   function renderHeader(){
+    document.documentElement.dataset.product=app.activeProduct==='Europatipset'?'europatipset':'stryktipset';
+    $('svenska-spel-link').href='https://spela.svenskaspel.se/'+(app.activeProduct==='Europatipset'?'europatipset':'stryktipset')+'/externa-systemspel';
     $('hero-product').textContent=app.activeProduct.toUpperCase();
     $('retro-product').textContent=app.activeProduct.toUpperCase();
     document.querySelectorAll('[data-product]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.product===app.activeProduct)));

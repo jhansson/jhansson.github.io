@@ -7,9 +7,9 @@
   <meta name="description" content="Bygg och reducera Stryktipset och Europatipset med egna regler och viktade tecken.">
   <title>Reduceraren · Stryktipset & Europatipset</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="retro.css">
+  <link rel="stylesheet" href="retro-v2.css">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='retro'?'retro':'sport'}catch{document.documentElement.dataset.theme='sport'}</script>
-  <script src="app.js" defer></script>
+  <script src="app-v2.js" defer></script>
 </head>
 <body>
   <div class="site-shell">
@@ -55,6 +55,8 @@
             <div class="stat-row"><span>Kostnad <small>1 kr/rad</small></span><strong id="price">—</strong></div>
             <button id="generate" type="button" class="generate-button"><span aria-hidden="true">▶</span> SKAPA RADER</button>
             <div class="export-actions"><button id="download" type="button" disabled>↓ Ladda ned TXT</button><button id="copy" type="button" disabled>▤ Kopiera rader</button></div>
+            <a id="svenska-spel-link" class="upload-link" href="https://spela.svenskaspel.se/stryktipset/externa-systemspel" target="_blank" rel="noopener noreferrer">Öppna uppladdning hos Svenska Spel ↗</a>
+            <p class="upload-hint">Ladda upp TXT-filen där och granska raderna före betalning.</p>
             <p id="status" class="status" role="status" aria-live="polite">Välj tecken och skapa rader.</p>
             <details class="preview-wrap"><summary>Visa rader</summary><pre id="preview">Inga rader skapade ännu.</pre></details>
           </div>
