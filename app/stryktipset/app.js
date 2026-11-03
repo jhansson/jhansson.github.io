@@ -5,6 +5,7 @@
   const SIGNS=['1','X','2'];
   const STORAGE_KEY='tips-reduceraren-v2';
   const LEGACY_KEY='stryktips-reduceraren-v1';
+  const THEME_KEY='tips-reduceraren-theme';
   const MAX_ROWS=10000;
   const POOL_SIZE=12000;
   const $=id=>document.getElementById(id);
@@ -55,6 +56,7 @@
 
   function renderHeader(){
     $('hero-product').textContent=app.activeProduct.toUpperCase();
+    $('retro-product').textContent=app.activeProduct.toUpperCase();
     document.querySelectorAll('[data-product]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.product===app.activeProduct)));
     $('target').value=current().target;
     renderFixtureInfo();
@@ -262,6 +264,13 @@
     if(btn.dataset.product===app.activeProduct)return;
     app.activeProduct=btn.dataset.product;invalidate('Bytte till '+app.activeProduct+'. Skapa rader för den omgången.');renderAll();
   }));
+  function setTheme(theme){
+    document.documentElement.dataset.theme=theme;
+    document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.themeChoice===theme)));
+    try{localStorage.setItem(THEME_KEY,theme)}catch{}
+  }
+  document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>setTheme(btn.dataset.themeChoice)));
+  setTheme(document.documentElement.dataset.theme==='retro'?'retro':'sport');
   $('reset-signs').addEventListener('click',()=>{current().matches.forEach(m=>{m.signs=[];m.weights=[]});renderMatches();invalidate('Alla tecken rensade. Välj minst ett per match.')});
   $('refresh-fixture').addEventListener('click',refreshFixtures);
   $('target').addEventListener('input',()=>{current().target=$('target').value;invalidate()});

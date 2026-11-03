@@ -1,0 +1,117 @@
+/* The theme switch belongs to both visual modes. */
+.theme-switch{display:flex;gap:3px;padding:3px;border:1px solid #426786;border-radius:8px;background:#071d36;flex:none}
+.theme-switch button{border:0;border-radius:5px;background:transparent;color:#bed1e1;padding:6px 12px;font-size:.75rem;font-weight:850;white-space:nowrap}
+.theme-switch button[aria-pressed="true"]{background:var(--lime);color:#061426}
+.theme-switch button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.retro-note{display:none}
+@media(max-width:760px){.topbar{height:auto;min-height:58px;flex-wrap:wrap;padding:9px 0}.theme-switch{order:3;width:100%;justify-content:center}.theme-switch button{flex:1}.top-actions{margin-left:auto}}
+
+/* A second skin for the same controls and state: old paper and printed ink. */
+html[data-theme="retro"]{--ink:#102a50;--muted:#425d79;--dim:#647b91;--navy:#e9dcc5;--navy2:#f7edd9;--panel:#f7e9d0;--panel-deep:#efe0c4;--line:#1c4771;--line-soft:#8ba3ad;--lime:#c9312c;--lime-dark:#aa2428;--gold:#194b90;--danger:#a92026;--shadow:0 8px 0 #71543d31,0 22px 35px #45352830}
+html[data-theme="retro"] body{color:var(--ink);font-family:"Trebuchet MS",Arial,sans-serif;background:radial-gradient(circle at 14% 12%,#fff9e5a8 0 12%,transparent 35%),radial-gradient(circle at 82% 88%,#b7774260,transparent 30%),repeating-radial-gradient(circle at 0 0,#4e342611 0 1px,transparent 1px 4px),linear-gradient(120deg,#e9d1a9,#f4e7ca 42%,#e7d0aa);min-height:100vh}
+html[data-theme="retro"] .site-shell{position:relative;max-width:1540px;min-height:100vh;padding:0 25px 30px;background:radial-gradient(circle at 98% 2%,#9a572623,transparent 19%),repeating-linear-gradient(0deg,#6b3c1906 0 1px,transparent 1px 6px),linear-gradient(#f7e9d1,#f4e5cb 60%,#ecd9b8);box-shadow:0 0 0 2px #a35a4938,0 8px 45px #53352061}
+html[data-theme="retro"] .site-shell:before{content:"";position:absolute;inset:0 6px 0;pointer-events:none;border-left:1px solid #ae43385c;border-right:1px solid #ae43385c;opacity:.55}
+html[data-theme="retro"] .topbar{position:relative;height:74px;border-bottom:2px solid #be3837;gap:18px}
+html[data-theme="retro"] .brand{background:#143e71;color:#fff3d9;padding:7px 12px 7px 8px;font-family:Impact,"Arial Narrow",sans-serif;font-size:1.32rem;letter-spacing:.06em;box-shadow:4px 4px 0 #a7292a}
+html[data-theme="retro"] .brand-ball{display:grid;place-items:center;background:#c12d30;width:36px;height:34px;font-size:22px;filter:grayscale(.15)}
+html[data-theme="retro"] .theme-switch{background:#e9d5b3;border:1px solid #1d4774;border-radius:0;padding:2px}
+html[data-theme="retro"] .theme-switch button{border-radius:0;color:#1a4774;font-family:Georgia,serif;font-style:italic;font-size:.82rem}
+html[data-theme="retro"] .theme-switch button[aria-pressed="true"]{background:#164476;color:#fff1d6}
+html[data-theme="retro"] .top-action{color:#1b4570;border:1px solid #a7a08e;border-radius:0;background:#f7ecd7;font-family:Georgia,serif;font-size:.78rem}
+html[data-theme="retro"] .top-action span{color:#b92a31}
+html[data-theme="retro"] .top-action:hover,html[data-theme="retro"] .top-action:focus-visible{background:#e8d4b5;border-color:#174777;color:#15385e}
+html[data-theme="retro"] .hero{min-height:176px;padding:30px 26px 26px;background:transparent;border:0;overflow:hidden}
+html[data-theme="retro"] .hero:before{background:repeating-radial-gradient(circle at 87% 15%,#1e56843b 0 1px,transparent 1px 5px);mask-image:linear-gradient(90deg,transparent 58%,black);opacity:.55}
+html[data-theme="retro"] .hero-art{right:-24px;top:-170px;width:490px;height:480px;border:0;background:repeating-linear-gradient(130deg,transparent 0 40px,#1c4b7852 41px 43px,transparent 44px 81px);opacity:.3}
+html[data-theme="retro"] .hero-copy{border-left:0;padding-left:0}
+html[data-theme="retro"] .hero-kicker{color:#ad292d;letter-spacing:.15em;font-weight:900;font-size:.72rem;order:2}
+html[data-theme="retro"] .hero h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.3rem,4.6vw,4.3rem);font-weight:900;font-style:italic;line-height:.94;letter-spacing:-.055em;text-shadow:2px 2px 0 #dbb891;margin:0 0 15px}
+html[data-theme="retro"] .hero h1 span{display:inline}
+html[data-theme="retro"] .hero h1 em{color:#bb2e33;font-style:italic;white-space:nowrap}
+html[data-theme="retro"] .hero p{font-family:Georgia,serif;font-style:italic;color:#315479;font-size:.89rem}
+html[data-theme="retro"] .product-switch{background:#ecd7b2;border:1px solid #164271;border-radius:0;box-shadow:3px 3px 0 #a02b2d;align-self:center}
+html[data-theme="retro"] .product-switch button{font-family:Georgia,serif;font-style:italic;color:#17416b;border-radius:0}
+html[data-theme="retro"] .product-switch button[aria-pressed="true"]{background:#164476;color:#fff3d7;box-shadow:none}
+html[data-theme="retro"] .content-grid{grid-template-columns:minmax(0,1.45fr) minmax(325px,.98fr) minmax(175px,.34fr);gap:0;margin:8px 0 0;border:2px solid #bd353a;border-radius:5px;align-items:stretch;background:#f8ecd6}
+html[data-theme="retro"] .panel{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+html[data-theme="retro"] .matches-panel{border-right:2px dashed #c2393d;padding:12px 15px 14px 9px}
+html[data-theme="retro"] .sidebar{display:block;border-right:2px dashed #c2393d;padding:12px 14px}
+html[data-theme="retro"] .sidebar .panel{margin-bottom:20px}
+html[data-theme="retro"] .panel-heading{background:#194b80;color:#fff0d4;padding:12px 13px;border-bottom:0;align-items:center;box-shadow:inset 0 -3px 0 #15375d}
+html[data-theme="retro"] .heading-kicker{display:none}
+html[data-theme="retro"] .panel h2{font-family:Georgia,serif;font-size:1.28rem;font-style:italic;letter-spacing:.01em;color:inherit}
+html[data-theme="retro"] .panel h2 span{color:#f6e7c5;font-size:1.15rem}
+html[data-theme="retro"] .panel h2 small{color:#e3d3ae}
+html[data-theme="retro"] .text-button{color:#fff2d5;border-color:#f9e9cd;font-family:Georgia,serif;font-size:.7rem}
+html[data-theme="retro"] .text-button:hover{color:#fff;border-color:#fff}
+html[data-theme="retro"] .fixture-bar{background:#f4e8d1;border:1px dashed #194b80;border-radius:0;color:#234d77;margin:12px 0 4px;font-family:"Courier New",monospace;font-size:.71rem}
+html[data-theme="retro"] .fixture-bar.error{background:#f8d7cc;border-color:#b82f37;color:#8c232c}
+html[data-theme="retro"] .live-dot{background:#c53335;box-shadow:none}
+html[data-theme="retro"] .fixture-bar button{color:#194b80}
+html[data-theme="retro"] .sign-legend{color:#385978;font-family:Georgia,serif;font-style:italic;padding:7px 4px 5px}
+html[data-theme="retro"] .legend-star{color:#164c8c}
+html[data-theme="retro"] .match-list{padding:0}
+html[data-theme="retro"] .match-row{grid-template-columns:32px minmax(0,1fr) 170px;gap:6px;min-height:43px;padding:3px 8px;background:transparent;border-bottom:1px dotted #b69c83}
+html[data-theme="retro"] .match-row:nth-child(odd){background:#d65b5540}
+html[data-theme="retro"] .match-row:first-child{border-top:1px dotted #b69c83}
+html[data-theme="retro"] .match-no{color:#a7252c;font-family:Georgia,serif;font-size:1.08rem;font-weight:900}
+html[data-theme="retro"] .match-name{color:#102b50;font-family:"Trebuchet MS",Arial,sans-serif;font-size:.88rem;font-weight:800}
+html[data-theme="retro"] .match-name:focus{background:#fff8e9;border-color:#ad343a}
+html[data-theme="retro"] .pick-group{gap:8px}
+html[data-theme="retro"] .pick{width:49px;height:31px;clip-path:none;border:1.5px solid #bd2d35;border-radius:3px;background:#fff5dd99;color:#bb3035;font-family:Georgia,serif;font-size:1.04rem;line-height:1;box-shadow:inset 0 0 0 1px #fdf4dc;overflow:visible}
+html[data-theme="retro"] .pick:hover{filter:none;background:#fff9e9;border-color:#174a88}
+html[data-theme="retro"] .pick.selected{background:#fff5dd99;color:#bb3035}
+html[data-theme="retro"] .pick.selected:not(.weighted):before,html[data-theme="retro"] .pick.selected:not(.weighted):after{content:"";position:absolute;z-index:2;left:3px;top:14px;width:41px;height:2.5px;border-radius:3px;background:#194b9a;transform:rotate(43deg);box-shadow:0 1px 0 #567bb675}
+html[data-theme="retro"] .pick.selected:not(.weighted):after{transform:rotate(-48deg);width:43px;left:2px}
+html[data-theme="retro"] .pick.weighted{background:#fff6e4;color:#ad2730;box-shadow:inset 0 0 0 1px #fdf4dc}
+html[data-theme="retro"] .pick.weighted:after{content:"";position:absolute;z-index:2;width:35px;height:27px;left:5px;top:0;border:3px solid #174b94;border-radius:50%;transform:rotate(-14deg);box-shadow:1px 0 0 #446eae55}
+html[data-theme="retro"] .pick .star{display:none}
+html[data-theme="retro"] .pick:focus-visible{outline:3px solid #164b91;outline-offset:2px;border-radius:3px}
+html[data-theme="retro"] .panel-foot{color:#395a77;font-family:Georgia,serif;font-style:italic;padding:12px 4px 2px}
+html[data-theme="retro"] .overview{border:1px solid #20517b;border-radius:3px;background:#fff4df88}
+html[data-theme="retro"] .overview-heading{background:#194b80;color:#fff1d6;padding:10px 13px}
+html[data-theme="retro"] .overview-heading h2{font-family:Georgia,serif;font-style:italic;font-size:1.35rem;color:#fff1d6}
+html[data-theme="retro"] .overview-icon{color:#fff2d8}
+html[data-theme="retro"] .overview-body{padding:11px 12px 14px}
+html[data-theme="retro"] .target-row,html[data-theme="retro"] .stat-row{color:#183a61;border-bottom:1px dotted #71889a;font-family:"Trebuchet MS",Arial,sans-serif;font-size:.9rem}
+html[data-theme="retro"] .target-row input{background:#fff8e7;color:#112f57;border:1px solid #194b80;border-radius:2px}
+html[data-theme="retro"] .stat-row strong,html[data-theme="retro"] .stat-row strong.accent{color:#102d54;font-family:Georgia,serif;font-size:1.38rem}
+html[data-theme="retro"] .stat-row small{color:#365678}
+html[data-theme="retro"] .generate-button{margin-top:16px;background:#bf3034;color:#fff4da;border:1px solid #9f262d;border-radius:4px;box-shadow:0 5px 0 #8d242a;font-family:Georgia,serif;font-style:italic;font-size:1.2rem}
+html[data-theme="retro"] .generate-button:hover{background:#d43b3e}
+html[data-theme="retro"] .generate-button:active{box-shadow:0 2px 0 #8d242a}
+html[data-theme="retro"] .export-actions button{background:#f6e9d0;border:1px solid #2d527a;border-radius:2px;color:#174472;font-family:Georgia,serif;font-size:.77rem}
+html[data-theme="retro"] .export-actions button:not(:disabled):hover{color:#a72a2f;border-color:#a72a2f}
+html[data-theme="retro"] .status{border:1px dashed #718a9f;border-radius:0;background:#f8edda;color:#315573}
+html[data-theme="retro"] .status.good{background:#e5edda;color:#234e48}
+html[data-theme="retro"] .status.error{background:#f8dcd5;color:#a02630}
+html[data-theme="retro"] .preview-wrap{color:#1e4770}
+html[data-theme="retro"] .preview-wrap pre{background:#fff7e7;color:#173d66;border:1px solid #8fa1a5;border-radius:0}
+html[data-theme="retro"] .settings-panel{border:1px solid #24527d;border-radius:3px}
+html[data-theme="retro"] .settings-panel .panel-heading{background:#194b80;padding:10px 13px}
+html[data-theme="retro"] .settings-panel h2{font-family:Georgia,serif;font-style:italic;color:#fff0d7;font-size:1.2rem}
+html[data-theme="retro"] .global-rules{padding:4px 12px 8px}
+html[data-theme="retro"] .global-rule{border-bottom:1px dotted #9b9f95}
+html[data-theme="retro"] .global-rule strong{color:#16375d}
+html[data-theme="retro"] .global-rule label{color:#426080}
+html[data-theme="retro"] .global-rule input,html[data-theme="retro"] .custom-fields input{background:#fff8e8;color:#173a65;border:1px solid #315b85;border-radius:2px}
+html[data-theme="retro"] .small-copy{color:#385775;font-family:Georgia,serif;font-style:italic}
+html[data-theme="retro"] .custom-rules{padding:0 11px}
+html[data-theme="retro"] .custom-rule{background:#f8ecd7;border:1px dashed #466989;border-radius:0}
+html[data-theme="retro"] .custom-header input{color:#173a65}
+html[data-theme="retro"] .custom-fields label{color:#3a5875}
+html[data-theme="retro"] .custom-sign{background:#f8ebd3;color:#b42c33;border:1px solid #bb3038;border-radius:2px}
+html[data-theme="retro"] .custom-sign.selected{background:#164b83;color:#fff4dc;border-color:#164b83}
+html[data-theme="retro"] .add-rule{border:1px solid #204b76;border-radius:2px;color:#194a79;background:#fff4dc;font-family:Georgia,serif;font-style:italic;font-size:.89rem}
+html[data-theme="retro"] .add-rule:hover{background:#e6d1ad}
+html[data-theme="retro"] .retro-note{display:flex;flex-direction:column;align-items:center;gap:27px;padding:36px 12px 12px;text-align:center;color:#193d6a}
+html[data-theme="retro"] .retro-note-title{font-family:Georgia,serif;font-style:italic;font-weight:900;font-size:1.4rem;line-height:1.1;transform:rotate(-5deg);border-bottom:4px solid #b52d34;padding-bottom:10px}
+html[data-theme="retro"] .retro-note-title span{font-size:1.2rem}
+html[data-theme="retro"] .retro-ball{font-size:5.3rem;line-height:1;filter:grayscale(1) sepia(1) hue-rotate(170deg) saturate(3);transform:rotate(-13deg)}
+html[data-theme="retro"] .retro-note p{font-family:Georgia,serif;font-style:italic;font-size:1rem;font-weight:700;line-height:1.5;transform:rotate(-2deg)}
+html[data-theme="retro"] .retro-note small{font-family:"Courier New",monospace;letter-spacing:.08em;font-size:.55rem;border-top:1px solid #b73439;padding-top:11px}
+html[data-theme="retro"] footer{color:#385673;font-family:Georgia,serif;font-style:italic}
+@media(max-width:1150px){html[data-theme="retro"] .content-grid{grid-template-columns:minmax(0,1.2fr) minmax(310px,.8fr)}html[data-theme="retro"] .retro-note{display:none}html[data-theme="retro"] .sidebar{border-right:0}}
+@media(max-width:800px){html[data-theme="retro"] .content-grid{display:block}html[data-theme="retro"] .matches-panel{border-right:0;border-bottom:2px dashed #c2393d}html[data-theme="retro"] .sidebar{border-right:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}html[data-theme="retro"] .overview{grid-column:1/-1}html[data-theme="retro"] .sidebar .panel{margin:0}html[data-theme="retro"] .hero{display:block}html[data-theme="retro"] .product-switch{display:inline-flex;margin-top:20px}}
+@media(max-width:640px){html[data-theme="retro"] .site-shell{padding:0 9px 20px}html[data-theme="retro"] .topbar{padding:9px 2px;gap:7px}html[data-theme="retro"] .brand{font-size:1rem;padding:4px 7px 4px 4px}html[data-theme="retro"] .brand-ball{height:28px;width:29px;font-size:17px}html[data-theme="retro"] .top-action{font-size:0;padding:4px 8px}html[data-theme="retro"] .top-action span{font-size:1rem}html[data-theme="retro"] .theme-switch{order:3;width:100%}html[data-theme="retro"] .hero{padding:22px 11px 20px;min-height:0}html[data-theme="retro"] .hero h1{font-size:clamp(1.8rem,8vw,2.7rem)}html[data-theme="retro"] .hero h1 span{display:block}html[data-theme="retro"] .hero-kicker{font-size:.61rem}html[data-theme="retro"] .product-switch{display:flex;width:100%;margin:17px 0 0}html[data-theme="retro"] .content-grid{margin-top:0}html[data-theme="retro"] .matches-panel{padding:8px 7px 12px}html[data-theme="retro"] .panel-heading{padding:9px 9px}html[data-theme="retro"] .panel h2{font-size:1rem}html[data-theme="retro"] .match-row{grid-template-columns:20px minmax(0,1fr) 113px;min-height:43px;gap:3px;padding:3px 2px}html[data-theme="retro"] .match-no{font-size:.8rem}html[data-theme="retro"] .match-name{font-size:.72rem}html[data-theme="retro"] .pick-group{gap:2px}html[data-theme="retro"] .pick{width:36px;height:27px;font-size:.85rem}html[data-theme="retro"] .pick.selected:not(.weighted):before,html[data-theme="retro"] .pick.selected:not(.weighted):after{width:29px;top:12px;left:2px}html[data-theme="retro"] .pick.weighted:after{width:27px;height:22px;left:3px;top:0;border-width:2.5px}html[data-theme="retro"] .sidebar{display:block;padding:10px 8px}html[data-theme="retro"] .sidebar .panel{margin-bottom:12px}html[data-theme="retro"] .fixture-bar{font-size:.62rem}html[data-theme="retro"] .sign-legend{font-size:.59rem}}
+
