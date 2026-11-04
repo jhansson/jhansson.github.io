@@ -121,18 +121,41 @@
     }else match.signs=SIGNS.filter(s=>s===sign||match.signs.includes(s));
     setPickAppearance(button,match,sign);invalidate();
   }
+  let pendingPick=null;
+  function finishPendingPick(toggle=true){
+    if(!pendingPick)return;
+    const pending=pendingPick;pendingPick=null;clearTimeout(pending.timer);
+    if(toggle&&pending.button.isConnected&&pending.product===app.activeProduct)pending.toggle();
+  }
   function makePick(index,sign,match){
     const button=document.createElement('button');button.type='button';setPickAppearance(button,match,sign);
-    let holdTimer=0,clickTimer=0,held=false;
-    button.addEventListener('pointerdown',event=>{if(event.button!==0)return;held=false;holdTimer=setTimeout(()=>{held=true;changePick(index,sign,button,'weight')},550)});
+    const product=app.activeProduct;
+    const toggle=()=>changePick(index,sign,button,'toggle');
+    let holdTimer=0,held=false;
+    button.addEventListener('pointerdown',event=>{
+      if(event.button!==0)return;
+      held=false;
+      holdTimer=setTimeout(()=>{
+        held=true;
+        finishPendingPick(pendingPick?.button!==button);
+        changePick(index,sign,button,'weight');
+      },550);
+    });
     const cancelHold=()=>{clearTimeout(holdTimer);holdTimer=0};
     button.addEventListener('pointerup',cancelHold);button.addEventListener('pointercancel',cancelHold);button.addEventListener('pointerleave',cancelHold);
     button.addEventListener('contextmenu',event=>event.preventDefault());
     button.addEventListener('click',event=>{
       if(held){held=false;event.preventDefault();return}
-      if(event.detail>=2){clearTimeout(clickTimer);clickTimer=0;changePick(index,sign,button,'weight');return}
-      if(event.detail===0){changePick(index,sign,button,'toggle');return}
-      clickTimer=setTimeout(()=>{clickTimer=0;changePick(index,sign,button,'toggle')},400);
+      if(event.detail===0){finishPendingPick();toggle();return}
+      if(pendingPick?.button===button){
+        finishPendingPick(false);
+        changePick(index,sign,button,'weight');
+        return;
+      }
+      finishPendingPick();
+      const pending={button,product,toggle,timer:0};
+      pending.timer=setTimeout(()=>{if(pendingPick===pending)finishPendingPick()},400);
+      pendingPick=pending;
     });
     button.addEventListener('dblclick',event=>event.preventDefault());
     return button;
