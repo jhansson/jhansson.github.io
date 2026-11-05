@@ -6,7 +6,7 @@
   const STORAGE_KEY='tips-reduceraren-v2';
   const LEGACY_KEY='stryktips-reduceraren-v1';
   const THEME_KEY='tips-reduceraren-theme';
-  const MAX_ROWS=10000;
+  const MAX_ROWS=500;
   const POOL_SIZE=12000;
   const $=id=>document.getElementById(id);
   const format=n=>new Intl.NumberFormat('sv-SE').format(n);
@@ -28,7 +28,7 @@
     });
     const global={};for(const s of SIGNS){const r=raw.global?.[s]||{};global[s]={min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}}
     const rules=(Array.isArray(raw.rules)?raw.rules:[]).slice(0,50).map(r=>({id:String(r.id||id()),name:String(r.name||'Egen regel').slice(0,80),matches:String(r.matches||'').slice(0,100),signs:SIGNS.filter(s=>Array.isArray(r.signs)&&r.signs.includes(s)),min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}));
-    return {matches,global,rules,target:numberInRange(raw.target,40,1,MAX_ROWS),drawNumber:raw.drawNumber!=null&&Number.isInteger(Number(raw.drawNumber))?Number(raw.drawNumber):null};
+    return {matches,global,rules,target:Math.min(MAX_ROWS,numberInRange(raw.target,40,1,10000)),drawNumber:raw.drawNumber!=null&&Number.isInteger(Number(raw.drawNumber))?Number(raw.drawNumber):null};
   }
   function normalizeState(raw){
     if(raw?.products){return {activeProduct:PRODUCTS.includes(raw.activeProduct)?raw.activeProduct:PRODUCTS[0],products:Object.fromEntries(PRODUCTS.map(name=>[name,raw.products[name]?normalizeProduct(raw.products[name]):newProduct()]))}}
@@ -59,6 +59,7 @@
     $('svenska-spel-link').href='https://spela.svenskaspel.se/'+(app.activeProduct==='Europatipset'?'europatipset':'stryktipset')+'/externa-systemspel';
     document.querySelectorAll('[data-product]').forEach(btn=>btn.setAttribute('aria-pressed',String(btn.dataset.product===app.activeProduct)));
     $('target').value=current().target;
+    $('target-picker').value=String(current().target);
     renderFixtureInfo();
   }
   function renderFixtureInfo(){
@@ -172,6 +173,21 @@
       row.append(num,name,picks);root.append(row);
     });
   }
+  function makeMobileNumberSelect(input,min,max,onValue){
+    const picker=document.createElement('select');
+    picker.className='mobile-number-select';
+    const description=input.getAttribute('aria-label');
+    if(description)picker.setAttribute('aria-label',description);
+    for(let n=min;n<=max;n++){
+      const option=document.createElement('option');
+      option.value=String(n);option.textContent=String(n);picker.append(option);
+    }
+    picker.value=input.value;
+    input.classList.add('number-input');
+    input.addEventListener('input',()=>{picker.value=input.value;onValue(input.value)});
+    picker.addEventListener('change',()=>{input.value=picker.value;onValue(picker.value)});
+    return picker;
+  }
   function renderGlobals(){
     const root=$('global-rules');root.replaceChildren();
     for(const sign of SIGNS){
@@ -180,7 +196,7 @@
       for(const key of ['min','max']){
         const label=document.createElement('label');label.textContent=key==='min'?'Min':'Max';
         const input=document.createElement('input');input.type='number';input.min=0;input.max=13;input.step=1;input.inputMode='numeric';input.value=current().global[sign][key];input.setAttribute('aria-label',`${key==='min'?'Minst':'Högst'} antal ${title.textContent.toLowerCase().replace('antal ','')}`);
-        input.addEventListener('input',()=>{current().global[sign][key]=input.value;invalidate()});label.append(input);row.append(label);
+        const picker=makeMobileNumberSelect(input,0,13,value=>{current().global[sign][key]=value;invalidate()});label.append(input,picker);row.append(label);
       }
       root.append(row);
     }
@@ -196,7 +212,7 @@
       const matchLabel=document.createElement('label');matchLabel.textContent='Matcher (t.ex. 1-6, 9, 11-13)';const matchInput=document.createElement('input');matchInput.value=rule.matches;matchInput.placeholder='1-13';matchInput.addEventListener('input',()=>{rule.matches=matchInput.value;invalidate()});matchLabel.append(matchInput);fields.append(matchLabel);
       const signLabel=document.createElement('div');signLabel.textContent='Räkna tecken';signLabel.style.cssText='color:#a6bed1;font-size:.69rem';const signs=document.createElement('div');signs.className='custom-signs';
       for(const s of SIGNS){const btn=document.createElement('button');btn.type='button';btn.textContent=s;btn.className='custom-sign'+(rule.signs.includes(s)?' selected':'');btn.setAttribute('aria-pressed',String(rule.signs.includes(s)));btn.addEventListener('click',()=>{rule.signs=SIGNS.filter(x=>x===s?!rule.signs.includes(x):rule.signs.includes(x));btn.classList.toggle('selected',rule.signs.includes(s));btn.setAttribute('aria-pressed',String(rule.signs.includes(s)));invalidate()});signs.append(btn)}signLabel.append(signs);fields.append(signLabel);
-      for(const key of ['min','max']){const label=document.createElement('label');label.textContent=key==='min'?'Min':'Max';const input=document.createElement('input');input.type='number';input.min=0;input.max=13;input.step=1;input.value=rule[key];input.addEventListener('input',()=>{rule[key]=input.value;invalidate()});label.append(input);fields.append(label)}
+      for(const key of ['min','max']){const label=document.createElement('label');label.textContent=key==='min'?'Min':'Max';const input=document.createElement('input');input.type='number';input.min=0;input.max=13;input.step=1;input.value=rule[key];const picker=makeMobileNumberSelect(input,0,13,value=>{rule[key]=value;invalidate()});label.append(input,picker);fields.append(label)}
       card.append(top,fields);root.append(card);
     });
   }
@@ -291,7 +307,7 @@
     const productName=app.activeProduct,product=current();
     let compiled;try{compiled=compile(product)}catch(error){status(error.message,'error');return}
     const target=Number($('target').value);
-    if(!Number.isInteger(target)||target<1||target>MAX_ROWS){status('Ange ett antal mellan 1 och 10 000.','error');return}
+    if(!Number.isInteger(target)||target<1||target>MAX_ROWS){status('Ange ett antal mellan 1 och 500.','error');return}
     product.target=target;invalidate();busy=true;const token=++runId;$('generate').disabled=true;status('Beräknar rader som klarar reglerna …');
     const {choices,constraints}=compiled,pool=[],row=Array(13),stack=[{depth:0,next:0}];let visited=0,eligible=0;
     while(stack.length){
@@ -336,7 +352,11 @@
   setTheme(document.documentElement.dataset.theme==='sport'?'sport':'retro');
   $('reset-signs').addEventListener('click',()=>{current().matches.forEach(m=>{m.signs=[];m.weights=[]});renderMatches();invalidate('Alla tecken rensade. Välj minst ett per match.')});
   $('refresh-fixture').addEventListener('click',refreshFixtures);
-  $('target').addEventListener('input',()=>{current().target=$('target').value;invalidate()});
+  for(let n=1;n<=MAX_ROWS;n++){
+    const option=document.createElement('option');option.value=String(n);option.textContent=String(n);$('target-picker').append(option);
+  }
+  $('target').addEventListener('input',()=>{$('target-picker').value=$('target').value;current().target=$('target').value;invalidate()});
+  $('target-picker').addEventListener('change',()=>{$('target').value=$('target-picker').value;current().target=$('target-picker').value;invalidate()});
   $('add-rule').addEventListener('click',()=>{current().rules.push({id:id(),name:'Ny regel',matches:'1-6',signs:['X'],min:0,max:2});renderRules();invalidate()});
   $('generate').addEventListener('click',generate);
   $('download').addEventListener('click',()=>{if(!result)return;const slug=result.product==='Stryktipset'?'stryktipset':'europatipset';download(slug+'-enkelrader.txt',makeText(result),'text/plain;charset=us-ascii')});

@@ -14,10 +14,10 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Reduceraren">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
   <link rel="stylesheet" href="retro-v3.css?v=3">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='sport'?'sport':'retro'}catch{document.documentElement.dataset.theme='retro'}</script>
-  <script src="app-v2.js?v=4" defer></script>
+  <script src="app-v2.js?v=5" defer></script>
 </head>
 <body>
   <div class="site-shell">
@@ -47,7 +47,7 @@
         <section class="panel overview" aria-labelledby="overview-title">
           <div class="overview-heading"><span class="overview-icon" aria-hidden="true">☘</span><h2 id="overview-title">SYSTEMÖVERSIKT</h2></div>
           <div class="overview-body">
-            <label class="target-row" for="target"><span>Önskat antal rader</span><input id="target" type="number" min="1" max="10000" step="1" inputmode="numeric" value="40"></label>
+            <label class="target-row"><span>Önskat antal rader</span><input id="target" class="number-input" type="number" min="1" max="500" step="1" inputmode="numeric" value="40"><select id="target-picker" class="mobile-number-select" aria-label="Önskat antal rader"></select></label>
             <div class="stat-row"><span>Rader efter regler</span><strong id="eligible">—</strong></div>
             <div class="stat-row"><span>Valda rader</span><strong id="count" class="accent">—</strong></div>
             <div class="stat-row"><span>Kostnad <small>1 kr/rad</small></span><strong id="price">—</strong></div>
