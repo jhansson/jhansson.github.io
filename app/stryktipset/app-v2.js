@@ -14,9 +14,9 @@
 
   function newProduct(){
     return {
-      matches:Array.from({length:13},(_,i)=>({name:'',signs:i<6?['1','X']:['1'],weights:[]})),
-      global:{'1':{min:0,max:13},'X':{min:0,max:4},'2':{min:0,max:3}},
-      rules:[],target:40,drawNumber:null
+      matches:Array.from({length:13},()=>({name:'',signs:[],weights:[]})),
+      global:{'1':{min:0,max:13},'X':{min:0,max:13},'2':{min:0,max:13}},
+      rules:[],target:'',drawNumber:null
     };
   }
   function numberInRange(value,fallback,min,max){const n=Number(value);return Number.isInteger(n)&&n>=min&&n<=max?n:fallback}
@@ -28,7 +28,7 @@
     });
     const global={};for(const s of SIGNS){const r=raw.global?.[s]||{};global[s]={min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}}
     const rules=(Array.isArray(raw.rules)?raw.rules:[]).slice(0,50).map(r=>({id:String(r.id||id()),name:String(r.name||'Egen regel').slice(0,80),matches:String(r.matches||'').slice(0,100),signs:SIGNS.filter(s=>Array.isArray(r.signs)&&r.signs.includes(s)),min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}));
-    return {matches,global,rules,target:Math.min(MAX_ROWS,numberInRange(raw.target,40,1,10000)),drawNumber:raw.drawNumber!=null&&Number.isInteger(Number(raw.drawNumber))?Number(raw.drawNumber):null};
+    return {matches,global,rules,target:raw.target===''?'':Math.min(MAX_ROWS,numberInRange(raw.target,40,1,10000)),drawNumber:raw.drawNumber!=null&&Number.isInteger(Number(raw.drawNumber))?Number(raw.drawNumber):null};
   }
   function normalizeState(raw){
     if(raw?.products){return {activeProduct:PRODUCTS.includes(raw.activeProduct)?raw.activeProduct:PRODUCTS[0],products:Object.fromEntries(PRODUCTS.map(name=>[name,raw.products[name]?normalizeProduct(raw.products[name]):newProduct()]))}}
@@ -91,7 +91,7 @@
       const product=app.products[name],fixture=incoming[name];
       if(product.drawNumber!==fixture.drawNumber){
         const isNewRound=product.drawNumber!==null;
-        product.matches.forEach((match,i)=>{match.name=fixture.names[i];if(isNewRound){match.signs=['1'];match.weights=[]}});
+        product.matches.forEach((match,i)=>{match.name=fixture.names[i];if(isNewRound){match.signs=[];match.weights=[]}});
         product.drawNumber=fixture.drawNumber;
       }else if(product.matches.every(m=>!m.name.trim()))product.matches.forEach((m,i)=>m.name=fixture.names[i]);
     }
@@ -331,7 +331,7 @@
     busy=false;$('generate').disabled=false;if(token!==runId||guarantee===null)return;
     result={product:productName,rows};
     $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('guarantee').textContent=guarantee+' rätt';$('download').disabled=false;$('copy').disabled=false;
-    $('preview').textContent=makeText(result,false,200)+(rows.length>10?'\n… och '+format(rows.length-10)+' rader till':'');
+    $('preview').textContent=makeText(result,false);
     const weighted=product.matches.some(m=>m.weights.length);
     const message=eligible<target?`Endast ${format(eligible)} rader klarar reglerna. Alla valdes.`:`${format(rows.length)} av ${format(eligible)} giltiga rader valda${weighted?' med viktade tecken prioriterade':''}.`;
     status(message,'good');

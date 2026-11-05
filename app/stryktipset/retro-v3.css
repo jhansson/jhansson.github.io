@@ -59,12 +59,16 @@ html[data-theme="retro"] .match-name{color:#102b50;font-family:"Trebuchet MS",Ar
 html[data-theme="retro"] .match-name:focus{background:#fff8e9;border-color:#ad343a}
 html[data-theme="retro"] .pick-group{gap:8px}
 html[data-theme="retro"] .pick{width:49px;height:31px;clip-path:none;border:1.5px solid #bd2d35;border-radius:3px;background:#fff5dd99;color:#bb3035;font-family:Georgia,serif;font-size:1.04rem;line-height:1;box-shadow:inset 0 0 0 1px #fdf4dc;overflow:visible}
-html[data-theme="retro"] .pick:hover{filter:none;background:#fff9e9;border-color:#174a88}
+html[data-theme="retro"] .pick:hover{filter:none;border-color:#174a88}
 html[data-theme="retro"] .pick.selected{background:#fff5dd99;color:#bb3035}
-html[data-theme="retro"] .pick.selected:not(.weighted):before,html[data-theme="retro"] .pick.selected:not(.weighted):after{content:"";position:absolute;z-index:2;left:3px;top:14px;width:41px;height:2.5px;border-radius:3px;background:#194b9a;transform:rotate(43deg);box-shadow:0 1px 0 #567bb675}
-html[data-theme="retro"] .pick.selected:not(.weighted):after{transform:rotate(-48deg);width:43px;left:2px}
-html[data-theme="retro"] .pick.weighted{background:#fff6e4;color:#ad2730;box-shadow:inset 0 0 0 1px #fdf4dc}
-html[data-theme="retro"] .pick.weighted:after{content:"";position:absolute;z-index:2;width:35px;height:27px;left:5px;top:0;border:3px solid #174b94;border-radius:50%;transform:rotate(-14deg);box-shadow:1px 0 0 #446eae55}
+html[data-theme="retro"] .pick.selected:not(.weighted):before,html[data-theme="retro"] .pick.selected:not(.weighted):after{content:"";position:absolute;z-index:2;left:3px;top:14px;width:41px;height:2.5px;border-radius:3px;background:#194b9a;transform:translateY(var(--mark-y-a,0px)) rotate(var(--mark-angle-a,43deg)) scaleX(var(--mark-scale-a,1));box-shadow:0 1px 0 #567bb675}
+html[data-theme="retro"] .pick.selected:not(.weighted):after{transform:translateY(var(--mark-y-b,0px)) rotate(var(--mark-angle-b,-48deg)) scaleX(var(--mark-scale-b,1));width:43px;left:2px}
+html[data-theme="retro"] .pick.weighted{background:#fff5dd99;color:#ad2730;box-shadow:inset 0 0 0 1px #fdf4dc}
+html[data-theme="retro"] .pick.weighted:after{content:"";position:absolute;z-index:2;width:35px;height:27px;left:5px;top:0;border:3px solid #174b94;border-radius:50%;transform:rotate(var(--ring-angle,-14deg)) scale(var(--ring-scale,1));box-shadow:1px 0 0 #446eae55}
+html[data-theme="retro"] .match-row:nth-child(5n+1){--mark-angle-a:40deg;--mark-angle-b:-45deg;--mark-scale-a:.97;--mark-scale-b:1.02;--ring-angle:-11deg;--ring-scale:.98}
+html[data-theme="retro"] .match-row:nth-child(5n+2){--mark-angle-a:45deg;--mark-angle-b:-50deg;--mark-y-a:1px;--mark-scale-a:1.03;--ring-angle:-17deg;--ring-scale:1.03}
+html[data-theme="retro"] .match-row:nth-child(5n+3){--mark-angle-a:42deg;--mark-angle-b:-46deg;--mark-y-b:-1px;--mark-scale-b:.96;--ring-angle:-8deg;--ring-scale:.97}
+html[data-theme="retro"] .match-row:nth-child(5n+4){--mark-angle-a:46deg;--mark-angle-b:-49deg;--mark-y-a:-1px;--mark-scale-a:1.01;--ring-angle:-19deg;--ring-scale:1.02}
 html[data-theme="retro"] .pick .star{display:none}
 html[data-theme="retro"] .pick:focus-visible{outline:3px solid #164b91;outline-offset:2px;border-radius:3px}
 html[data-theme="retro"] .panel-foot{color:#395a77;font-family:Georgia,serif;font-style:italic;padding:12px 4px 2px}

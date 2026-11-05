@@ -14,10 +14,10 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Reduceraren">
-  <link rel="stylesheet" href="styles.css?v=5">
-  <link rel="stylesheet" href="retro-v3.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="retro-v3.css?v=6">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='sport'?'sport':'retro'}catch{document.documentElement.dataset.theme='retro'}</script>
-  <script src="app-v2.js?v=5" defer></script>
+  <script src="app-v2.js?v=6" defer></script>
 </head>
 <body>
   <div class="site-shell">
@@ -36,9 +36,9 @@
 
     <div class="content-grid">
       <section class="panel matches-panel" aria-labelledby="matches-title">
-        <div class="panel-heading"><div><div class="heading-kicker">01 / KUPONGEN</div><h2 id="matches-title"><span aria-hidden="true">⚽</span> MATCHER <small>(13 ST)</small></h2></div><button id="reset-signs" type="button" class="text-button">Rensa tecken</button></div>
+        <div class="panel-heading"><div><div class="heading-kicker">01 / KUPONGEN</div><h2 id="matches-title"><span aria-hidden="true">⚽</span> MATCHER</h2></div><button id="reset-signs" type="button" class="text-button">Rensa tecken</button></div>
         <div class="fixture-bar"><span class="live-dot" aria-hidden="true"></span><span id="fixture-info">Hämtar matchlistan …</span><button id="refresh-fixture" type="button" aria-label="Läs matchfilen igen" title="Läs matchfilen igen">↻</button></div>
-        <div class="sign-legend"><span>Enkelt tryck: välj/ta bort</span><span><span class="legend-star">★</span> Dubbeltryck: vikta</span></div>
+        <div class="sign-legend"><span><span class="legend-star">★</span> Dubbeltryck: vikta</span></div>
         <div id="match-list" class="match-list"></div>
         <p class="panel-foot">En viktad markering prioriteras när färre rader väljs. Viktning ändrar aldrig dina regler eller antalet möjliga rader.</p>
       </section>
@@ -47,7 +47,7 @@
         <section class="panel overview" aria-labelledby="overview-title">
           <div class="overview-heading"><span class="overview-icon" aria-hidden="true">☘</span><h2 id="overview-title">SYSTEMÖVERSIKT</h2></div>
           <div class="overview-body">
-            <label class="target-row"><span>Önskat antal rader</span><input id="target" class="number-input" type="number" min="1" max="500" step="1" inputmode="numeric" value="40"><select id="target-picker" class="mobile-number-select" aria-label="Önskat antal rader"></select></label>
+            <label class="target-row"><span>Önskat antal rader</span><input id="target" class="number-input" type="number" min="1" max="500" step="1" inputmode="numeric" placeholder="Välj antal"><select id="target-picker" class="mobile-number-select" aria-label="Önskat antal rader"><option value="">Välj antal</option></select></label>
             <div class="stat-row"><span>Rader efter regler</span><strong id="eligible">—</strong></div>
             <div class="stat-row"><span>Valda rader</span><strong id="count" class="accent">—</strong></div>
             <div class="stat-row"><span>Kostnad <small>1 kr/rad</small></span><strong id="price">—</strong></div>
