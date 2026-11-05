@@ -49,7 +49,7 @@
   function invalidate(message='Inställningarna har ändrats. Skapa rader igen.'){
     if(busy)runId++;
     result=null;$('download').disabled=true;$('copy').disabled=true;
-    $('eligible').textContent='—';$('count').textContent='—';$('price').textContent='—';
+    $('eligible').textContent='—';$('count').textContent='—';$('price').textContent='—';$('guarantee').textContent='—';
     $('preview').textContent='Inga rader skapade ännu.';
     status(message);persist();
   }
@@ -249,6 +249,43 @@
   function chooseWeighted(pool,target,matches){
     return pool.map(row=>({row,key:-Math.log(Math.max(Number.MIN_VALUE,Math.random()))/Math.pow(3,preference(row,matches))})).sort((a,b)=>a.key-b.key).slice(0,target).map(x=>x.row);
   }
+  async function calculateGuarantee(rows,choices,token){
+    const strides=Array(13),radices=choices.map(choice=>choice.length);
+    let total=1;
+    for(let i=0;i<13;i++){strides[i]=total;total*=radices[i]}
+    const distance=new Uint8Array(total);
+    distance.fill(255);
+    for(const row of rows){
+      let index=0;
+      for(let i=0;i<13;i++)index+=choices[i].indexOf(row[i])*strides[i];
+      distance[index]=0;
+    }
+    for(let i=0;i<13;i++){
+      const step=strides[i],radix=radices[i],block=step*radix;
+      if(radix===1)continue;
+      for(let base=0;base<total;base+=block){
+        for(let offset=0;offset<step;offset++){
+          const first=base+offset;
+          let best=255;
+          for(let digit=0;digit<radix;digit++){
+            const value=distance[first+digit*step];
+            if(value<best)best=value;
+          }
+          if(best===255)continue;
+          const candidate=best+1;
+          for(let digit=0;digit<radix;digit++){
+            const index=first+digit*step;
+            if(distance[index]>candidate)distance[index]=candidate;
+          }
+        }
+      }
+      await new Promise(resolve=>setTimeout(resolve,0));
+      if(token!==runId)return null;
+    }
+    let worstDistance=0;
+    for(const value of distance)if(value>worstDistance)worstDistance=value;
+    return 13-worstDistance;
+  }
   async function generate(){
     if(busy)return;
     const productName=app.activeProduct,product=current();
@@ -272,9 +309,12 @@
     if(eligible<=target)rows=pool;
     else if(target<=200){status('Väljer spridda rader …');rows=await chooseDiverse(pool,target,product.matches,token)}
     else rows=chooseWeighted(pool,target,product.matches);
-    busy=false;$('generate').disabled=false;if(token!==runId||!rows)return;
+    if(token!==runId||!rows){busy=false;$('generate').disabled=false;return}
+    status('Beräknar rättsgaranti …');
+    const guarantee=await calculateGuarantee(rows,choices,token);
+    busy=false;$('generate').disabled=false;if(token!==runId||guarantee===null)return;
     result={product:productName,rows};
-    $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('download').disabled=false;$('copy').disabled=false;
+    $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('guarantee').textContent=guarantee+' rätt';$('download').disabled=false;$('copy').disabled=false;
     $('preview').textContent=makeText(result,false,200)+(rows.length>10?'\n… och '+format(rows.length-10)+' rader till':'');
     const weighted=product.matches.some(m=>m.weights.length);
     const message=eligible<target?`Endast ${format(eligible)} rader klarar reglerna. Alla valdes.`:`${format(rows.length)} av ${format(eligible)} giltiga rader valda${weighted?' med viktade tecken prioriterade':''}.`;
