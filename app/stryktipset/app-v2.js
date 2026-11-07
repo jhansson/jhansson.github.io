@@ -48,7 +48,7 @@
   function status(message,kind=''){const el=$('status');el.textContent=message;el.className='status'+(kind?' '+kind:'')}
   function invalidate(message='Inställningarna har ändrats. Skapa rader igen.'){
     if(busy)runId++;
-    result=null;$('download').disabled=true;$('copy').disabled=true;
+    result=null;clearDistribution();$('download').disabled=true;$('copy').disabled=true;
     $('eligible').textContent='—';$('count').textContent='—';$('price').textContent='—';$('guarantee').textContent='—';
     $('preview').textContent='Inga rader skapade ännu.';
     status(message);persist();
@@ -87,15 +87,19 @@
       incoming[name]=fixture;
     }
     fixtures=incoming;fixtureStatus='live';
+    let activeRoundChanged=false;
     for(const name of PRODUCTS){
       const product=app.products[name],fixture=incoming[name];
       if(product.drawNumber!==fixture.drawNumber){
         const isNewRound=product.drawNumber!==null;
+        if(isNewRound&&name===app.activeProduct)activeRoundChanged=true;
         product.matches.forEach((match,i)=>{match.name=fixture.names[i];if(isNewRound){match.signs=[];match.weights=[]}});
         product.drawNumber=fixture.drawNumber;
       }else if(product.matches.every(m=>!m.name.trim()))product.matches.forEach((m,i)=>m.name=fixture.names[i]);
     }
     persist();renderMatches();renderFixtureInfo();
+    if(activeRoundChanged)invalidate('Ny omgång. Välj tecken och skapa rader igen.');
+    else if(result?.product===app.activeProduct)renderDistribution(result.rows);
   }
   async function refreshFixtures(){
     fixtureStatus='loading';renderFixtureInfo();
@@ -107,10 +111,35 @@
     const selected=match.signs.includes(sign),weighted=match.weights.includes(sign);
     btn.className='pick'+(selected?' selected':'')+(weighted?' weighted':'');
     btn.setAttribute('aria-pressed',String(selected));
-    btn.setAttribute('aria-label',`${sign}: ${weighted?'viktad':selected?'vald':'inte vald'}. Enkelt tryck väljer eller tar bort, dubbeltryck eller långt tryck viktar.`);
-    btn.title=weighted?'Viktad '+sign+' – dubbeltryck eller håll inne för att ta bort viktning':'Dubbeltryck eller håll inne för att vikta '+sign;
-    btn.replaceChildren(document.createTextNode(sign));
+    btn.dataset.baseLabel=`${sign}: ${weighted?'viktad':selected?'vald':'inte vald'}. Enkelt tryck väljer eller tar bort, dubbeltryck eller långt tryck viktar.`;
+    btn.dataset.baseTitle=weighted?'Viktad '+sign+' – dubbeltryck eller håll inne för att ta bort viktning':'Dubbeltryck eller håll inne för att vikta '+sign;
+    btn.setAttribute('aria-label',btn.dataset.baseLabel);btn.title=btn.dataset.baseTitle;
+    const fill=document.createElement('span');fill.className='distribution-fill';fill.setAttribute('aria-hidden','true');
+    const glyph=document.createElement('span');glyph.className='pick-sign';glyph.textContent=sign;
+    btn.replaceChildren(fill,glyph);
     if(weighted){const star=document.createElement('span');star.className='star';star.textContent='★';star.setAttribute('aria-hidden','true');btn.append(star)}
+  }
+  function clearDistribution(){
+    $('match-list').querySelectorAll('.pick').forEach(button=>{
+      button.classList.remove('has-distribution');
+      button.style.removeProperty('--distribution');
+      button.setAttribute('aria-label',button.dataset.baseLabel);
+      button.title=button.dataset.baseTitle;
+    });
+  }
+  function renderDistribution(rows){
+    const counts=Array.from({length:13},()=>[0,0,0]);
+    for(const row of rows)for(let match=0;match<13;match++)counts[match][SIGNS.indexOf(row[match])]++;
+    $('match-list').querySelectorAll('.match-row').forEach((matchRow,match)=>{
+      matchRow.querySelectorAll('.pick').forEach((button,sign)=>{
+        const percent=counts[match][sign]*100/rows.length;
+        button.style.setProperty('--distribution',percent.toFixed(2)+'%');
+        button.classList.add('has-distribution');
+        const description=Math.round(percent)+' procent av skapade rader.';
+        button.setAttribute('aria-label',button.dataset.baseLabel+' '+description);
+        button.title=button.dataset.baseTitle+' · '+description;
+      });
+    });
   }
   function changePick(index,sign,button,mode){
     const match=current().matches[index];
@@ -329,7 +358,7 @@
     status('Beräknar rättsgaranti …');
     const guarantee=await calculateGuarantee(rows,choices,token);
     busy=false;$('generate').disabled=false;if(token!==runId||guarantee===null)return;
-    result={product:productName,rows};
+    result={product:productName,rows};renderDistribution(rows);
     $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('guarantee').textContent=guarantee+' rätt';$('download').disabled=false;$('copy').disabled=false;
     $('preview').textContent=makeText(result,false);
     const weighted=product.matches.some(m=>m.weights.length);
