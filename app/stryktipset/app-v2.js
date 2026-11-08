@@ -211,6 +211,9 @@
       previewStrength=Math.round(Math.max(MIN_WEIGHT,Math.min(MAX_WEIGHT,startStrength+(startY-event.clientY)/40))*10)/10;
       showStrength(event.clientY);
     });
+    button.addEventListener('touchmove',event=>{
+      if(adjusting&&event.cancelable)event.preventDefault();
+    },{passive:false});
     const finishPointer=(event,commit)=>{
       if(activePointer!==event.pointerId)return;
       clearTimeout(holdTimer);holdTimer=0;activePointer=null;
