@@ -21,3 +21,17 @@
 }
 
 .weight-bubble{position:fixed;z-index:1000;transform:translate(-50%,-100%);pointer-events:none;padding:8px 11px;border-radius:8px;background:#071d36;color:#fff;border:2px solid var(--lime);box-shadow:0 8px 18px #0007;font:900 1rem/1.1 "Segoe UI",Arial,sans-serif;white-space:nowrap}html[data-theme="retro"] .weight-bubble{background:#f7e9d0;color:#ac2930;border-color:#194b80;font-family:Georgia,serif}html[data-theme="retro"][data-product="europatipset"] .weight-bubble{color:#276144;border-color:#276144}
+
+.custom-match-field{grid-column:1/-1;border:0;margin:0;padding:0;min-width:0}
+.custom-match-field legend,.custom-sign-field{color:#a6bed1;font-size:.69rem}
+.custom-match-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin-top:5px}
+.custom-match{min-width:0;min-height:34px;padding:0;border:1px solid #4b6b86;border-radius:5px;background:#173653;color:#d6e4ef;font-size:.8rem;font-weight:850;line-height:1}
+.custom-match:hover{border-color:var(--lime)}
+.custom-match.selected{background:var(--lime);border-color:var(--lime);color:#061426}
+.custom-match:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.custom-sign-field{grid-column:1/-1}
+html[data-theme="sport"][data-product="europatipset"] .custom-match.selected{background:#86d7a1;border-color:#86d7a1;color:#082d1d}
+html[data-theme="retro"] .custom-match-field legend,html[data-theme="retro"] .custom-sign-field{color:#3a5875}
+html[data-theme="retro"] .custom-match{background:#f8ebd3;color:#b42c33;border:1px solid #bb3038;border-radius:2px;font-family:Georgia,serif}
+html[data-theme="retro"] .custom-match.selected{background:#164b83;border-color:#164b83;color:#fff4dc}
+html[data-theme="retro"][data-product="europatipset"] .custom-match.selected{background:#31704a;border-color:#31704a;color:#fff4dc}

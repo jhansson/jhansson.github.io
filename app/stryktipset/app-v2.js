@@ -12,6 +12,7 @@
   const POOL_SIZE=12000;
   const $=id=>document.getElementById(id);
   const format=n=>new Intl.NumberFormat('sv-SE').format(n);
+  const todayStamp=()=>{const date=new Date(),pad=n=>String(n).padStart(2,'0');return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`};
   const id=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 
   function newProduct(){
@@ -22,6 +23,11 @@
     };
   }
   function numberInRange(value,fallback,min,max){const n=Number(value);return Number.isInteger(n)&&n>=min&&n<=max?n:fallback}
+  function normalizeRuleMatches(raw){
+    if(Array.isArray(raw))return [...new Set(raw.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=13))].sort((a,b)=>a-b);
+    if(typeof raw==='string'){try{return parseMatches(raw).map(i=>i+1)}catch{return []}}
+    return [];
+  }
   function normalizeProduct(raw){
     if(!raw||!Array.isArray(raw.matches)||raw.matches.length!==13)throw Error('Upplägget måste ha 13 matcher.');
     const matches=raw.matches.map(m=>{
@@ -34,7 +40,7 @@
       return {name:String(m?.name||'').slice(0,100),signs,weights};
     });
     const global={};for(const s of SIGNS){const r=raw.global?.[s]||{};global[s]={min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}}
-    const rules=(Array.isArray(raw.rules)?raw.rules:[]).slice(0,50).map(r=>({id:String(r.id||id()),name:String(r.name||'Egen regel').slice(0,80),matches:String(r.matches||'').slice(0,100),signs:SIGNS.filter(s=>Array.isArray(r.signs)&&r.signs.includes(s)),min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}));
+    const rules=(Array.isArray(raw.rules)?raw.rules:[]).slice(0,50).map(r=>({id:String(r.id||id()),name:String(r.name||'Egen regel').slice(0,80),matches:normalizeRuleMatches(r.matches),signs:SIGNS.filter(s=>Array.isArray(r.signs)&&r.signs.includes(s)),min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}));
     return {matches,global,rules,target:raw.target===''?'':Math.min(MAX_ROWS,numberInRange(raw.target,40,1,10000)),drawNumber:raw.drawNumber!=null&&Number.isInteger(Number(raw.drawNumber))?Number(raw.drawNumber):null};
   }
   function normalizeState(raw){
@@ -281,8 +287,26 @@
       const title=document.createElement('input');title.value=rule.name;title.maxLength=80;title.setAttribute('aria-label','Regelns namn');title.addEventListener('input',()=>{rule.name=title.value;persist()});
       const remove=document.createElement('button');remove.type='button';remove.className='remove-rule';remove.textContent='×';remove.setAttribute('aria-label','Ta bort '+rule.name);remove.addEventListener('click',()=>{current().rules=current().rules.filter(r=>r.id!==rule.id);renderRules();invalidate()});top.append(title,remove);
       const fields=document.createElement('div');fields.className='custom-fields';
-      const matchLabel=document.createElement('label');matchLabel.textContent='Matcher (t.ex. 1-6, 9, 11-13)';const matchInput=document.createElement('input');matchInput.value=rule.matches;matchInput.placeholder='1-13';matchInput.addEventListener('input',()=>{rule.matches=matchInput.value;invalidate()});matchLabel.append(matchInput);fields.append(matchLabel);
-      const signLabel=document.createElement('div');signLabel.textContent='Räkna tecken';signLabel.style.cssText='color:#a6bed1;font-size:.69rem';const signs=document.createElement('div');signs.className='custom-signs';
+      const matchField=document.createElement('fieldset');matchField.className='custom-match-field';
+      const matchLegend=document.createElement('legend');matchLegend.textContent='Matcher';
+      const matchGrid=document.createElement('div');matchGrid.className='custom-match-grid';
+      for(let number=1;number<=13;number++){
+        const button=document.createElement('button');button.type='button';button.textContent=number;
+        button.className='custom-match'+(rule.matches.includes(number)?' selected':'');
+        button.setAttribute('aria-pressed',String(rule.matches.includes(number)));
+        const matchName=current().matches[number-1].name;
+        button.setAttribute('aria-label','Match '+number+(matchName?': '+matchName:''));
+        button.title=matchName||'Match '+number;
+        button.addEventListener('click',()=>{
+          rule.matches=rule.matches.includes(number)?rule.matches.filter(n=>n!==number):[...rule.matches,number].sort((a,b)=>a-b);
+          button.classList.toggle('selected',rule.matches.includes(number));
+          button.setAttribute('aria-pressed',String(rule.matches.includes(number)));
+          invalidate();
+        });
+        matchGrid.append(button);
+      }
+      matchField.append(matchLegend,matchGrid);fields.append(matchField);
+      const signLabel=document.createElement('div');signLabel.className='custom-sign-field';signLabel.textContent='Räkna tecken';const signs=document.createElement('div');signs.className='custom-signs';
       for(const s of SIGNS){const btn=document.createElement('button');btn.type='button';btn.textContent=s;btn.className='custom-sign'+(rule.signs.includes(s)?' selected':'');btn.setAttribute('aria-pressed',String(rule.signs.includes(s)));btn.addEventListener('click',()=>{rule.signs=SIGNS.filter(x=>x===s?!rule.signs.includes(x):rule.signs.includes(x));btn.classList.toggle('selected',rule.signs.includes(s));btn.setAttribute('aria-pressed',String(rule.signs.includes(s)));invalidate()});signs.append(btn)}signLabel.append(signs);fields.append(signLabel);
       for(const key of ['min','max']){const label=document.createElement('label');label.textContent=key==='min'?'Min':'Max';const input=document.createElement('input');input.type='number';input.min=0;input.max=13;input.step=1;input.value=rule[key];const picker=makeMobileNumberSelect(input,0,13,value=>{rule[key]=value;invalidate()});label.append(input,picker);fields.append(label)}
       card.append(top,fields);root.append(card);
@@ -300,10 +324,11 @@
     const choices=product.matches.map((m,i)=>{if(!m.signs.length)throw Error('Välj minst ett tecken för match '+(i+1)+'.');return SIGNS.filter(s=>m.signs.includes(s))});
     const constraints=[];
     for(const sign of SIGNS)constraints.push({name:'Antal '+sign,indices:Array.from({length:13},(_,i)=>i),signs:[sign],min:Number(product.global[sign].min),max:Number(product.global[sign].max)});
-    for(const rule of product.rules)constraints.push({name:rule.name||'Egen regel',indices:parseMatches(rule.matches),signs:rule.signs,min:Number(rule.min),max:Number(rule.max)});
+    for(const rule of product.rules)constraints.push({name:rule.name||'Egen regel',indices:rule.matches.map(number=>number-1),signs:rule.signs,min:Number(rule.min),max:Number(rule.max)});
     for(const c of constraints){
+      if(!c.indices.length)throw Error(c.name+': välj minst en match.');
       if(!c.signs.length)throw Error(c.name+': välj minst ett tecken.');
-      if(!Number.isInteger(c.min)||!Number.isInteger(c.max)||c.min<0||c.max>13||c.min>c.max||c.max>c.indices.length)throw Error(c.name+': kontrollera min och max.');
+      if(!Number.isInteger(c.min)||!Number.isInteger(c.max)||c.min<0||c.max>13||c.min>c.max)throw Error(c.name+': kontrollera min och max.');
       const possible=c.indices.filter(i=>choices[i].some(s=>c.signs.includes(s))).length;
       const forced=c.indices.filter(i=>choices[i].every(s=>c.signs.includes(s))).length;
       if(c.min>possible||c.max<forced)throw Error(c.name+': regeln kan inte uppfyllas med valda tecken.');
@@ -441,9 +466,9 @@
   }
   $('target').addEventListener('input',()=>{$('target-picker').value=$('target').value;current().target=$('target').value;invalidate()});
   $('target-picker').addEventListener('change',()=>{$('target').value=$('target-picker').value;current().target=$('target-picker').value;invalidate()});
-  $('add-rule').addEventListener('click',()=>{current().rules.push({id:id(),name:'Ny regel',matches:'1-6',signs:['X'],min:0,max:2});renderRules();invalidate()});
+  $('add-rule').addEventListener('click',()=>{current().rules.push({id:id(),name:'Ny regel',matches:[],signs:['X'],min:0,max:2});renderRules();invalidate()});
   $('generate').addEventListener('click',generate);
-  $('download').addEventListener('click',()=>{if(!result)return;const slug=result.product==='Stryktipset'?'stryktipset':'europatipset';download(slug+'-enkelrader.txt',makeText(result),'text/plain;charset=us-ascii')});
+  $('download').addEventListener('click',()=>{if(!result)return;const slug=result.product==='Stryktipset'?'stryktipset':'europatipset';download(slug+'-enkelrader-'+todayStamp()+'.txt',makeText(result),'text/plain;charset=us-ascii')});
   $('copy').addEventListener('click',async()=>{if(!result)return;try{await navigator.clipboard.writeText(makeText(result,false));status('Raderna kopierades till urklipp.','good')}catch{status('Det gick inte att kopiera. Ladda ned textfilen i stället.','error')}});
 
   renderAll();refreshFixtures();
