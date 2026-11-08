@@ -110,7 +110,7 @@
   }
   async function refreshFixtures(){
     fixtureStatus='loading';renderFixtureInfo();
-    try{const response=await fetch('./fixtures.json',{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);applyFixtures(await response.json())}
+    try{const response=await fetch('./fixtures.json?fresh='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);applyFixtures(await response.json())}
     catch(error){fixtureStatus='error';renderFixtureInfo();status('Matchlistan kunde inte hämtas: '+error.message,'error')}
   }
 
