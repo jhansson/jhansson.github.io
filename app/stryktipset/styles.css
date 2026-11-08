@@ -35,3 +35,8 @@ html[data-theme="retro"] .custom-match-field legend,html[data-theme="retro"] .cu
 html[data-theme="retro"] .custom-match{background:#f8ebd3;color:#b42c33;border:1px solid #bb3038;border-radius:2px;font-family:Georgia,serif}
 html[data-theme="retro"] .custom-match.selected{background:#164b83;border-color:#164b83;color:#fff4dc}
 html[data-theme="retro"][data-product="europatipset"] .custom-match.selected{background:#31704a;border-color:#31704a;color:#fff4dc}
+
+/* Keep the generated-row share visible inside each sport pick state. */
+html[data-theme="sport"] .pick.selected:not(.weighted) .distribution-fill{background:#7da81c}
+html[data-theme="sport"][data-product="europatipset"] .pick.selected:not(.weighted) .distribution-fill{background:#4b9848}
+html[data-theme="sport"] .pick.weighted .distribution-fill{background:#ba741b}
