@@ -7,6 +7,8 @@
   const LEGACY_KEY='stryktips-reduceraren-v1';
   const THEME_KEY='tips-reduceraren-theme';
   const MAX_ROWS=500;
+  const DEFAULT_WEIGHT=3,MIN_WEIGHT=1,MAX_WEIGHT=5;
+  const weightLabel=value=>value.toFixed(1).replace('.',',')+'×';
   const POOL_SIZE=12000;
   const $=id=>document.getElementById(id);
   const format=n=>new Intl.NumberFormat('sv-SE').format(n);
@@ -14,7 +16,7 @@
 
   function newProduct(){
     return {
-      matches:Array.from({length:13},()=>({name:'',signs:[],weights:[]})),
+      matches:Array.from({length:13},()=>({name:'',signs:[],weights:{}})),
       global:{'1':{min:0,max:13},'X':{min:0,max:13},'2':{min:0,max:13}},
       rules:[],target:'',drawNumber:null
     };
@@ -24,7 +26,12 @@
     if(!raw||!Array.isArray(raw.matches)||raw.matches.length!==13)throw Error('Upplägget måste ha 13 matcher.');
     const matches=raw.matches.map(m=>{
       const signs=SIGNS.filter(s=>Array.isArray(m?.signs)&&m.signs.includes(s));
-      return {name:String(m?.name||'').slice(0,100),signs,weights:SIGNS.filter(s=>signs.includes(s)&&Array.isArray(m?.weights)&&m.weights.includes(s))};
+      const weights={};
+      for(const sign of signs){
+        const raw=Array.isArray(m?.weights)?m.weights.includes(sign)?DEFAULT_WEIGHT:null:m?.weights?.[sign];
+        if(raw!=null&&Number.isFinite(Number(raw)))weights[sign]=Math.round(Math.max(MIN_WEIGHT,Math.min(MAX_WEIGHT,Number(raw)))*10)/10;
+      }
+      return {name:String(m?.name||'').slice(0,100),signs,weights};
     });
     const global={};for(const s of SIGNS){const r=raw.global?.[s]||{};global[s]={min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}}
     const rules=(Array.isArray(raw.rules)?raw.rules:[]).slice(0,50).map(r=>({id:String(r.id||id()),name:String(r.name||'Egen regel').slice(0,80),matches:String(r.matches||'').slice(0,100),signs:SIGNS.filter(s=>Array.isArray(r.signs)&&r.signs.includes(s)),min:numberInRange(r.min,0,0,13),max:numberInRange(r.max,13,0,13)}));
@@ -93,7 +100,7 @@
       if(product.drawNumber!==fixture.drawNumber){
         const isNewRound=product.drawNumber!==null;
         if(isNewRound&&name===app.activeProduct)activeRoundChanged=true;
-        product.matches.forEach((match,i)=>{match.name=fixture.names[i];if(isNewRound){match.signs=[];match.weights=[]}});
+        product.matches.forEach((match,i)=>{match.name=fixture.names[i];if(isNewRound){match.signs=[];match.weights={}}});
         product.drawNumber=fixture.drawNumber;
       }else if(product.matches.every(m=>!m.name.trim()))product.matches.forEach((m,i)=>m.name=fixture.names[i]);
     }
@@ -108,11 +115,11 @@
   }
 
   function setPickAppearance(btn,match,sign){
-    const selected=match.signs.includes(sign),weighted=match.weights.includes(sign);
+    const selected=match.signs.includes(sign),strength=match.weights[sign],weighted=strength!==undefined;
     btn.className='pick'+(selected?' selected':'')+(weighted?' weighted':'');
     btn.setAttribute('aria-pressed',String(selected));
-    btn.dataset.baseLabel=`${sign}: ${weighted?'viktad':selected?'vald':'inte vald'}. Enkelt tryck väljer eller tar bort, dubbeltryck eller långt tryck viktar.`;
-    btn.dataset.baseTitle=weighted?'Viktad '+sign+' – dubbeltryck eller håll inne för att ta bort viktning':'Dubbeltryck eller håll inne för att vikta '+sign;
+    btn.dataset.baseLabel=`${sign}: ${weighted?'viktad '+weightLabel(strength):selected?'vald':'inte vald'}. Dubbeltryck växlar viktning, håll och dra ändrar styrkan.`;
+    btn.dataset.baseTitle=weighted?'Viktad '+sign+' '+weightLabel(strength)+' · dubbeltryck för att ta bort':'Dubbeltryck för '+weightLabel(DEFAULT_WEIGHT)+' eller håll och dra';
     btn.setAttribute('aria-label',btn.dataset.baseLabel);btn.title=btn.dataset.baseTitle;
     const fill=document.createElement('span');fill.className='distribution-fill';fill.setAttribute('aria-hidden','true');
     const glyph=document.createElement('span');glyph.className='pick-sign';glyph.textContent=sign;
@@ -141,15 +148,17 @@
       });
     });
   }
-  function changePick(index,sign,button,mode){
+  function changePick(index,sign,button,mode,strength=DEFAULT_WEIGHT){
     const match=current().matches[index];
-    if(mode==='weight'){
+    if(mode==='weight'||mode==='set-weight'){
       if(!match.signs.includes(sign))match.signs=SIGNS.filter(s=>s===sign||match.signs.includes(s));
-      match.weights=SIGNS.filter(s=>s===sign?!match.weights.includes(s):match.weights.includes(s));
+      if(mode==='weight'&&match.weights[sign]!==undefined)delete match.weights[sign];
+      else match.weights[sign]=strength;
     }else if(match.signs.includes(sign)){
-      match.signs=match.signs.filter(s=>s!==sign);match.weights=match.weights.filter(s=>s!==sign);
+      match.signs=match.signs.filter(s=>s!==sign);delete match.weights[sign];
     }else match.signs=SIGNS.filter(s=>s===sign||match.signs.includes(s));
-    setPickAppearance(button,match,sign);invalidate();
+    setPickAppearance(button,match,sign);
+    invalidate(mode==='set-weight'?`Match ${index+1}, ${sign}: viktning ${weightLabel(strength)}. Skapa rader igen.`:undefined);
   }
   let pendingPick=null;
   function finishPendingPick(toggle=true){
@@ -161,20 +170,55 @@
     const button=document.createElement('button');button.type='button';setPickAppearance(button,match,sign);
     const product=app.activeProduct;
     const toggle=()=>changePick(index,sign,button,'toggle');
-    let holdTimer=0,held=false;
+    let holdTimer=0,held=false,activePointer=null,moved=false,adjusting=false;
+    let startX=0,startY=0,startStrength=DEFAULT_WEIGHT,previewStrength=DEFAULT_WEIGHT,bubble=null;
+    const showStrength=y=>{
+      if(!bubble){bubble=document.createElement('div');bubble.className='weight-bubble';document.body.append(bubble)}
+      bubble.textContent='Viktning '+weightLabel(previewStrength);
+      const rect=button.getBoundingClientRect();
+      bubble.style.left=Math.max(75,Math.min(window.innerWidth-75,rect.left+rect.width/2))+'px';
+      bubble.style.top=Math.max(48,y-20)+'px';
+    };
+    const hideStrength=()=>{if(bubble){bubble.remove();bubble=null}};
     button.addEventListener('pointerdown',event=>{
-      if(event.button!==0)return;
-      held=false;
+      if(event.button!==0||activePointer!==null)return;
+      held=false;moved=false;adjusting=false;activePointer=event.pointerId;
+      startX=event.clientX;startY=event.clientY;
+      startStrength=match.weights[sign]??DEFAULT_WEIGHT;previewStrength=startStrength;
+      try{button.setPointerCapture(event.pointerId)}catch{}
       holdTimer=setTimeout(()=>{
-        held=true;
+        if(activePointer!==event.pointerId||moved||!button.isConnected||product!==app.activeProduct)return;
+        held=true;adjusting=true;
         finishPendingPick(pendingPick?.button!==button);
-        changePick(index,sign,button,'weight');
+        showStrength(startY);
       },550);
     });
-    const cancelHold=()=>{clearTimeout(holdTimer);holdTimer=0};
-    button.addEventListener('pointerup',cancelHold);button.addEventListener('pointercancel',cancelHold);button.addEventListener('pointerleave',cancelHold);
+    button.addEventListener('pointermove',event=>{
+      if(activePointer!==event.pointerId)return;
+      if(!adjusting){
+        if(Math.hypot(event.clientX-startX,event.clientY-startY)>12){
+          moved=true;clearTimeout(holdTimer);holdTimer=0;
+        }
+        return;
+      }
+      event.preventDefault();
+      previewStrength=Math.round(Math.max(MIN_WEIGHT,Math.min(MAX_WEIGHT,startStrength+(startY-event.clientY)/40))*10)/10;
+      showStrength(event.clientY);
+    });
+    const finishPointer=(event,commit)=>{
+      if(activePointer!==event.pointerId)return;
+      clearTimeout(holdTimer);holdTimer=0;activePointer=null;
+      try{if(button.hasPointerCapture(event.pointerId))button.releasePointerCapture(event.pointerId)}catch{}
+      if(adjusting){
+        adjusting=false;hideStrength();held=true;
+        if(commit&&button.isConnected&&product===app.activeProduct)changePick(index,sign,button,'set-weight',previewStrength);
+      }else if(moved)held=true;
+    };
+    button.addEventListener('pointerup',event=>finishPointer(event,true));
+    button.addEventListener('pointercancel',event=>finishPointer(event,false));
     button.addEventListener('contextmenu',event=>event.preventDefault());
     button.addEventListener('click',event=>{
+      if(!button.isConnected||product!==app.activeProduct)return;
       if(held){held=false;event.preventDefault();return}
       if(event.detail===0){finishPendingPick();toggle();return}
       if(pendingPick?.button===button){
@@ -195,8 +239,7 @@
     current().matches.forEach((match,i)=>{
       const row=document.createElement('div');row.className='match-row';
       const num=document.createElement('span');num.className='match-no';num.textContent=String(i+1).padStart(2,'0');
-      const name=document.createElement('input');name.className='match-name';name.type='text';name.maxLength=100;name.placeholder='Match '+(i+1);name.value=match.name;name.setAttribute('aria-label','Match '+(i+1));
-      name.addEventListener('input',()=>{match.name=name.value;persist()});
+      const name=document.createElement('span');name.className='match-name';name.textContent=match.name||'Match '+(i+1);
       const picks=document.createElement('div');picks.className='pick-group';picks.setAttribute('role','group');picks.setAttribute('aria-label','Tecken för match '+(i+1));
       SIGNS.forEach(sign=>picks.append(makePick(i,sign,match)));
       row.append(num,name,picks);root.append(row);
@@ -270,29 +313,41 @@
   function passesPrefix(row,depth,constraints,choices){
     for(const c of constraints){let count=0,possible=0;for(const i of c.indices){if(i<depth){if(c.signs.includes(row[i]))count++}else if(choices[i].some(s=>c.signs.includes(s)))possible++}if(count>c.max||count+possible<c.min)return false}return true;
   }
-  function preference(row,matches){let hits=0;for(let i=0;i<13;i++)if(matches[i].weights.includes(row[i]))hits++;return hits}
+  function preference(row,matches){let score=0;for(let i=0;i<13;i++)score+=Math.log(matches[i].weights[row[i]]||1)/Math.log(DEFAULT_WEIGHT);return score}
   async function chooseDiverse(pool,target,matches,token){
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-    const pairs=[];for(let i=0;i<13;i++)for(let j=i+1;j<13;j++)pairs.push([i,j]);
-    const encoded=pool.map(row=>{const signs=row.map(s=>SIGNS.indexOf(s));return Uint16Array.from(pairs,([a,b],p)=>p*9+signs[a]*3+signs[b])});
-    const prefs=pool.map(row=>preference(row,matches));
+    const pairs=[];for(let i=0;i<13;i++)for(let k=i+1;k<13;k++)pairs.push([i,k]);
+    const codes=pool.map(row=>Uint8Array.from(row,sign=>SIGNS.indexOf(sign)));
+    const encoded=codes.map(row=>Uint16Array.from(pairs,([a,b],p)=>p*9+row[a]*3+row[b]));
+    const shares=matches.map(match=>{
+      const factors=SIGNS.map(sign=>match.signs.includes(sign)?match.weights[sign]??1:0);
+      const sum=factors.reduce((a,b)=>a+b,0);
+      return factors.map(factor=>factor/sum);
+    });
     const covered=new Uint8Array(pairs.length*9),used=new Uint8Array(pool.length),minDistance=new Uint8Array(pool.length).fill(13),selected=[];
+    const counts=Array.from({length:13},()=>[0,0,0]);
     for(let pick=0;pick<target;pick++){
       let best=-1,bestScore=-Infinity;
       for(let i=0;i<pool.length;i++){
         if(used[i])continue;
         let fresh=0;for(const key of encoded[i])if(!covered[key])fresh++;
-        const score=fresh*10+minDistance[i]*3+prefs[i]*18;
+        let balance=0;
+        for(let m=0;m<13;m++){
+          const sign=codes[i][m];
+          balance+=(pick+1)*shares[m][sign]-counts[m][sign];
+        }
+        const score=fresh*10+minDistance[i]*3+balance*24;
         if(score>bestScore){bestScore=score;best=i}
       }
       used[best]=1;selected.push(pool[best]);for(const key of encoded[best])covered[key]=1;
-      for(let i=0;i<pool.length;i++)if(!used[i]){let distance=0;for(let m=0;m<13;m++)if(pool[i][m]!==pool[best][m])distance++;if(distance<minDistance[i])minDistance[i]=distance}
+      for(let m=0;m<13;m++)counts[m][codes[best][m]]++;
+      for(let i=0;i<pool.length;i++)if(!used[i]){let distance=0;for(let m=0;m<13;m++)if(codes[i][m]!==codes[best][m])distance++;if(distance<minDistance[i])minDistance[i]=distance}
       if(pick%3===2){status('Väljer spridda rader: '+(pick+1)+' av '+target+' …');await new Promise(resolve=>setTimeout(resolve,0));if(token!==runId)return null}
     }
     return selected;
   }
   function chooseWeighted(pool,target,matches){
-    return pool.map(row=>({row,key:-Math.log(Math.max(Number.MIN_VALUE,Math.random()))/Math.pow(3,preference(row,matches))})).sort((a,b)=>a.key-b.key).slice(0,target).map(x=>x.row);
+    return pool.map(row=>({row,key:-Math.log(Math.max(Number.MIN_VALUE,Math.random()))/Math.pow(DEFAULT_WEIGHT,preference(row,matches))})).sort((a,b)=>a.key-b.key).slice(0,target).map(x=>x.row);
   }
   async function calculateGuarantee(rows,choices,token){
     const strides=Array(13),radices=choices.map(choice=>choice.length);
@@ -361,7 +416,7 @@
     result={product:productName,rows};renderDistribution(rows);
     $('count').textContent=format(rows.length);$('price').textContent=format(rows.length)+' kr';$('guarantee').textContent=guarantee+' rätt';$('download').disabled=false;$('copy').disabled=false;
     $('preview').textContent=makeText(result,false);
-    const weighted=product.matches.some(m=>m.weights.length);
+    const weighted=product.matches.some(m=>Object.keys(m.weights).length);
     const message=eligible<target?`Endast ${format(eligible)} rader klarar reglerna. Alla valdes.`:`${format(rows.length)} av ${format(eligible)} giltiga rader valda${weighted?' med viktade tecken prioriterade':''}.`;
     status(message,'good');
   }
@@ -379,7 +434,7 @@
   }
   document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>setTheme(btn.dataset.themeChoice)));
   setTheme(document.documentElement.dataset.theme==='sport'?'sport':'retro');
-  $('reset-signs').addEventListener('click',()=>{current().matches.forEach(m=>{m.signs=[];m.weights=[]});renderMatches();invalidate('Alla tecken rensade. Välj minst ett per match.')});
+  $('reset-signs').addEventListener('click',()=>{current().matches.forEach(m=>{m.signs=[];m.weights={}});renderMatches();invalidate('Alla tecken rensade. Välj minst ett per match.')});
   $('refresh-fixture').addEventListener('click',refreshFixtures);
   for(let n=1;n<=MAX_ROWS;n++){
     const option=document.createElement('option');option.value=String(n);option.textContent=String(n);$('target-picker').append(option);
