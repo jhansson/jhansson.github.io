@@ -217,3 +217,40 @@ html[data-theme="retro"] .pick.selected:not(.weighted):before,
 html[data-theme="retro"] .pick.selected:not(.weighted):after,
 html[data-theme="retro"] .pick.weighted:after{display:none}
 @media(max-width:640px){html[data-theme="retro"] .pick.selected .hand-mark{left:0;top:-2px;width:34px;height:29px}}
+
+
+/* A worn paper surface across the whole retro coupon. The decorative layer never receives input. */
+html[data-theme="retro"] .site-shell{
+  background:
+    radial-gradient(ellipse at 3% 2%,#fffaf0b0,transparent 28%),
+    radial-gradient(ellipse at 97% 96%,#ae6f4130,transparent 25%),
+    radial-gradient(ellipse at 55% 46%,#c88b5514,transparent 41%),
+    repeating-linear-gradient(94deg,transparent 0 18px,#82563508 19px 20px,transparent 21px 43px),
+    linear-gradient(#f7e9d1,#f4e5cb 60%,#ecd9b8);
+  box-shadow:inset 0 0 18px #925f3e7a,inset 0 0 66px #9d6a3d35,0 0 0 2px #a35a4938,0 8px 45px #53352061;
+}
+html[data-theme="retro"] .site-shell::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:50;
+  pointer-events:none;
+  border-radius:2px;
+  opacity:.17;
+  mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22180%22%20height%3D%22180%22%3E%3Cfilter%20id%3D%22grain%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%22.78%22%20numOctaves%3D%223%22%20seed%3D%2211%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20filter%3D%22url(%23grain)%22%20opacity%3D%22.55%22%2F%3E%3C%2Fsvg%3E"),radial-gradient(circle at 6px 8px,#6d422f 0 .5px,transparent 1.1px),radial-gradient(circle at 19px 22px,#936448 0 .8px,transparent 1.5px);
+  background-size:180px 180px,29px 31px,43px 47px;
+}
+html[data-theme="retro"] .content-grid{
+  background:radial-gradient(ellipse at 92% 4%,#e0b88e28,transparent 31%),linear-gradient(#f8ecd6e8,#f2e2c8e8);
+  box-shadow:inset 0 0 10px #9d64483d,inset 0 0 34px #a0724930;
+}
+html[data-theme="retro"] .panel-heading,
+html[data-theme="retro"] .overview-heading{
+  background-image:repeating-linear-gradient(103deg,transparent 0 8px,#fff5d708 9px 10px,transparent 11px 19px);
+}
+html[data-theme="retro"] .match-row:nth-child(odd){background:#d65b5530}
+@media(max-width:640px){
+  html[data-theme="retro"] .site-shell{box-shadow:inset 0 0 13px #925f3e66,inset 0 0 35px #9d6a3d2b,0 0 0 1px #a35a4938}
+  html[data-theme="retro"] .site-shell::after{opacity:.13}
+}
