@@ -208,3 +208,12 @@ html[data-theme="retro"] .legend-star{vertical-align:baseline;flex:none;margin:0
 @media(max-width:800px){html[data-theme="retro"] .content-grid{display:block}}
 @media(max-width:760px){.topbar,html[data-theme="retro"] .topbar{flex-wrap:nowrap;height:58px;min-height:0}.theme-switch,html[data-theme="retro"] .theme-switch{order:0;width:auto;margin-left:auto}.theme-switch button{flex:none}}
 @media(max-width:640px){.sign-legend,html[data-theme="retro"] .sign-legend{font-size:.8rem}html[data-theme="retro"] .fixture-bar,.fixture-bar{font-size:.8rem}html[data-theme="retro"] .theme-switch{width:auto}}
+
+/* Slightly irregular pen marks, stable for each match and sign. */
+.pick .hand-mark{display:none}
+html[data-theme="retro"] .pick.selected .hand-mark{display:block;position:absolute;z-index:3;left:2px;top:-2px;width:43px;height:35px;color:#194b9a;pointer-events:none;overflow:visible}
+html[data-theme="retro"][data-product="europatipset"] .pick.selected .hand-mark{color:#267449}
+html[data-theme="retro"] .pick.selected:not(.weighted):before,
+html[data-theme="retro"] .pick.selected:not(.weighted):after,
+html[data-theme="retro"] .pick.weighted:after{display:none}
+@media(max-width:640px){html[data-theme="retro"] .pick.selected .hand-mark{left:0;top:-2px;width:34px;height:29px}}

@@ -120,6 +120,42 @@
     catch(error){fixtureStatus='error';renderFixtureInfo();status('Matchlistan kunde inte hämtas: '+error.message,'error')}
   }
 
+  const handCrosses=[
+    ['M 6 4 C 13 12 24 24 35 29','M 35 4 C 28 10 15 22 7 29'],
+    ['M 5 5 Q 19 16 36 28','M 34 3 Q 24 15 6 29'],
+    ['M 7 3 C 13 11 25 23 34 30','M 36 5 C 25 11 20 24 6 28'],
+    ['M 5 4 Q 16 17 34 29','M 35 3 C 29 12 16 20 8 30'],
+    ['M 7 4 C 13 12 27 22 35 28','M 35 4 Q 19 19 5 29'],
+    ['M 6 5 Q 18 18 36 29','M 34 5 C 28 10 13 22 7 28'],
+    ['M 7 3 C 15 13 24 25 36 29','M 35 4 Q 24 13 7 30']
+  ];
+  const handRings=[
+    'M 20 3 C 31 2 38 8 37 17 C 36 27 29 31 19 30 C 8 31 4 25 5 16 C 6 7 12 3 19 4',
+    'M 18 4 C 28 1 37 7 38 15 C 39 25 30 31 21 29 C 11 31 4 26 5 17 C 5 9 11 5 18 4',
+    'M 20 3 C 29 3 36 7 37 16 C 37 25 31 31 19 30 C 10 31 3 24 5 15 C 6 7 12 4 20 3',
+    'M 19 4 C 31 1 38 8 36 17 C 37 25 30 30 20 30 C 9 30 5 25 5 16 C 4 8 12 3 19 4',
+    'M 20 3 C 31 2 37 9 38 17 C 37 26 29 31 19 29 C 8 31 4 24 6 15 C 6 7 12 4 20 3',
+    'M 19 3 C 29 2 39 7 37 16 C 38 27 28 30 19 30 C 10 30 4 24 5 15 C 6 7 12 3 19 3',
+    'M 20 4 C 31 2 38 9 37 17 C 36 26 31 29 20 30 C 10 31 5 25 5 16 C 5 7 12 3 20 4'
+  ];
+  function makeHandMark(index,sign,weighted){
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.classList.add('hand-mark');svg.setAttribute('viewBox','0 0 42 34');svg.setAttribute('aria-hidden','true');
+    const variant=(index*3+SIGNS.indexOf(sign))%handRings.length;
+    svg.style.transform=`rotate(${(weighted?[-3,2,-1,4,-2,3,0]:[-6,4,-3,7,-5,5,1])[variant]}deg) scale(${[.98,1.02,1,.97,1.03,.99,1.01][variant]})`;
+    const paths=weighted?[handRings[variant]]:handCrosses[variant];
+    for(let i=0;i<paths.length;i++){
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d',paths[i]);
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke','currentColor');
+      path.setAttribute('stroke-width',String(weighted?2.5+(variant%3)*.22:2.3+((variant+i)%3)*.25));
+      path.setAttribute('stroke-linecap','round');
+      path.setAttribute('stroke-linejoin','round');
+      svg.append(path);
+    }
+    return svg;
+  }
   function setPickAppearance(btn,match,sign){
     const selected=match.signs.includes(sign),strength=match.weights[sign],weighted=strength!==undefined;
     btn.className='pick'+(selected?' selected':'')+(weighted?' weighted':'');
@@ -131,6 +167,7 @@
     const glyph=document.createElement('span');glyph.className='pick-sign';glyph.textContent=sign;
     btn.replaceChildren(fill,glyph);
     if(weighted){const star=document.createElement('span');star.className='star';star.textContent='★';star.setAttribute('aria-hidden','true');btn.append(star)}
+    if(selected)btn.append(makeHandMark(Number(btn.dataset.matchIndex||0),sign,weighted));
   }
   function clearDistribution(){
     $('match-list').querySelectorAll('.pick').forEach(button=>{
@@ -173,7 +210,7 @@
     if(toggle&&pending.button.isConnected&&pending.product===app.activeProduct)pending.toggle();
   }
   function makePick(index,sign,match){
-    const button=document.createElement('button');button.type='button';setPickAppearance(button,match,sign);
+    const button=document.createElement('button');button.type='button';button.dataset.matchIndex=index;setPickAppearance(button,match,sign);
     const product=app.activeProduct;
     const toggle=()=>changePick(index,sign,button,'toggle');
     let holdTimer=0,held=false,activePointer=null,moved=false,adjusting=false;
