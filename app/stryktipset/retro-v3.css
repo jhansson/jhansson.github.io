@@ -227,6 +227,6 @@ html[data-theme="retro"] .site-shell::after{
   z-index:50;
   pointer-events:none;
   background:url("paper-texture.jpg") left top / 1024px 1024px repeat;
-  opacity:.6;
+  opacity:.45;
   mix-blend-mode:multiply;
 }
