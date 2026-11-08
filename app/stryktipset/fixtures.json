@@ -21,25 +21,24 @@
       ]
     },
     "Europatipset": {
-      "drawNumber": 2622,
-      "regCloseTime": "2026-11-04T20:44:00+01:00",
-      "fetchedAt": "2026-11-03T19:26:29.038Z",
+      "drawNumber": 2623,
+      "regCloseTime": "2026-11-08T14:59:00+01:00",
+      "fetchedAt": "2026-11-08T08:09:02.355Z",
       "names": [
-        "Slavia Prag - Arsenal",
-        "RB Leipzig - Manchester City",
-        "Dortmund - Real Betis",
-        "Porto - Napoli",
-        "PSV Eindhoven - Club Brügge",
-        "Lens - Como",
-        "Viking - Sabah Masazir",
-        "Bristol City - Wolverhampton",
-        "Cardiff - West Ham",
-        "Wrexham - Middlesbrough",
-        "Oxford - Reading",
-        "Botafogo RJ - Atletico Mineiro",
-        "Sao Paulo - Corinthians"
+        "Manchester United - Aston Villa",
+        "Crystal Palace - Liverpool",
+        "Sunderland - Chelsea",
+        "Brighton - Brentford",
+        "Ipswich - Bournemouth",
+        "Inter - Como",
+        "Genoa - Milan",
+        "Fiorentina - Juventus",
+        "Atlético Madrid - Barcelona",
+        "Celta de Vigo - Levante",
+        "AIK - Häcken",
+        "Brommapojkarna - Mjällby",
+        "Kalmar - Sirius"
       ]
     }
   }
 }
-
