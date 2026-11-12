@@ -16,7 +16,9 @@
   <meta name="apple-mobile-web-app-title" content="Reduceraren">
   <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="retro-v3.css?v=10">
+  <link rel="stylesheet" href="install-prompt.css?v=1">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('tips-reduceraren-theme')==='sport'?'sport':'retro'}catch{document.documentElement.dataset.theme='retro'}</script>
+  <script src="install-prompt.js?v=1" defer></script>
   <script src="app-v2.js?v=14" defer></script>
 </head>
 <body>
@@ -25,6 +27,14 @@
       <a class="brand" href="/app/" aria-label="Till appöversikten"><span class="brand-ball" aria-hidden="true">⚽</span><span>REDUCERAREN</span></a>
       <div class="theme-switch" role="group" aria-label="Välj utseende"><button type="button" data-theme-choice="sport" aria-pressed="false">Sport</button><button type="button" data-theme-choice="retro" aria-pressed="true">Retro</button></div>
     </header>
+
+    <section id="install-banner" aria-label="Spara Reduceraren på telefonen" hidden>
+      <img class="install-icon" src="icon-192.png" width="42" height="42" alt="">
+      <div class="install-copy"><strong>Reduceraren på startskärmen</strong><span>Öppna den direkt som en app nästa gång.</span></div>
+      <button id="install-action" type="button" aria-controls="install-guide" aria-expanded="false">Spara som app</button>
+      <button id="install-dismiss" type="button" aria-label="Stäng tips om att spara appen">×</button>
+      <p id="install-guide" hidden></p>
+    </section>
 
     <section class="hero" aria-label="Välj spelprodukt">
       <div class="hero-art" aria-hidden="true"></div>

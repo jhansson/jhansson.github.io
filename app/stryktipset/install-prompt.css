@@ -1,0 +1,27 @@
+#install-banner[hidden],#install-guide[hidden]{display:none!important}
+#install-banner{display:grid;grid-template-columns:42px minmax(0,1fr) auto 28px;align-items:center;gap:11px;margin:12px 0 0;padding:12px 13px;border:1px solid #426786;border-radius:9px;background:#102c46;color:#eff6ff;box-shadow:0 5px 15px #0003}
+#install-banner .install-icon{width:42px;height:42px;border-radius:9px}
+#install-banner .install-copy{min-width:0}
+#install-banner .install-copy strong{display:block;font-size:.89rem;line-height:1.2}
+#install-banner .install-copy span{display:block;margin-top:3px;color:#bdcedd;font-size:.76rem}
+#install-action{min-height:38px;padding:7px 11px;border:0;border-radius:6px;background:var(--lime);color:#102237;font-size:.78rem;font-weight:800;white-space:nowrap}
+#install-dismiss{width:28px;height:28px;padding:0;border:0;background:transparent;color:inherit;font-size:1.25rem;line-height:1}
+#install-action:focus-visible,#install-dismiss:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+#install-guide{grid-column:2/-2;margin:1px 0 0;color:#d4e2ed;font-size:.78rem;line-height:1.4}
+html[data-theme="retro"] #install-banner{border:1px dashed #b23539;border-radius:2px;background:#f0dbba;color:#173b66;box-shadow:3px 3px 0 #6d493025}
+html[data-theme="retro"] #install-banner .install-icon{border-radius:2px}
+html[data-theme="retro"] #install-banner .install-copy strong{font-family:Georgia,serif;font-style:italic}
+html[data-theme="retro"] #install-banner .install-copy span,html[data-theme="retro"] #install-guide{color:#49617a}
+html[data-theme="retro"] #install-action{border:1px solid #204f79;border-radius:2px;background:#194b80;color:#fff3d8;font-family:Georgia,serif;font-style:italic}
+html[data-theme="retro"][data-product="europatipset"] #install-action{border-color:#2e6745;background:#31704a}
+html[data-theme="retro"][data-product="europatipset"] #install-banner{color:#245a3d}
+html[data-theme="retro"][data-product="europatipset"] #install-banner .install-copy span,html[data-theme="retro"][data-product="europatipset"] #install-guide{color:#416a50}
+@media(min-width:761px){#install-banner{display:none!important}}
+@media(max-width:520px){
+  #install-banner{grid-template-columns:42px minmax(0,1fr) 28px;gap:9px;padding:10px}
+  #install-banner .install-copy strong{font-size:.85rem}
+  #install-action{grid-column:2;grid-row:2;justify-self:start}
+  #install-dismiss{grid-column:3;grid-row:1}
+  #install-guide{grid-column:2/-1}
+}
+
