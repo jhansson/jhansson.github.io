@@ -1,43 +1,43 @@
 {
   "products": {
     "Stryktipset": {
-      "drawNumber": 4978,
-      "regCloseTime": "2026-11-07T15:59:00+01:00",
-      "fetchedAt": "2026-11-03T19:26:29.043Z",
+      "drawNumber": 4979,
+      "regCloseTime": "2026-11-14T15:59:00+01:00",
+      "fetchedAt": "2026-11-12T09:56:15.173Z",
       "names": [
-        "Nottingham - Manchester City",
-        "Arsenal - Hull",
-        "Fulham - Newcastle",
-        "Blackburn - West Ham",
-        "Birmingham - Swansea",
-        "Cardiff - Burnley",
-        "Charlton - Sheffield U",
-        "Preston - Southampton",
-        "Queens Park Rangers - Lincoln",
-        "Watford - Middlesbrough",
-        "West Bromwich - Millwall",
-        "Crewe - Wimbledon",
-        "Oxford - Stevenage"
+        "Sverige - Bosnien & Hercegovina",
+        "Portugal - Danmark",
+        "Norge - Wales",
+        "Rumänien - Polen",
+        "Nordirland - Ukraina",
+        "Österrike - Irland",
+        "Georgien - Ungern",
+        "Milton Keynes Dons - Burton",
+        "Sheffield W - Plymouth",
+        "Stockport - Reading",
+        "Wimbledon - Blackpool",
+        "Wigan - Barnsley",
+        "Swindon - Grimsby"
       ]
     },
     "Europatipset": {
-      "drawNumber": 2623,
-      "regCloseTime": "2026-11-08T14:59:00+01:00",
-      "fetchedAt": "2026-11-08T08:09:02.355Z",
+      "drawNumber": 2624,
+      "regCloseTime": "2026-11-12T20:44:00+01:00",
+      "fetchedAt": "2026-11-12T09:56:15.188Z",
       "names": [
-        "Manchester United - Aston Villa",
-        "Crystal Palace - Liverpool",
-        "Sunderland - Chelsea",
-        "Brighton - Brentford",
-        "Ipswich - Bournemouth",
-        "Inter - Como",
-        "Genoa - Milan",
-        "Fiorentina - Juventus",
-        "Atlético Madrid - Barcelona",
-        "Celta de Vigo - Levante",
-        "AIK - Häcken",
-        "Brommapojkarna - Mjällby",
-        "Kalmar - Sirius"
+        "Italien - Frankrike",
+        "England - Kroatien",
+        "Tjeckien - Spanien",
+        "Albanien - Finland",
+        "Montenegro - Lettland",
+        "Nederländerna - Grekland",
+        "Serbien - Tyskland",
+        "Skottland - Nordmakedonien",
+        "Slovenien - Schweiz",
+        "Bulgarien - Island",
+        "Luxemburg - Estland",
+        "Slovakien - Färöarna",
+        "Moldavien - Kazakstan"
       ]
     }
   }
